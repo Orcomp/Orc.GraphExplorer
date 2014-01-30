@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D32429C3-438E-4A21-9384-153B609E1B97}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Orc.GraphExplorer</RootNamespace>
+    <AssemblyName>Orc.GraphExplorer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>../../output/Debug/Orc.GraphExplorer</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <RegisterForComInterop>false</RegisterForComInterop>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>../../output/Release/Orc.GraphExplorer</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Catel.Core">
+      <HintPath>..\packages\Catel.Core.3.8.1401261328-beta\lib\net40\Catel.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Catel.MVVM">
+      <HintPath>..\packages\Catel.MVVM.3.8.1401261328-beta\lib\net40\Catel.MVVM.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\..\lib\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphX, Version=0.1.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\GraphX.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\..\lib\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Orc.FilterBuilder">
+      <HintPath>..\packages\Orc.FilterBuilder.1.0.0.0\lib\NET40\Orc.FilterBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Orc.Toolkit">
+      <HintPath>..\packages\Orc.Toolkit.1.0.7.0\lib\NET40\Orc.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\QuickGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\QuickGraph.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Catel.MVVM.3.8.1401261328-beta\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="YAXLib, Version=2.12.0.0, Culture=neutral, PublicKeyToken=7cc39f8266ad1835, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\YAXLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="SettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Assets\ThemedGraphXTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="FilePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GraphExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converter\BoolToVisibilityConverter.cs" />
+    <Compile Include="Model\FilterEntity.cs" />
+    <Compile Include="Operation\EditValuePropertyOperation.cs" />
+    <Compile Include="Operation\EditKeyPropertyOperation.cs" />
+    <Compile Include="Operation\AddPropertyOperation.cs" />
+    <Compile Include="Operation\DeleteEdgeOperation.cs" />
+    <Compile Include="Operation\DeletePropertyOperation.cs" />
+    <Compile Include="Operation\EdgeOperation.cs" />
+    <Compile Include="Operation\PropertyOperation.cs" />
+    <Compile Include="Operation\VertexOperation.cs" />
+    <Compile Include="Operation\CreateEdgeOperation.cs" />
+    <Compile Include="Operation\CreateVertexOperation.cs" />
+    <Compile Include="CsvGraphDataService.cs" />
+    <Compile Include="CsvGraphDataServiceConfig.cs" />
+    <Compile Include="DataLoadedEventArgs.cs" />
+    <Compile Include="FilePicker.xaml.cs">
+      <DependentUpon>FilePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GraphExplorer.xaml.cs">
+      <DependentUpon>GraphExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GraphExplorerViewmodel.cs" />
+    <Compile Include="IDataProvider.cs" />
+    <Compile Include="IGraphDataService.cs" />
+    <Compile Include="IOperation.cs" />
+    <Compile Include="Model\NotificationObject.cs" />
+    <Compile Include="Model\PropertyViewmodel.cs" />
+    <Compile Include="Model\Result.cs" />
+    <Compile Include="NavigateHistoryItem.cs" />
+    <Compile Include="Operation\DeleteVertexOperation.cs" />
+    <Compile Include="Operation\VertexPositionChangeOperation.cs" />
+    <Compile Include="SettingView.xaml.cs">
+      <DependentUpon>SettingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingViewCloseEventHandler.cs" />
+    <Compile Include="TopologicalLayoutAlgorithm.cs" />
+    <Compile Include="Model\DataEdge.cs" />
+    <Compile Include="Model\DataVertex.cs" />
+    <Compile Include="Model\DisplayMode.cs" />
+    <Compile Include="Model\Graph.cs" />
+    <Compile Include="Model\GraphArea.cs" />
+    <Compile Include="Model\GraphDataServiceEnum.cs" />
+    <Compile Include="GraphExplorerConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.people.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.close.png" />
+    <Resource Include="Assets\appbar.save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.folder.open.png" />
+    <Resource Include="Assets\appbar.image.export.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.page.png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.cursor.hand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.vector.line.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.vector.line.curve.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.vector.rectangle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\appbar.redo.curve.disable.design" />
+    <None Include="Assets\appbar.undo.curve.disable.design" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.redo.curve.disable.png" />
+    <Resource Include="Assets\appbar.undo.curve.disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appbar.redo.curve.png" />
+    <Resource Include="Assets\appbar.undo.curve.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

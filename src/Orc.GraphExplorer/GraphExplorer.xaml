@@ -1,0 +1,166 @@
+﻿<UserControl x:Class="Orc.GraphExplorer.GraphExplorer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"  
+             xmlns:zb="clr-namespace:GraphX.Xceed.Wpf.Toolkit.Zoombox;assembly=GraphX"
+             xmlns:graphxctrl="clr-namespace:GraphX.Controls;assembly=GraphX"
+             xmlns:model="clr-namespace:Orc.GraphExplorer.Model"  
+             xmlns:local="clr-namespace:Orc.GraphExplorer"
+             xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX"
+             xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX"
+             xmlns:net401="clr-namespace:Orc.FilterBuilder;assembly=Orc.FilterBuilder"
+             xmlns:converter="clr-namespace:Orc.GraphExplorer.Converter"
+             xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Assets/ThemedGraphXTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <Converters:DoubleToLog10Converter x:Key="log10Converter" />
+            <Converters:EqualityToBooleanConverter x:Key="equalityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Name="root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem  Name="overrallTab" FontWeight="Bold">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="8,0,8,0" FontWeight="Bold" Text="Overrall" VerticalAlignment="Center"/>
+                        <TextBlock Text=" *" Name="changeIndicator" Visibility="{Binding HasChange,Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Margin="0" Height="32" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Left"  ToolTip="Save Layout To Xml"  Height="28" Width="28" Name="btnSave" Style="{StaticResource SaveButtonStyle}" Click="btnSave_Click"/>
+                            <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Load Layout From Xml"  Name="btnLoad" Style="{StaticResource LoadButtonStyle}" Click="btnLoad_Click"/>
+                            <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Save As Image" Name="btnExport" Style="{StaticResource ExportButtonStyle}" Click="btnExport_Click"/>
+
+                            <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding CanDrag,Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" Name="tbtnCanDrag"/>
+                            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" Name="tbtnCanEdit" Click="tbtnCanEdit_Click"/>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Name="editPanel" Visibility="{Binding IsChecked,ElementName=tbtnCanEdit,Converter={StaticResource BoolToVisibilityConverter}}">
+                                <ToggleButton Height="28" DockPanel.Dock="Left" ToolTip="Create Link" Name="tbnNewEdge" Click="tbnNewEdge_Click" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}"/>
+                                <Button Height="28" DockPanel.Dock="Left" ToolTip="Drag To Treate Node" Name="tbnNewNode" PreviewMouseLeftButtonDown="tbnNewNode_PreviewMouseLeftButtonDown"  Width="28" Style="{StaticResource VertexButtonStyle}"/>
+                                <Button Height="28" DockPanel.Dock="Left" ToolTip="Undo" Name="tbnUndo" Command="{Binding UndoCommand}" Width="28" Style="{StaticResource UndoButtonStyle}"/>
+                                <Button Height="28" DockPanel.Dock="Left" ToolTip="Redo" Name="tbnRedo" Command="{Binding RedoCommand}" Width="28" Style="{StaticResource RedoButtonStyle}"/>
+                                <Button Height="28" DockPanel.Dock="Left" ToolTip="Save Changes To Data Source" Name="tbnSaveChanges" Click="tbnSaveChanges_Click" Width="28" Style="{StaticResource SaveButtonStyle}"/>
+                            </StackPanel>
+                            <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                            <Button DockPanel.Dock="Left" Height="28" ToolTip="Refresh Graph" Width="28" Name="btnRefresh" Style="{StaticResource RefershButtonStyle}" Click="btnRefresh_Click"/>
+                            <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                            <Slider DockPanel.Dock="Left" Style="{StaticResource SliderStyle}" Width="100"
+                                            Minimum="{Binding MinZoom,ElementName=zoomctrl,Converter={StaticResource log10Converter}}"
+                                            Maximum="{Binding MaxZoom,ElementName=zoomctrl,Converter={StaticResource log10Converter}}"
+                                            Value="{Binding Zoom,ElementName=zoomctrl,Mode=TwoWay,Converter={StaticResource log10Converter}}"
+                                            VerticalAlignment="Center"
+                                            Ticks="0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2"
+                                            AutoToolTipPlacement="BottomRight"
+                                            AutoToolTipPrecision="1"
+                                            TickPlacement="None"
+                                            TickFrequency="1"
+                                            LargeChange="0.2"
+                                            SmallChange="0.1"
+                                            Orientation="Horizontal" />
+                            <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Path=Zoom,ElementName=zoomctrl,StringFormat='{}{0:P0}'}" FontSize="10" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Fill}}" />
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
+                            <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                            <orctk:DropDownButton ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
+                                <StackPanel Height="200" Width="320">
+                                    <net401:FilterBuilderControl Margin="2,2,6,2"
+			RawCollection="{Binding Entities}"
+			FilteredCollection="{Binding FilteredEntities}"/>
+                                    <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
+                                </StackPanel>
+                            </orctk:DropDownButton>
+                        </DockPanel>
+                    </Border>
+
+                    <graphxctrl:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="50" Grid.Row="1">
+                        <model:GraphArea x:Name="Area"/>
+                    </graphxctrl:ZoomControl>
+                </Grid>
+            </TabItem>
+            <TabItem Name="navTab" Visibility="Hidden" Padding="1" FontWeight="Bold">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="8,0,0,0" FontWeight="Bold" Text="Navigate" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Height="20" Foreground="{Binding Foreground,ElementName=navTab}" Width="20" Name="btnClose" Style="{StaticResource CloseButtonStyle}" Click="btnClose_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+<Border Margin="0" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
+                        <StackPanel Orientation="Horizontal" Height="32">
+                            <Button Height="28" Width="28" Name="btnExportNav" Style="{StaticResource ExportButtonStyle}" Click="btnExportNav_Click"/>
+                            <Rectangle Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                            <Slider Style="{StaticResource SliderStyle}" Width="100"
+                                            Minimum="{Binding MinZoom,ElementName=zoomctrlNav,Converter={StaticResource log10Converter}}"
+                                            Maximum="{Binding MaxZoom,ElementName=zoomctrlNav,Converter={StaticResource log10Converter}}"
+                                            Value="{Binding Zoom,ElementName=zoomctrlNav,Mode=TwoWay,Converter={StaticResource log10Converter}}"
+                                            VerticalAlignment="Center"
+                                            Ticks="0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2"
+                                            AutoToolTipPlacement="BottomRight"
+                                            AutoToolTipPrecision="1"
+                                            TickPlacement="None"
+                                            TickFrequency="1"
+                                            LargeChange="0.2"
+                                            SmallChange="0.1"
+                                            Orientation="Horizontal" />
+                            <TextBlock FontSize="10" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Path=Zoom,ElementName=zoomctrlNav,StringFormat='{}{0:P0}'}" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Fill}}" />
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
+                        </StackPanel>
+                    </Border>
+                    <graphxctrl:ZoomControl Grid.Row="1"  MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="50" x:Name="zoomctrlNav">
+                        <model:GraphArea x:Name="AreaNav" />
+                    </graphxctrl:ZoomControl>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!--the menu bar-->
+        <!--<Border VerticalAlignment="Top" Height="32" HorizontalAlignment="Stretch" Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity=".5" RenderingBias="Performance" ShadowDepth="1"/>
+            </Border.Effect>
+            <StackPanel Background="AliceBlue" Orientation="Horizontal">
+                <Button x:Name="btnBack" Content="&lt;-"/>
+                <Button x:Name="btnForward" Content="->"/>
+            </StackPanel>
+        </Border>-->
+        <Button Height="22" Width="22" Margin="2,1" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource SettingButtonStyle}" ToolTip="Open Setting" Name="btnSetting" Click="btnSetting_Click"/>
+        <Border x:Name="StatusBar" Grid.Row="1" Background="{DynamicResource StatusBar.Backround}">
+            <StackPanel Orientation="Horizontal" Margin="6,2">
+                <Image />
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" Text="{Binding StatusMessage,Mode=OneWay}"/>
+            </StackPanel>
+        </Border>
+        <local:SettingView Grid.RowSpan="3" Visibility="Collapsed" Margin="-1" SettingApplied="settingView_SettingApplied" x:Name="settingView"/>
+    </Grid>
+</UserControl>
