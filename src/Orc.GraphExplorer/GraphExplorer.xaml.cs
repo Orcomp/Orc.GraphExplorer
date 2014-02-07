@@ -641,7 +641,7 @@ namespace Orc.GraphExplorer
 
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
-            Area.ExportAsPNG();
+            Area.ExportAsImage(PrintHelper.ImageType.PNG);
         }
 
         private void btnExportNav_Click(object sender, RoutedEventArgs e)

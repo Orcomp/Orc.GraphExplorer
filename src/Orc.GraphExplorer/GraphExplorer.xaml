@@ -90,10 +90,13 @@
                                     <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
                                 </StackPanel>
                             </orctk:DropDownButton>
+                            <!--<StackPanel DockPanel.Dock="Right">
+                                <TextBox Text="{Binding SearchText}"/>
+                            </StackPanel>-->
                         </DockPanel>
                     </Border>
 
-                    <graphxctrl:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="50" Grid.Row="1">
+                    <graphxctrl:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1">
                         <model:GraphArea x:Name="Area"/>
                     </graphxctrl:ZoomControl>
                 </Grid>
@@ -137,7 +140,7 @@
                             <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
                         </StackPanel>
                     </Border>
-                    <graphxctrl:ZoomControl Grid.Row="1"  MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="50" x:Name="zoomctrlNav">
+                    <graphxctrl:ZoomControl Grid.Row="1"  MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav">
                         <model:GraphArea x:Name="AreaNav" />
                     </graphxctrl:ZoomControl>
                 </Grid>

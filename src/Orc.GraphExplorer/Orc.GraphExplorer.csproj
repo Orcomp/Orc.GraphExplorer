@@ -95,6 +95,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="VertexFilter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Resource Include="Assets\ThemedGraphXTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -152,6 +156,9 @@
     <Compile Include="Model\GraphArea.cs" />
     <Compile Include="Model\GraphDataServiceEnum.cs" />
     <Compile Include="GraphExplorerConfiguration.cs" />
+    <Compile Include="VertexFilter.xaml.cs">
+      <DependentUpon>VertexFilter.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\appbar.people.png" />

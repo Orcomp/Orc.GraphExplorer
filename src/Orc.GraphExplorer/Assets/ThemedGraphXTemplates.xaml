@@ -1858,4 +1858,12 @@
     <Style x:Key="FilterButtonStyle" TargetType="{x:Type orctk:DropDownButton}">
         <Setter Property="Template" Value="{StaticResource DropDownButtonControlTemplate1}"/>
     </Style>
+    
+    <!--Vertex Filter Control-->
+    <DataTemplate x:Key="FilterItemTemplate">
+        <StackPanel Orientation="Horizontal">
+            <ComboBox Width="80" IsEditable="False" ItemsSource="{Binding DataContext.PropertyNames,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=UserControl}}" SelectedItem="{Binding SelectedPropertyName}"/>
+            <ComboBox Width="40" IsEditable="False" ItemsSource="{Binding DataContext.PropertyNames,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=UserControl}}" SelectedItem="{Binding SelectedPropertyName}"/>
+        </StackPanel>
+    </DataTemplate>
 </ResourceDictionary>

@@ -60,7 +60,7 @@ namespace Orc.GraphExplorer
                     InnerGetVertxes();
 
                 if (onSuccess != null)
-                    onSuccess.Invoke(vCache.Select(i => i.Value));
+                    onSuccess.Invoke(vCache.OrderBy(i=>i.Key).Select(i => i.Value));
             }
             catch (Exception error)
             {

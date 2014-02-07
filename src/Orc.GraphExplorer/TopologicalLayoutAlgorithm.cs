@@ -41,6 +41,11 @@ namespace Orc.GraphExplorer
 
             vertexPositions = new Dictionary<TVertex, Point>();
 
+            double offsetY = esla.VertexPositions.Values.Min(p => p.X);
+            if (offsetY < 0)
+            {
+                _offsetY = -offsetY;
+            }
             //vertexPositions = esla.VertexPositions;
             foreach (var item in esla.VertexPositions)
             {
