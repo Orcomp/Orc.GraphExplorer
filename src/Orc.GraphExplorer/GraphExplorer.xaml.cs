@@ -567,7 +567,9 @@ namespace Orc.GraphExplorer
                 {
                     tbtnCanEdit.IsChecked = false;
                     tbtnCanDrag.IsChecked = false;
+                    tbtnIsFilterApplied.IsChecked = false;
                     InnerRefreshGraph();
+                    _viewmodel.PostStatusMessage("Graph Refreshed");
                 }
                 else
                 {
@@ -664,6 +666,7 @@ namespace Orc.GraphExplorer
 
                 tbtnCanDrag.IsChecked = false;
                 tbtnCanEdit.IsChecked = false;
+                tbtnIsFilterApplied.IsChecked = false;
             }
 
             ((SettingView)sender).Visibility = System.Windows.Visibility.Collapsed;

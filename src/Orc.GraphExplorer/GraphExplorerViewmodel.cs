@@ -19,6 +19,49 @@ namespace Orc.GraphExplorer
         IEnumerable<DataVertex> _vertexes;
         IEnumerable<DataEdge> _edges;
 
+        string _filterText;
+
+        public string FilterText
+        {
+            get { return _filterText; }
+            set
+            {
+                if (_filterText != value)
+                {
+                    _filterText = value;
+                    RaisePropertyChanged("FilterText");
+
+                    if (IsFilterApplied)
+                    {
+                        ApplyFilter(_filterText);
+                    }
+                }
+            }
+        }
+
+        bool _isFilterApplied;
+
+        public bool IsFilterApplied
+        {
+            get { return _isFilterApplied; }
+            set
+            {
+                _isFilterApplied = value;
+                RaisePropertyChanged("IsFilterApplied");
+                if (_isFilterApplied)
+                {
+                    ApplyFilter(FilterText);
+                    PostStatusMessage("Filter Applied");
+                }
+                else
+                {
+                    DisApplyFilter();
+                    PostStatusMessage("Filter Removed");
+                }
+            }
+        }
+
+
         public bool EnableEditProperty
         {
             get
@@ -234,7 +277,7 @@ namespace Orc.GraphExplorer
             _operationsRedo = new List<IOperation>();
             _operations = new List<IOperation>();
 
-            IsHideVertexes = true;
+            IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
         }
 
@@ -594,6 +637,46 @@ namespace Orc.GraphExplorer
         {
             StatusMessage = message;
         }
+        #endregion
+
+        #region Filter Nodes
+
+        private void ApplyFilter(string filterText)
+        {
+            if ( Entities == null)
+                return;
+
+            if (string.IsNullOrEmpty(filterText))
+            {
+                DisApplyFilter();
+                return;
+            }
+
+            FilteredEntities.Clear();
+
+            foreach (var entity in Entities)
+            {
+                if (entity.Title.Contains(filterText) || (!string.IsNullOrEmpty(entity.PropertyValue) && entity.PropertyValue.Contains(filterText)))
+                {
+                    if (!FilteredEntities.Contains(entity))
+                    {
+                        FilteredEntities.Add(entity);
+                    }
+                }
+            }
+            //throw new NotImplementedException();
+        }
+
+        private void DisApplyFilter()
+        {
+            FilteredEntities.Clear();
+
+            foreach (var entity in Entities)
+            {
+                FilteredEntities.Add(entity);
+            }
+        }
+
         #endregion
     }
 }

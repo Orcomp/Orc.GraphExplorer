@@ -20,7 +20,16 @@ namespace Orc.GraphExplorer.Model
 
         public static IEnumerable<FilterEntity> GenerateFilterEntities(IEnumerable<DataVertex> vertexes)
         {
-            return vertexes.SelectMany(v => v.Properties).Select(p => new FilterEntity { ID = p.Data.Id,Title =p.Data.Title, PropertyName = p.Key, PropertyValue = p.Value, Vertex = p.Data });
+            List<FilterEntity> list = new List<FilterEntity>();
+
+            list.AddRange(vertexes.SelectMany(v => v.Properties).Select(p => new FilterEntity { ID = p.Data.Id, Title = p.Data.Title, PropertyName = p.Key, PropertyValue = p.Value, Vertex = p.Data }));
+
+            foreach (var v in vertexes)
+            {
+                if (!list.Any(i => i.ID == v.ID))
+                    list.Add(new FilterEntity() { ID = v.Id,Title = v.Title,Vertex = v });
+            }
+            return list;
         }
     }
 }
