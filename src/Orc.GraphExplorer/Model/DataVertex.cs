@@ -25,13 +25,28 @@ namespace Orc.GraphExplorer
         public bool IsEnabled
         {
             get
-            { 
+            {
                 return _isEnabled;
             }
             set
             {
                 _isEnabled = value;
                 RaisePropertyChanged("IsEnabled");
+            }
+        }
+
+        bool _enableEditProperty;
+
+        public bool EnableEditProperty
+        {
+            get
+            {
+                return _enableEditProperty && IsEditing;
+            }
+            set
+            {
+                _enableEditProperty = value;
+                RaisePropertyChanged("EnableEditProperty");
             }
         }
 
@@ -205,6 +220,7 @@ namespace Orc.GraphExplorer
                 _isEditing = value;
                 UpdatePropertiesIsEditing(_isEditing);
                 RaisePropertyChanged("IsEditing");
+                RaisePropertyChanged("EnableEditProperty");
             }
         }
 
@@ -288,6 +304,16 @@ namespace Orc.GraphExplorer
 
             _totalCount++;
             _maxId = id > _maxId ? id : _maxId;
+
+            EnableEditProperty = GraphExplorerSection.Current.CsvGraphDataServiceConfig.EnableProperty;
+            GraphExplorerSection.ConfigurationChanged += GraphExplorerSection_ConfigurationChanged;
+        }
+
+        void GraphExplorerSection_ConfigurationChanged(object sender, EventArgs e)
+        {
+            var config = (GraphExplorerSection)sender;
+
+            EnableEditProperty = config.CsvGraphDataServiceConfig.EnableProperty;
         }
 
         public static DataVertex Create()
@@ -517,6 +543,8 @@ namespace Orc.GraphExplorer
         {
             _properties = null;
             _totalCount--;
+
+            GraphExplorerSection.ConfigurationChanged -= GraphExplorerSection_ConfigurationChanged;
             //if (_maxId <= this.Id+1)
             //    _maxId--;
         }

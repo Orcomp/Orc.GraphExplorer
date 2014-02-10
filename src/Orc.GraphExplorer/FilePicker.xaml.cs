@@ -59,6 +59,8 @@ namespace Orc.GraphExplorer
             tbRelationships.Text = config.EdgesFilePath;
 
             tbProperties.Text = config.VertexesFilePath;
+
+            cbProperties.IsChecked = config.EnableProperty;
             //throw new NotImplementedException();
         }
 
@@ -66,17 +68,15 @@ namespace Orc.GraphExplorer
         {
             try
             {
-                Configuration exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-                GraphExplorerSection section = (GraphExplorerSection)exeConfiguration.GetSection("graphExplorer");
-
-                var config = section.CsvGraphDataServiceConfig;
+                var config = GraphExplorerSection.Current.CsvGraphDataServiceConfig;
 
                 config.EdgesFilePath = tbRelationships.Text;
 
                 config.VertexesFilePath = tbProperties.Text;
 
-                exeConfiguration.Save(ConfigurationSaveMode.Modified);
+                config.EnableProperty = cbProperties.IsChecked.HasValue?cbProperties.IsChecked.Value:false;
+
+                GraphExplorerSection.Current.Save();
 
                 RaiseSettingAppliedEvent(true);
             }

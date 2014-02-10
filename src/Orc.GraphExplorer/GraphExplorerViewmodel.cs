@@ -19,6 +19,14 @@ namespace Orc.GraphExplorer
         IEnumerable<DataVertex> _vertexes;
         IEnumerable<DataEdge> _edges;
 
+        public bool EnableEditProperty
+        {
+            get
+            {
+                return CsvGraphDataServiceConfig.Current.EnableProperty;
+            }
+        }
+
         string _statusMessage;
 
         public string StatusMessage
@@ -293,6 +301,8 @@ namespace Orc.GraphExplorer
         //    Update visibility of  specific vertex
         private void UpdateVertexVisibility(FilterEntity item)
         {
+            if (_edges == null)
+                return;
             //throw new NotImplementedException();
             var vertex = _vertexes.FirstOrDefault(v => v == item.Vertex);
             if (vertex != null)
@@ -494,7 +504,9 @@ namespace Orc.GraphExplorer
                 return;
 
             _vertexes = vertexes;
-            _edges = View.Area.EdgesList.Keys;
+
+            if (View != null)
+                _edges = View.Area.EdgesList.Keys;
 
             foreach (var vertex in vertexes)
             {

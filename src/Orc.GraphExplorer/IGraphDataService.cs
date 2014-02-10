@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 
@@ -17,6 +18,8 @@ namespace Orc.GraphExplorer
 
         void UpdateVertexes(IEnumerable<DataVertex> vertexes, Action<bool,Exception> onComplete);
 
-        void UpdateEdges(IEnumerable<DataEdge> vertexes, Action<bool, Exception> onComplete); 
+        void UpdateEdges(IEnumerable<DataEdge> vertexes, Action<bool, Exception> onComplete);
+
+        void Config(ConfigurationElement config);
     }
 }

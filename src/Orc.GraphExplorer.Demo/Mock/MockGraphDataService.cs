@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Orc.GraphExplorer;
+using System.Configuration;
 
 namespace Orc.GraphExplorer.Demo.Mock
 {
@@ -74,6 +75,11 @@ namespace Orc.GraphExplorer.Demo.Mock
         public void UpdateVertex(DataVertex vertex, Action<bool, DataVertex, Exception> onComplete)
         {
 
+        }
+
+        void IGraphDataService.Config(ConfigurationElement config)
+        {
+            throw new NotImplementedException();
         }
     }
 }

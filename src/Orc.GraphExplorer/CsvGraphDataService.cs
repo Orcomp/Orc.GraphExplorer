@@ -73,6 +73,12 @@ namespace Orc.GraphExplorer
         //     get vertexes data by mapping and grouping from csv file and generate cache
         private void InnerGetVertxes()
         {
+            var config = GraphExplorerSection.Current.CsvGraphDataServiceConfig;
+            if (!config.EnableProperty)
+            {
+                vCache = new Dictionary<int, DataVertex>();
+                return;
+            }
             var vertexesPath = ExamVertexesFilePath();
 
             using (var fs = new FileStream(vertexesPath, FileMode.Open))
@@ -372,6 +378,14 @@ namespace Orc.GraphExplorer
         public void UpdateEdges(IEnumerable<DataEdge> vertexes, Action<bool, DataVertex, Exception> onComplete)
         {
             throw new NotImplementedException();
+        }
+
+        void IGraphDataService.Config(System.Configuration.ConfigurationElement config)
+        {
+            if (config is CsvGraphDataServiceConfig)
+            {
+                _config = config as CsvGraphDataServiceConfig;
+            }
         }
     }
 }

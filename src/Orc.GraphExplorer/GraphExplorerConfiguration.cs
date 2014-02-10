@@ -9,11 +9,23 @@ namespace Orc.GraphExplorer
 {
     public class GraphExplorerSection : ConfigurationSection
     {
+        public void Save()
+        {
+            if (exeConfiguration != null)
+            {
+                exeConfiguration.Save(ConfigurationSaveMode.Modified);
+                FireConfigurationChanged();
+            }
+        }
+
+        static Configuration exeConfiguration;
+
         public static GraphExplorerSection Current
         {
             get
             {
-                Configuration exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                if (exeConfiguration == null)
+                    exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                 return exeConfiguration.GetSection("graphExplorer") as GraphExplorerSection;
             }
@@ -26,13 +38,13 @@ namespace Orc.GraphExplorer
             set { base["csvGraphDataServiceConfig"] = value; }
         }
 
-        [ConfigurationProperty("setting",IsRequired=false)]
+        [ConfigurationProperty("setting", IsRequired = false)]
         public GraphExplorerSetting Setting
         {
             get { return (GraphExplorerSetting)base["setting"]; }
             set { base["setting"] = value; }
         }
-    
+
         [ConfigurationProperty("defaultGraphDataService", DefaultValue = GraphDataServiceEnum.Csv)]
         public GraphDataServiceEnum DefaultGraphDataService
         {
@@ -40,17 +52,28 @@ namespace Orc.GraphExplorer
             set { base["defaultGraphDataService"] = value; }
         }
 
-        [ConfigurationProperty("graphDataServiceFactory", IsRequired=false)]
+        [ConfigurationProperty("graphDataServiceFactory", IsRequired = false)]
         public string GraphDataServiceFactory
         {
             get { return (string)base["graphDataServiceFactory"]; }
             set { base["graphDataServiceFactory"] = value; }
         }
+
+        static void FireConfigurationChanged()
+        {
+            var handler = ConfigurationChanged;
+            if (handler != null)
+            {
+                handler.Invoke(Current, new EventArgs());
+            }
+        }
+
+        public static event EventHandler ConfigurationChanged;
     }
 
     public class GraphExplorerSetting : ConfigurationElement
     {
-        [ConfigurationProperty("enableNavigation",IsRequired = false, DefaultValue = false)]
+        [ConfigurationProperty("enableNavigation", IsRequired = false, DefaultValue = false)]
         public bool EnableNavigation
         {
             get { return (bool)base["enableNavigation"]; }

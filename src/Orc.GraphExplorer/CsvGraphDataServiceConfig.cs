@@ -37,5 +37,11 @@ namespace Orc.GraphExplorer
             set { base["enableCache"] = value; }
         }
 
+        [ConfigurationProperty("enableProperty", DefaultValue = false)]
+        public bool EnableProperty
+        {
+            get { return (bool)base["enableProperty"]; }
+            set { base["enableProperty"] = value; }
+        }
     }
 }

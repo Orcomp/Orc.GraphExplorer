@@ -566,6 +566,7 @@ namespace Orc.GraphExplorer
                  "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     tbtnCanEdit.IsChecked = false;
+                    tbtnCanDrag.IsChecked = false;
                     InnerRefreshGraph();
                 }
                 else
@@ -660,6 +661,9 @@ namespace Orc.GraphExplorer
                 overrallTab.IsSelected = true;
 
                 GraphDataService = new CsvGraphDataService();
+
+                tbtnCanDrag.IsChecked = false;
+                tbtnCanEdit.IsChecked = false;
             }
 
             ((SettingView)sender).Visibility = System.Windows.Visibility.Collapsed;
