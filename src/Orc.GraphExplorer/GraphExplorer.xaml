@@ -48,8 +48,8 @@
 
                     <Border Margin="0" Height="32" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
                         <DockPanel>
-                            <Button DockPanel.Dock="Left"  ToolTip="Save Layout To Xml"  Height="28" Width="28" Name="btnSave" Style="{StaticResource SaveButtonStyle}" Click="btnSave_Click"/>
-                            <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Load Layout From Xml"  Name="btnLoad" Style="{StaticResource LoadButtonStyle}" Click="btnLoad_Click"/>
+                            <Button DockPanel.Dock="Left" Visibility="Collapsed" ToolTip="Save Layout To Xml"  Height="28" Width="28" Name="btnSave" Style="{StaticResource SaveButtonStyle}" Click="btnSave_Click"/>
+                            <Button DockPanel.Dock="Left" Visibility="Collapsed" Height="28" Width="28" ToolTip="Load Layout From Xml"  Name="btnLoad" Style="{StaticResource LoadButtonStyle}" Click="btnLoad_Click"/>
                             <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Save As Image" Name="btnExport" Style="{StaticResource ExportButtonStyle}" Click="btnExport_Click"/>
 
                             <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>

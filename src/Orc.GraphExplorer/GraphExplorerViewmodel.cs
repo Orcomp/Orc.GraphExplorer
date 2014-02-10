@@ -135,7 +135,14 @@ namespace Orc.GraphExplorer
                     _selectedVertices.Clear();
                     UpdateIsInEditing(_isInEditing);
                     if (_isInEditing)
+                    {
                         CanDrag = true;
+                        PostStatusMessage("Edit Mode");
+                    }
+                    else
+                    {
+                        PostStatusMessage("Exit Edit Mode");
+                    }
                     RaisePropertyChanged("IsInEditing");
                 }
             }
