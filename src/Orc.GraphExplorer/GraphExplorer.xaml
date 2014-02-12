@@ -82,7 +82,7 @@
                             <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Fill}}" />
                             <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
                             <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
-                            <orctk:DropDownButton Visibility="Collapsed" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
+                            <orctk:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
                                 <StackPanel Height="200" Width="320">
                                     <net401:FilterBuilderControl Margin="2,2,6,2"
 			RawCollection="{Binding Entities}"
@@ -90,7 +90,7 @@
                                     <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
                                 </StackPanel>
                             </orctk:DropDownButton>
-                            <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
+                            <StackPanel Visibility="Collapsed" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
                                 <TextBox Width="120" VerticalContentAlignment="Center" Height="22" Text="{Binding FilterText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                                 <ToggleButton Name="tbtnIsFilterApplied" Margin="1" Height="24" Width="24" Style="{StaticResource FilterToggleButtonStyle}" ToolTip="Apply Filter" IsChecked="{Binding IsFilterApplied}"/>
                             </StackPanel>

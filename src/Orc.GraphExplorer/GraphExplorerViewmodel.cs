@@ -314,7 +314,9 @@ namespace Orc.GraphExplorer
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
                     if (IsHideVertexes)
                     {
+                        SetVertexesIsEnabled(true);
                         SetVertexesVisibility(false);
+                        UpdateEdgesVisibility();
                     }
                     else
                     {
@@ -327,9 +329,35 @@ namespace Orc.GraphExplorer
             //throw new NotImplementedException();
         }
 
+        private void UpdateEdgesVisibility()
+        {
+            GraphExplorer.RunCodeInUiThread(() =>
+            {
+                if (_edges != null)
+                {
+                    foreach (var edge in _edges)
+                    {
+                        if (edge.Target != null && !edge.Target.IsVisible)
+                        {
+                            edge.IsVisible = false;
+                            continue;
+                        }
+
+                        if (edge.Source != null && !edge.Source.IsVisible)
+                        {
+                            edge.IsVisible = false;
+                            continue;
+                        }
+
+                        edge.IsVisible = true;
+                    }
+                }
+            }, null, System.Windows.Threading.DispatcherPriority.Loaded);
+        }
+
         private void UpdateVertexIsEnabled(FilterEntity item)
         {
-            var vertex = _vertexes.FirstOrDefault(v => v == item.Vertex);
+            var vertex = _vertexes.FirstOrDefault(v => v.Id == item.Vertex.Id);
             if (vertex != null)
             {
                 vertex.IsEnabled = true;
@@ -354,15 +382,26 @@ namespace Orc.GraphExplorer
             if (_edges == null)
                 return;
             //throw new NotImplementedException();
-            var vertex = _vertexes.FirstOrDefault(v => v == item.Vertex);
+            var vertex = _vertexes.FirstOrDefault(v => v.Id == item.Vertex.Id);
             if (vertex != null)
             {
                 vertex.IsVisible = true;
 
-                foreach (var edge in _edges.Where(e => e.Source.Id == vertex.Id || e.Target.Id == vertex.Id))
-                {
-                    edge.IsVisible = true;
-                }
+                //foreach (var edgeIn in _edges.Where(e => e.Target.Id == vertex.Id))
+                //{
+                //    if (edgeIn.Source.IsVisible)
+                //        edgeIn.IsVisible = true;
+                //    else
+                //        edgeIn.IsVisible = false;
+                //}
+
+                //foreach (var edgeOut in _edges.Where(e => e.Source.Id == vertex.Id))
+                //{
+                //    if (edgeOut.Target.IsVisible)
+                //        edgeOut.IsVisible = true;
+                //    else
+                //        edgeOut.IsVisible = false;
+                //}
             }
         }
 
@@ -377,6 +416,14 @@ namespace Orc.GraphExplorer
             foreach (var vertex in _vertexes)
             {
                 vertex.IsVisible = value;
+            }
+
+            if (_edges != null)
+            {
+                foreach (var edge in _edges)
+                {
+                    edge.IsVisible = value;
+                }
             }
         }
 
@@ -613,28 +660,25 @@ namespace Orc.GraphExplorer
 
                 vertex.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
                 vertex.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
+            }
 
-                foreach (var edge in graph.GetRelatedControls(vertex.Value, GraphControlType.Edge, EdgesType.All).OfType<EdgeControl>())
+            foreach (var edge in graph.EdgesList)
+            {
+                var bindingIsVisible = new Binding("IsVisible")
                 {
-                    if (edge.GetBindingExpression(UIElement.VisibilityProperty) != null)
-                        continue;
+                    Source = edge.Key,
+                    Mode = BindingMode.TwoWay,
+                    Converter = conv
+                };
 
-                    bindingIsVisible = new Binding("IsVisible")
-                    {
-                        Source = vertex.Key,
-                        Mode = BindingMode.TwoWay,
-                        Converter = conv
-                    };
+                var bindingIsEnabled = new Binding("IsEnabled")
+                {
+                    Source = edge.Key,
+                    Mode = BindingMode.TwoWay
+                };
 
-                    bindingIsEnabled = new Binding("IsEnabled")
-                    {
-                        Source = vertex.Key,
-                        Mode = BindingMode.TwoWay
-                    };
-
-                    edge.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
-                    edge.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
-                }
+                edge.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
+                edge.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
             }
         }
         #endregion
@@ -650,7 +694,7 @@ namespace Orc.GraphExplorer
 
         private void ApplyFilter(string filterText)
         {
-            if ( Entities == null)
+            if (Entities == null)
                 return;
 
             if (string.IsNullOrEmpty(filterText))
@@ -663,7 +707,7 @@ namespace Orc.GraphExplorer
 
             foreach (var entity in Entities)
             {
-                if (entity.Title.Contains(filterText) || (!string.IsNullOrEmpty(entity.PropertyValue) && entity.PropertyValue.Contains(filterText)))
+                if (entity.Title.Contains(filterText) || (!string.IsNullOrEmpty(entity.FirstName) && entity.LastName.Contains(filterText)))
                 {
                     if (!FilteredEntities.Contains(entity))
                     {

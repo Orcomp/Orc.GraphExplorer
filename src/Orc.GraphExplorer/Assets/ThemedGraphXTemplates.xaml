@@ -824,7 +824,7 @@
                             <Border Name="checkedBorder" Grid.ColumnSpan="2" BorderThickness="1" Opacity="0" BorderBrush="{StaticResource Button.MouseOver.Border}" Background="{StaticResource Button.MouseOver.Background}"/>
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="appbar_filter" Width="28" Height="28" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
-                                <Path Width="14" Canvas.Left="4" Canvas.Top="4" Height="14" Stretch="Fill" Fill="{StaticResource AccentBrush}" Data="F1 M 34.8333,61.75L 34.8333,42.75L 19,20.5833L 57,20.5833L 41.1667,42.75L 41.1667,58.5833L 34.8333,61.75 Z "/>
+                                <Path Width="14" Canvas.Left="6" Canvas.Top="6" Height="14" Stretch="Fill" Fill="{StaticResource AccentBrush}" Data="F1 M 34.8333,61.75L 34.8333,42.75L 19,20.5833L 57,20.5833L 41.1667,42.75L 41.1667,58.5833L 34.8333,61.75 Z "/>
                             </Canvas>
                         </Grid>
                     </Border>
@@ -1480,12 +1480,12 @@
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="28" />
+                                                        <ColumnDefinition Width="Auto" />
                                                         <ColumnDefinition Width="100" MinWidth="100"/>
                                                         <ColumnDefinition Width="100"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <CheckBox Height="28" Width="28" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsSelected,Mode=TwoWay}"/>
-                                                    <TextBox Margin="0,0,1,0" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Key,Mode=TwoWay,UpdateSourceTrigger=Default}"></TextBox>
+                                                    <CheckBox Visibility="Collapsed" Height="28" Width="28" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsSelected,Mode=TwoWay}"/>
+                                                    <TextBlock Margin="0,0,1,0" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Key,Mode=TwoWay,UpdateSourceTrigger=Default}"></TextBlock>
                                                     <TextBox HorizontalAlignment="Stretch" Text="{Binding Value,Mode=TwoWay,UpdateSourceTrigger=Default}" Grid.Column="2"></TextBox>
                                                 </Grid>
                                             </Grid>
@@ -1494,8 +1494,8 @@
                                 </ItemsControl>
                             </ScrollViewer>
                         </Expander>
-                        <!---->
-                        <StackPanel Visibility="{Binding EnableEditProperty, Converter={StaticResource BoolToVisibilityConverter}}" Margin="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <!--<StackPanel Visibility="{Binding EnableEditProperty, Converter={StaticResource BoolToVisibilityConverter}}"-->
+                        <StackPanel Visibility="Collapsed" Margin="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Style="{StaticResource AddButtonStyle}" ToolTip="Add Property" Margin="2" Command="{Binding AddCommand}" Height="28" Width="28"/>
                             <Button Style="{StaticResource DeleteButtonStyle}" ToolTip="Delete Selected Property" Margin="2" Command="{Binding DeleteCommand}" Height="28" Width="28"/>
                         </StackPanel>
@@ -1794,9 +1794,9 @@
                     </Grid.ColumnDefinitions>
                     <!--<Path x:Name="arrow" Grid.Column="1" Data="M0,0L2.5,3 5,0z" Fill="Black" HorizontalAlignment="Center" Stretch="None" VerticalAlignment="Center" Width="5"/>-->
                     <!--<Path Width="28" Height="28" Stretch="Fill" Fill="{StaticResource AccentBrush}" Data="F1 M 34.8333,61.75L 34.8333,42.75L 19,20.5833L 57,20.5833L 41.1667,42.75L 41.1667,58.5833L 34.8333,61.75 Z "/>-->
-                    <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="appbar_filter" Width="28" Height="28" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                    <!--<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="appbar_filter" Width="28" Height="28" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
                         <Path Width="14" Canvas.Left="4" Canvas.Top="4" Height="14" Stretch="Fill" Fill="{StaticResource AccentBrush}" Data="F1 M 34.8333,61.75L 34.8333,42.75L 19,20.5833L 57,20.5833L 41.1667,42.75L 41.1667,58.5833L 34.8333,61.75 Z "/>
-                    </Canvas>
+                    </Canvas>-->
 
                     <!--<Grid>
                         <ContentControl ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Header}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
