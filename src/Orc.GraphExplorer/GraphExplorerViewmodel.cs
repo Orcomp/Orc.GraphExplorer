@@ -48,16 +48,17 @@ namespace Orc.GraphExplorer
             {
                 _isFilterApplied = value;
                 RaisePropertyChanged("IsFilterApplied");
-                if (_isFilterApplied)
-                {
-                    ApplyFilter(FilterText);
-                    PostStatusMessage("Filter Applied");
-                }
-                else
-                {
-                    DisApplyFilter();
-                    PostStatusMessage("Filter Removed");
-                }
+                ClearFilterCommand.RaiseCanExecuteChanged();
+                //if (_isFilterApplied)
+                //{
+                //    ApplyFilter(FilterText);
+                //    PostStatusMessage("Filter Applied");
+                //}
+                //else
+                //{
+                //    DisApplyFilter();
+                //    PostStatusMessage("Filter Removed");
+                //}
             }
         }
 
@@ -323,7 +324,7 @@ namespace Orc.GraphExplorer
                         SetVertexesVisibility(true);
                         SetVertexesIsEnabled(false);
                     }
-
+                    IsFilterApplied = true;
                     break;
             }
             //throw new NotImplementedException();
@@ -467,6 +468,31 @@ namespace Orc.GraphExplorer
         }
 
         #region Commands
+
+        DelegateCommand _clearFilterCommand;
+
+        public DelegateCommand ClearFilterCommand
+        {
+            get
+            {
+                if (_clearFilterCommand == null)
+                    _clearFilterCommand = new DelegateCommand(ExecuteClearFilter, CanExecuteClearFilter);
+                return _clearFilterCommand;
+            }
+        }
+
+        void ExecuteClearFilter()
+        {
+            if (IsFilterApplied)
+            {
+                DisApplyFilter();
+            }
+        }
+
+        bool CanExecuteClearFilter()
+        {
+            return IsFilterApplied;
+        }
 
         DelegateCommand _undoCommand;
 
@@ -726,6 +752,8 @@ namespace Orc.GraphExplorer
             {
                 FilteredEntities.Add(entity);
             }
+
+            IsFilterApplied = false;
         }
 
         #endregion

@@ -88,6 +88,7 @@
 			RawCollection="{Binding Entities}"
 			FilteredCollection="{Binding FilteredEntities}"/>
                                     <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
+                                    <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
                                 </StackPanel>
                             </orctk:DropDownButton>
                             <StackPanel Visibility="Collapsed" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
