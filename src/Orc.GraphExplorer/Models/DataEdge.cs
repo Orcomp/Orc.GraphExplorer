@@ -7,7 +7,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using YAXLib;
 
-namespace Orc.GraphExplorer
+namespace Orc.GraphExplorer.Models
 {
     [Serializable]
     public class DataEdge : EdgeBase<DataVertex>,INotifyPropertyChanged, IDisposable

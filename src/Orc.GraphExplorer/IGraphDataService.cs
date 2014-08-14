@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer
 {
+    using Models;
+
     public interface IGraphDataService
     {
         void GetVertexes(Action<IEnumerable<DataVertex>> onSuccess, Action<Exception> onFail);

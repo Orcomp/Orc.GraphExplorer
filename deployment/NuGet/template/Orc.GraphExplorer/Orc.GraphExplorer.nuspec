@@ -1,0 +1,33 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Orc.GraphExplorer</id>
+    <version>[VERSION]</version>
+    <title>Orc.GraphExplorer</title>
+    <authors>OrchestraDevs</authors>
+    <owners>OrchestraDevs</owners>
+
+	<description>
+	  Graph explorer library.
+	</description>
+	<summary>
+	</summary>
+
+	<tags>orc graph explorer</tags>
+
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright Orchestra team 2010 - 2014</copyright>
+
+	<language>en-US</language>
+	<projectUrl>https://github.com/Orcomp/Orc.GraphExplorer</projectUrl>
+	<!--<licenseUrl>http://catel.codeplex.com/license</licenseUrl>-->
+	<!--<iconUrl>http://www.catenalogic.com/catel.png</iconUrl>-->
+    
+    <dependencies>
+      <dependency id="Orc.FilterBuilder" version="[replaced]" />
+      <dependency id="Orc.Toolkit" version="[replaced]" />
+      <dependency id="GraphX" version="[replaced]" />
+      <dependency id="CsvHelper" version="[replaced]" />
+    </dependencies>    
+  </metadata>
+</package>

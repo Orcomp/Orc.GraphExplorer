@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Orc.GraphExplorer.Model;
-using System.Threading.Tasks;
-using GraphX.Xceed.Wpf.Toolkit.Zoombox;
-using GraphX.GraphSharp.Algorithms.Layout.Simple.FDP;
+using Orc.GraphExplorer.Models;
 using GraphX.GraphSharp.Algorithms.OverlapRemoval;
-using GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using GraphX;
@@ -644,12 +634,12 @@ namespace Orc.GraphExplorer
 
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
-            Area.ExportAsImage(PrintHelper.ImageType.PNG);
+            Area.ExportAsImage(ImageType.PNG);
         }
 
         private void btnExportNav_Click(object sender, RoutedEventArgs e)
         {
-            AreaNav.ExportAsPNG();
+            AreaNav.ExportAsPng();
         }
 
         private void settingView_SettingApplied(object sender, SettingAppliedRoutedEventArgs e)
@@ -816,6 +806,8 @@ namespace Orc.GraphExplorer
         {
             try
             {
+
+
                 GraphDataService.UpdateEdges(Area.Graph.Edges, (result, error) =>
                 {
                     if (!result && error != null)

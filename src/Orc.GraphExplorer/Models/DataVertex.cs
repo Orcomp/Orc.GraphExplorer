@@ -4,15 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
 using YAXLib;
-using Orc.GraphExplorer.Model;
-using Microsoft.Practices.Prism.Commands;
 using System.Collections.ObjectModel;
 
-namespace Orc.GraphExplorer
+namespace Orc.GraphExplorer.Models
 {
+    using Catel.MVVM;
+
     public class DataVertex : VertexBase, INotifyPropertyChanged, IDisposable, IObservable<IOperation>, IObserver<IOperation>
     {
         #region Properties
@@ -360,14 +358,14 @@ namespace Orc.GraphExplorer
 
         #region Commands
 
-        DelegateCommand _addCommand;
+        Command _addCommand;
 
-        public DelegateCommand AddCommand
+        public Command AddCommand
         {
             get
             {
                 if (_addCommand == null)
-                    _addCommand = new DelegateCommand(ExecAdd, CanExecAdd);
+                    _addCommand = new Command(ExecAdd, CanExecAdd);
                 return _addCommand;
             }
         }
@@ -444,14 +442,14 @@ namespace Orc.GraphExplorer
             return property;
         }
 
-        DelegateCommand _deleteCommand;
+        Command _deleteCommand;
 
-        public DelegateCommand DeleteCommand
+        public Command DeleteCommand
         {
             get
             {
                 if (_deleteCommand == null)
-                    _deleteCommand = new DelegateCommand(ExecDelete, CanExecDelete);
+                    _deleteCommand = new Command(ExecDelete, CanExecDelete);
                 return _deleteCommand;
             }
         }

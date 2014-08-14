@@ -1,6 +1,6 @@
 ﻿using GraphX.GraphSharp.Algorithms.Layout;
 using GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical;
-using Orc.GraphExplorer.Model;
+using Orc.GraphExplorer.Models;
 using QuickGraph;
 using System;
 using System.Collections.Generic;

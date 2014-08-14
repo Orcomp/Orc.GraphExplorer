@@ -1,14 +1,15 @@
-﻿using Microsoft.Practices.Prism.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
 
 
-namespace Orc.GraphExplorer.Model
+namespace Orc.GraphExplorer.Models
 {
-    public class PropertyViewmodel : NotificationObject, IObservable<IOperation>,IDisposable
+    using Catel.Data;
+
+    public class PropertyViewmodel : ObservableObject, IObservable<IOperation>,IDisposable
     {
         #region Properties
 

@@ -1,5 +1,5 @@
 ﻿using CsvHelper;
-using Orc.GraphExplorer.Model;
+using Orc.GraphExplorer.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;

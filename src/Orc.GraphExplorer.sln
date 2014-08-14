@@ -1,12 +1,27 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer", "Orc.GraphExplorer\Orc.GraphExplorer.csproj", "{D32429C3-438E-4A21-9384-153B609E1B97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Tests", "Orc.GraphExplorer.Tests\Orc.GraphExplorer.Tests.csproj", "{73C72E0C-51EC-4325-A6F5-08B228F702D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Test", "Orc.GraphExplorer.Test\Orc.GraphExplorer.Test.csproj", "{73C72E0C-51EC-4325-A6F5-08B228F702D2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Demo", "Orc.GraphExplorer.Demo\Orc.GraphExplorer.Demo.csproj", "{2C50CF42-66C8-4955-82F8-B76197DF5287}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{492373B2-2AD1-4590-A564-C582AEBC7672}"
+	ProjectSection(SolutionItems) = preProject
+		..\lib\repositories.config = ..\lib\repositories.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{DA563D74-3F85-442B-AB5A-0FD0747200EA}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+		Orc.GraphExplorer.sln.DotSettings = Orc.GraphExplorer.sln.DotSettings
+		Settings.StyleCop = Settings.StyleCop
+		SolutionAssemblyInfo.cs = SolutionAssemblyInfo.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +46,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D32429C3-438E-4A21-9384-153B609E1B97} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
+		{73C72E0C-51EC-4325-A6F5-08B228F702D2} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 		{2C50CF42-66C8-4955-82F8-B76197DF5287} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,4 @@
 ﻿using GraphX;
-using Orc.GraphExplorer.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer
 {
+    using Models;
+
     public class DeleteEdgeOperation : EdgeOperation
     {
         public DeleteEdgeOperation(GraphArea graph, DataVertex source, DataVertex target,DataEdge edge, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)

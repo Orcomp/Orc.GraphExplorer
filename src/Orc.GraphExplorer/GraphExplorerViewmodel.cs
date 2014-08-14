@@ -1,6 +1,5 @@
 ﻿using GraphX;
-using Microsoft.Practices.Prism.Commands;
-using Orc.GraphExplorer.Model;
+using Orc.GraphExplorer.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +10,11 @@ using System.Windows.Data;
 
 namespace Orc.GraphExplorer
 {
-    public class GraphExplorerViewmodel : NotificationObject, IObserver<IOperation>
+    using Catel.Data;
+    using Catel.MVVM;
+    using Catel.MVVM.Converters;
+
+    public class GraphExplorerViewmodel : ObservableObject, IObserver<IOperation>
     {
         #region Properties
 
@@ -469,14 +472,14 @@ namespace Orc.GraphExplorer
 
         #region Commands
 
-        DelegateCommand _clearFilterCommand;
+        Command _clearFilterCommand;
 
-        public DelegateCommand ClearFilterCommand
+        public Command ClearFilterCommand
         {
             get
             {
                 if (_clearFilterCommand == null)
-                    _clearFilterCommand = new DelegateCommand(ExecuteClearFilter, CanExecuteClearFilter);
+                    _clearFilterCommand = new Command(ExecuteClearFilter, CanExecuteClearFilter);
                 return _clearFilterCommand;
             }
         }
@@ -494,14 +497,14 @@ namespace Orc.GraphExplorer
             return IsFilterApplied;
         }
 
-        DelegateCommand _undoCommand;
+        Command _undoCommand;
 
-        public DelegateCommand UndoCommand
+        public Command UndoCommand
         {
             get
             {
                 if (_undoCommand == null)
-                    _undoCommand = new DelegateCommand(ExecuteUndo, CanExecuteUndo);
+                    _undoCommand = new Command(ExecuteUndo, CanExecuteUndo);
                 return _undoCommand;
             }
         }
@@ -530,14 +533,14 @@ namespace Orc.GraphExplorer
             return HasUndoable;
         }
 
-        DelegateCommand _redoCommand;
+        Command _redoCommand;
 
-        public DelegateCommand RedoCommand
+        public Command RedoCommand
         {
             get
             {
                 if (_redoCommand == null)
-                    _redoCommand = new DelegateCommand(ExecuteRedo, CanExecuteRedo);
+                    _redoCommand = new Command(ExecuteRedo, CanExecuteRedo);
                 return _redoCommand;
             }
         }
@@ -667,7 +670,7 @@ namespace Orc.GraphExplorer
         public void SetVertexPropertiesBinding()
         {
             var graph = View.Area;
-            IValueConverter conv = Orc.GraphExplorer.Converter.BoolToVisibilityConverter.Instance;
+            IValueConverter conv = new BooleanToHidingVisibilityConverter();
 
             foreach (var vertex in graph.VertexList)
             {

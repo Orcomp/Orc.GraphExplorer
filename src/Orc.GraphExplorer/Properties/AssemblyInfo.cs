@@ -9,9 +9,9 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Orc.GraphExplorer.Demo")]
-[assembly: AssemblyProduct("Orc.GraphExplorer.Demo")]
-[assembly: AssemblyDescription("Orc.GraphExplorer.Demo application")]
+[assembly: AssemblyTitle("Orc.GraphExplorer")]
+[assembly: AssemblyProduct("Orc.GraphExplorer")]
+[assembly: AssemblyDescription("Orc.GraphExplorer library")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

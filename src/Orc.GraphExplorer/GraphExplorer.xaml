@@ -4,26 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d"  
-             xmlns:zb="clr-namespace:GraphX.Xceed.Wpf.Toolkit.Zoombox;assembly=GraphX"
-             xmlns:graphxctrl="clr-namespace:GraphX.Controls;assembly=GraphX"
-             xmlns:model="clr-namespace:Orc.GraphExplorer.Model"  
+             xmlns:models="clr-namespace:Orc.GraphExplorer.Models"  
              xmlns:local="clr-namespace:Orc.GraphExplorer"
-             xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX"
-             xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX"
-             xmlns:net401="clr-namespace:Orc.FilterBuilder;assembly=Orc.FilterBuilder"
-             xmlns:converter="clr-namespace:Orc.GraphExplorer.Converter"
-             xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+             xmlns:catel="http://catel.codeplex.com"
+             xmlns:controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
+             xmlns:views="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
+             xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
+             xmlns:toolkit="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
              d:DesignHeight="300" d:DesignWidth="300">
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Assets/ThemedGraphXTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <Converters:DoubleToLog10Converter x:Key="log10Converter" />
-            <Converters:EqualityToBooleanConverter x:Key="equalityConverter" />
+            <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
+            <converters:DoubleToLog10Converter x:Key="log10Converter" />
+            <converters:EqualityToBooleanConverter x:Key="equalityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
+
     <Grid Name="root">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -34,7 +34,7 @@
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="8,0,8,0" FontWeight="Bold" Text="Overrall" VerticalAlignment="Center"/>
-                        <TextBlock Text=" *" Name="changeIndicator" Visibility="{Binding HasChange,Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
+                        <TextBlock Text=" *" Name="changeIndicator" Visibility="{Binding HasChange,Converter={StaticResource BooleanToHidingVisibilityConverter}}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <Grid>
@@ -79,18 +79,16 @@
                                             SmallChange="0.1"
                                             Orientation="Horizontal" />
                             <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Path=Zoom,ElementName=zoomctrl,StringFormat='{}{0:P0}'}" FontSize="10" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
-                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Fill}}" />
-                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Fill}}" />
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Original}}" />
                             <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
-                            <orctk:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
+                            <toolkit:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
                                 <StackPanel Height="200" Width="320">
-                                    <net401:FilterBuilderControl Margin="2,2,6,2"
-			RawCollection="{Binding Entities}"
-			FilteredCollection="{Binding FilteredEntities}"/>
+                                    <views:FilterBuilderControl Margin="2,2,6,2" RawCollection="{Binding Entities}" FilteredCollection="{Binding FilteredEntities}"/>
                                     <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
                                     <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
                                 </StackPanel>
-                            </orctk:DropDownButton>
+                            </toolkit:DropDownButton>
                             <StackPanel Visibility="Collapsed" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
                                 <TextBox Width="120" VerticalContentAlignment="Center" Height="22" Text="{Binding FilterText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                                 <ToggleButton Name="tbtnIsFilterApplied" Margin="1" Height="24" Width="24" Style="{StaticResource FilterToggleButtonStyle}" ToolTip="Apply Filter" IsChecked="{Binding IsFilterApplied}"/>
@@ -98,9 +96,9 @@
                         </DockPanel>
                     </Border>
 
-                    <graphxctrl:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1">
-                        <model:GraphArea x:Name="Area"/>
-                    </graphxctrl:ZoomControl>
+                    <controls:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1">
+                        <models:GraphArea x:Name="Area"/>
+                    </controls:ZoomControl>
                 </Grid>
             </TabItem>
             <TabItem Name="navTab" Visibility="Hidden" Padding="1" FontWeight="Bold">
@@ -120,7 +118,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-<Border Margin="0" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
+                    <Border Margin="0" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
                         <StackPanel Orientation="Horizontal" Height="32">
                             <Button Height="28" Width="28" Name="btnExportNav" Style="{StaticResource ExportButtonStyle}" Click="btnExportNav_Click"/>
                             <Rectangle Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
@@ -138,13 +136,13 @@
                                             SmallChange="0.1"
                                             Orientation="Horizontal" />
                             <TextBlock FontSize="10" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Path=Zoom,ElementName=zoomctrlNav,StringFormat='{}{0:P0}'}" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
-                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Fill}}" />
-                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static Controls:ZoomControlModes.Original}}" />
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Fill}}" />
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrlNav,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Original}}" />
                         </StackPanel>
                     </Border>
-                    <graphxctrl:ZoomControl Grid.Row="1"  MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav">
-                        <model:GraphArea x:Name="AreaNav" />
-                    </graphxctrl:ZoomControl>
+                    <controls:ZoomControl Grid.Row="1"  MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav">
+                        <models:GraphArea x:Name="AreaNav" />
+                    </controls:ZoomControl>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -1,12 +1,10 @@
 ﻿using GraphX;
-using Orc.GraphExplorer.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Orc.GraphExplorer
 {
+    using Models;
+
     /// <summary>
     /// base class for encapsulating edge management
     /// </summary>

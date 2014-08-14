@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer
 {
+    using Models;
+
     public class NavigateHistoryItem
     {
         public List<DataVertex> Vertexes { get; set; }
