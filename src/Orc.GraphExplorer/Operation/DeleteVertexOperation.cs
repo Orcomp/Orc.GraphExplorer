@@ -20,18 +20,16 @@ namespace Orc.GraphExplorer
         public override void Do()
         {
             _relatedEdges.Clear();
-            foreach (var item in _graph.GetRelatedControls(_vCtrl, GraphControlType.Edge, EdgesType.All))
+            foreach (var item in GetRelatedControls(_vCtrl, GraphControlType.Edge, EdgesType.All))
             {
                 var ec = item as EdgeControl;
 
                 _relatedEdges.Add(new Tuple<DataEdge, DataVertex, DataVertex>(ec.Edge as DataEdge, ec.Source.Vertex as DataVertex, ec.Target.Vertex as DataVertex));
-
-                _graph.Graph.RemoveEdge(ec.Edge as DataEdge);
-                _graph.RemoveEdge(ec.Edge as DataEdge);
+                
+                RemoveEdge(ec.Edge as DataEdge);
             }
 
-            _graph.Graph.RemoveVertex(_vertex);
-            _graph.RemoveVertex(_vertex);
+            RemoveVertex(_vertex);
 
             if (_callback != null)
             {
@@ -41,17 +39,16 @@ namespace Orc.GraphExplorer
 
         public override void UnDo()
         {
-            _graph.Graph.AddVertex(_vertex);
             _vCtrl = new VertexControl(_vertex);
-            _graph.AddVertex(_vertex, _vCtrl);
+            AddVertex(_vertex, _vCtrl);
 
             HighlightBehaviour.SetIsHighlightEnabled(_vCtrl, false);
 
             foreach (var edge in _relatedEdges)
             {
 
-                var source = _graph.VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item2.Id);
-                var target = _graph.VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item3.Id);
+                var source = VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item2.Id);
+                var target = VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item3.Id);
 
                 if(source.Value==null||target.Value==null)
                     throw new Exception("source or target vertex not found");
@@ -62,8 +59,7 @@ namespace Orc.GraphExplorer
                     ShowLabel = true
                 };
 
-                _graph.Graph.AddEdge(edge.Item1);
-                _graph.AddEdge(edge.Item1, edgeCtrl);
+                AddEdge(edge.Item1, edgeCtrl);
 
                 HighlightBehaviour.SetIsHighlightEnabled(edgeCtrl, false);
             }
@@ -74,11 +70,11 @@ namespace Orc.GraphExplorer
             }
         }
 
-        public DeleteVertexOperation(GraphArea graph, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(graph, data, callback, undoCallback)
+        public DeleteVertexOperation(GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+            : base(area, data, callback, undoCallback)
         {
-            if (graph.VertexList.ContainsKey(_vertex))
-                _vCtrl = graph.VertexList[_vertex];
+            if (area.VertexList.ContainsKey(_vertex))
+                _vCtrl = area.VertexList[_vertex];
             else
             {
                 //throw new ArgumentNullException("Vertex Control");

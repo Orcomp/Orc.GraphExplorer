@@ -19,8 +19,8 @@ namespace Orc.GraphExplorer
         {
             _Edge = new DataEdge(_source, _target);
 
-            _sourceVC = _graph.VertexList.Where(pair => pair.Key.Id == _source.Id).Select(pair => pair.Value).FirstOrDefault();
-            _targetVC = _graph.VertexList.Where(pair => pair.Key.Id == _target.Id).Select(pair => pair.Value).FirstOrDefault();
+            _sourceVC = VertexList.Where(pair => pair.Key.Id == _source.Id).Select(pair => pair.Value).FirstOrDefault();
+            _targetVC = VertexList.Where(pair => pair.Key.Id == _target.Id).Select(pair => pair.Value).FirstOrDefault();
 
             if (_sourceVC == null || _targetVC == null)
                 throw new ArgumentNullException("Vertex Control");
@@ -31,8 +31,7 @@ namespace Orc.GraphExplorer
                 ShowLabel = true
             };
 
-            _graph.Graph.AddEdge(_Edge);
-            _graph.AddEdge(_Edge, _eCtrl);
+            AddEdge(_Edge, _eCtrl);
 
             if (_callback != null)
             {
@@ -42,8 +41,7 @@ namespace Orc.GraphExplorer
 
         public override void UnDo()
         {
-            _graph.Graph.RemoveEdge(_Edge);
-            _graph.RemoveEdge(_Edge);
+            RemoveEdge(_Edge);
 
             if (_undoCallback != null)
             {
@@ -51,7 +49,7 @@ namespace Orc.GraphExplorer
             }
         }
 
-        public CreateEdgeOperation(GraphArea graph, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null):base(graph,source,target,callback,undoCallback)
+        public CreateEdgeOperation(GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null):base(area, source,target,callback,undoCallback)
         {
 
         }

@@ -32,8 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GraphX">
-      <HintPath>..\..\lib\GraphX.dll</HintPath>
+    <Reference Include="GraphX.Common">
+      <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphX.Controls">
+      <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphX.Logic">
+      <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Logic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -43,10 +49,16 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="QuickGraph">
-      <HintPath>..\..\lib\QuickGraph.dll</HintPath>
+      <HintPath>..\..\lib\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph.Data">
+      <HintPath>..\..\lib\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph.Graphviz">
+      <HintPath>..\..\lib\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll</HintPath>
     </Reference>
     <Reference Include="QuickGraph.Serialization">
-      <HintPath>..\..\lib\QuickGraph.Serialization.dll</HintPath>
+      <HintPath>..\..\lib\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -59,14 +71,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="YAXLib">
-      <HintPath>..\..\lib\YAXLib.dll</HintPath>
+      <HintPath>..\..\lib\YAXLib.2.13\lib\YAXLib.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Orc.GraphExplorer\Orc.GraphExplorer.csproj">
-      <Project>{d32429c3-438e-4a21-9384-153b609e1b97}</Project>
-      <Name>Orc.GraphExplorer</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Orc.GraphExplorer.Demo\Mock\MockGraphDataService.cs">
@@ -98,6 +104,13 @@
       <Link>Data\Relationships.csv</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Orc.GraphExplorer\Orc.GraphExplorer.csproj">
+      <Project>{d32429c3-438e-4a21-9384-153b609e1b97}</Project>
+      <Name>Orc.GraphExplorer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

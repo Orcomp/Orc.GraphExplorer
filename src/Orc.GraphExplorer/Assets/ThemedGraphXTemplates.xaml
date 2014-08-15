@@ -3,12 +3,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
     xmlns:win="clr-namespace:System.Windows;assembly=PresentationFramework"
-    xmlns:gxl="clr-namespace:GraphX;assembly=GraphX"
-    xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX"
-    xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX"       
-    xmlns:converter="clr-namespace:Orc.GraphExplorer.Converter;assembly=Orc.GraphExplorer"
-    xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
-    xmlns:conv="clr-namespace:GraphX.Converters;assembly=GraphX">
+    xmlns:gxlctrl="clr-namespace:GraphX;assembly=GraphX.Controls"
+    xmlns:gxlcommon="clr-namespace:GraphX;assembly=GraphX.Common"
+    xmlns:gxllogic="clr-namespace:GraphX;assembly=GraphX.Logic"
+    xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
+    xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"       
+    xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit">
 
     <!--TabControl-->
     <Color x:Key="AccentColor" >#FF205A95</Color>
@@ -124,7 +124,7 @@
 
     <Converters:DoubleToLog10Converter x:Key="log10Converter" />
     <Converters:EqualityToBooleanConverter x:Key="equalityConverter" />
-    <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <orctk:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <!--<BitmapImage x:Key="AddImageSource" UriSource="appbar.add.png" />
     <BitmapImage x:Key="ResetImageSource" UriSource="appbar.close.png" />
     <BitmapImage x:Key="RefreshImageSource" UriSource="appbar.refresh.png" />
@@ -1387,7 +1387,7 @@
     <SolidColorBrush x:Key="MouseOverBorderBrush" Color="{StaticResource AccentColor}"/>
 
     <!-- VERTEX CONTROL -->
-    <Style TargetType="{x:Type gxl:VertexControl}">
+    <Style TargetType="{x:Type gxlctrl:VertexControl}">
         <!-- Set background color through attached property -->
         <Setter Property="Background" Value="{StaticResource NormalBrush}"/>
         <Setter Property="Padding" Value="2"/>
@@ -1400,7 +1400,7 @@
         <Setter Property="MinWidth" Value="180"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type gxl:VertexControl}">
+                <ControlTemplate TargetType="{x:Type gxlctrl:VertexControl}">
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="Highlight">
                             <!--<DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" />
@@ -1501,7 +1501,7 @@
                         </StackPanel>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="gxl:HighlightBehaviour.Highlighted" Value="True">
+                        <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource Highlight}" />
                             </Trigger.EnterActions>
@@ -1527,27 +1527,27 @@
         </Setter>
 
         <!-- VERTEX DRAGGING CONTROL -->
-                        <Setter Property="gxl:DragBehaviour.IsDragEnabled"
+                        <Setter Property="gxlctrl:DragBehaviour.IsDragEnabled"
                 Value="False" />
-                        <Setter Property="gxl:DragBehaviour.UpdateEdgesOnMove"
+                        <Setter Property="gxlctrl:DragBehaviour.UpdateEdgesOnMove"
                 Value="True" />
-                        <Setter Property="gxl:DragBehaviour.IsDragging"
+                        <Setter Property="gxlctrl:DragBehaviour.IsDragging"
                 Value="{Binding IsDragging,Mode=OneWayToSource}" />
 
-                        <Setter Property="gxl:HighlightBehaviour.IsHighlightEnabled"
+                        <Setter Property="gxlctrl:HighlightBehaviour.IsHighlightEnabled"
                 Value="True" />
-                        <Setter Property="gxl:HighlightBehaviour.HighlightControl"
+                        <Setter Property="gxlctrl:HighlightBehaviour.HighlightControl"
                 Value="VertexAndEdge" />
-                        <Setter Property="gxl:HighlightBehaviour.HighlightEdges" 
+                        <Setter Property="gxlctrl:HighlightBehaviour.HighlightEdges" 
                 Value="All"/>
-                        <Setter Property="gxl:GraphAreaBase.FinalX" Value="{Binding X,Mode=OneWayToSource}"/>
-                        <Setter Property="gxl:GraphAreaBase.FinalY" Value="{Binding Y,Mode=OneWayToSource}"/>
+                        <Setter Property="gxlctrl:GraphAreaBase.FinalX" Value="{Binding X,Mode=OneWayToSource}"/>
+                        <Setter Property="gxlctrl:GraphAreaBase.FinalY" Value="{Binding Y,Mode=OneWayToSource}"/>
                         <Style.Triggers>
-                            <Trigger Property="gxl:HighlightBehaviour.Highlighted" Value="True">
+                            <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="True">
                                 <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                             </Trigger>
-                            <Trigger Property="gxl:HighlightBehaviour.Highlighted" Value="False">
+                            <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="False">
                                 <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
                                 <Setter Property="BorderThickness" Value="1"/>
                             </Trigger>
@@ -1555,10 +1555,10 @@
     </Style>
 
     <!--EDGE LABLE CONTROL -->
-    <Style x:Key="EdgeLabelControlStyle" TargetType="{x:Type gxl:EdgeLabelControl}">
+    <Style x:Key="EdgeLabelControlStyle" TargetType="{x:Type gxlctrl:EdgeLabelControl}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type gxl:EdgeLabelControl}">
+                <ControlTemplate TargetType="{x:Type gxlctrl:EdgeLabelControl}">
                     <Grid>
                         <Border BorderBrush="Black" BorderThickness="1" Background="Gold" CornerRadius="8">
                             <ContentPresenter Margin="5"/>
@@ -1571,10 +1571,10 @@
 
     <!--        Content="{Binding Edge.Tag, RelativeSource={RelativeSource TemplatedParent}}"                    StrokeDashArray="{Binding Path=Edge, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource dconv}}" -->
     <!-- EDGE CONTROL -->
-    <Style TargetType="{x:Type gxl:EdgeControl}">
+    <Style TargetType="{x:Type gxlctrl:EdgeControl}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type gxl:EdgeControl}">
+                <ControlTemplate TargetType="{x:Type gxlctrl:EdgeControl}">
                     <Grid>
                         <Path Stroke="{TemplateBinding Foreground}"
                           StrokeThickness="2" MinWidth="1" MinHeight="1"
@@ -1583,7 +1583,7 @@
                         <Path Stroke="{TemplateBinding Foreground}"
                           StrokeThickness="2" MinWidth="1" MinHeight="1" 
                             x:Name="PART_edgeArrowPath"/>
-                        <gxl:EdgeLabelControl Style="{StaticResource EdgeLabelControlStyle}" x:Name="PART_edgeLabel" />
+                        <gxlctrl:EdgeLabelControl Style="{StaticResource EdgeLabelControlStyle}" x:Name="PART_edgeLabel" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -1611,14 +1611,14 @@
             </Setter.Value>
         </Setter>-->
 
-        <Setter Property="gxl:HighlightBehaviour.IsHighlightEnabled"
+        <Setter Property="gxlctrl:HighlightBehaviour.IsHighlightEnabled"
                 Value="True" />
-        <Setter Property="gxl:HighlightBehaviour.HighlightControl"
+        <Setter Property="gxlctrl:HighlightBehaviour.HighlightControl"
                 Value="VertexAndEdge" />
-        <Setter Property="gxl:HighlightBehaviour.HighlightEdges" 
+        <Setter Property="gxlctrl:HighlightBehaviour.HighlightEdges" 
                 Value="All"/>
         <Style.Triggers>
-            <Trigger Property="gxl:HighlightBehaviour.Highlighted" Value="True">
+            <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
                 <Setter Property="StrokeThickness" Value="3"/>
             </Trigger>

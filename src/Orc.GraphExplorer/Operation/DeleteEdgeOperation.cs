@@ -10,17 +10,16 @@ namespace Orc.GraphExplorer
 
     public class DeleteEdgeOperation : EdgeOperation
     {
-        public DeleteEdgeOperation(GraphArea graph, DataVertex source, DataVertex target,DataEdge edge, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
-            : base(graph, source, target, callback, undoCallback)
+        public DeleteEdgeOperation(GraphArea area, DataVertex source, DataVertex target,DataEdge edge, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+            : base(area,  source, target, callback, undoCallback)
         {
             _Edge = edge;
             base.Sammary = "Delete Edge";
         }
 
         public override void Do()
-        {
-            _graph.Graph.RemoveEdge(_Edge);
-            _graph.RemoveEdge(_Edge);
+        {            
+            RemoveEdge(_Edge);
 
             if (_callback != null)
             {
@@ -32,8 +31,8 @@ namespace Orc.GraphExplorer
         {
             _Edge = new DataEdge(_source, _target);
 
-            _sourceVC = _graph.VertexList.Where(pair => pair.Key == _source).Select(pair => pair.Value).FirstOrDefault();
-            _targetVC = _graph.VertexList.Where(pair => pair.Key == _target).Select(pair => pair.Value).FirstOrDefault();
+            _sourceVC = VertexList.Where(pair => pair.Key == _source).Select(pair => pair.Value).FirstOrDefault();
+            _targetVC = VertexList.Where(pair => pair.Key == _target).Select(pair => pair.Value).FirstOrDefault();
 
             if (_sourceVC == null || _targetVC == null)
                 throw new ArgumentNullException("VertexControl");
@@ -43,9 +42,8 @@ namespace Orc.GraphExplorer
                 ShowArrows = true,
                 ShowLabel = true
             };
-
-            _graph.Graph.AddEdge(_Edge);
-            _graph.AddEdge(_Edge, _eCtrl);
+            
+            AddEdge(_Edge, _eCtrl);
 
             HighlightBehaviour.SetIsHighlightEnabled(_eCtrl, false);
 

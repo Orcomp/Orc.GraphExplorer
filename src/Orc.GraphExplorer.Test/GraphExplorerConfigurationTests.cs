@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Orc.GraphExplorer.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests
 {
+    using Orc.GraphExplorer.Models;
+
     [TestClass]
     public class GraphExplorerConfigurationTests
     {

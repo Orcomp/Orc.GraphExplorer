@@ -43,9 +43,6 @@
     <Reference Include="CsvHelper">
       <HintPath>..\..\lib\CsvHelper.2.7.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="GraphX">
-      <HintPath>..\..\lib\GraphX.dll</HintPath>
-    </Reference>
     <Reference Include="GraphX.Common">
       <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Common.dll</HintPath>
     </Reference>

@@ -61,8 +61,8 @@ namespace Orc.GraphExplorer
         {
             InitializeComponent();
 
-            ApplySetting(zoomctrl, Area);
-            ApplySetting(zoomctrlNav, AreaNav, true);
+            ApplySetting(zoomctrl, Area.Logic);
+            ApplySetting(zoomctrlNav, AreaNav.Logic, true);
 
             Area.VertexDoubleClick += Area_VertexDoubleClick;
             AreaNav.VertexDoubleClick += AreaNav_VertexDoubleClick;
@@ -162,8 +162,8 @@ namespace Orc.GraphExplorer
                         var dedge = new DataEdge(_edVertex.Vertex as DataVertex, _edFakeDV);
                         _edEdge = new EdgeControl(_edVertex, null, dedge) { ManualDrawing = true };
                         Area.AddEdge(dedge, _edEdge);
-                        Area.Graph.AddVertex(_edFakeDV);
-                        Area.Graph.AddEdge(dedge);
+                        Area.Logic.Graph.AddVertex(_edFakeDV);
+                        Area.Logic.Graph.AddEdge(dedge);
                         _edEdge.SetEdgePathManually(_edGeo);
                         _status = GraphExplorerStatus.CreateLinkSelectTarget;
                         _viewmodel.PostStatusMessage("Select Target Node");
@@ -192,11 +192,11 @@ namespace Orc.GraphExplorer
         void ClearEdgeDrawing()
         {
             if (_edFakeDV != null)
-                Area.Graph.RemoveVertex(_edFakeDV);
+                Area.Logic.Graph.RemoveVertex(_edFakeDV);
             if (_edEdge != null)
             {
                 var edge = _edEdge.Edge as DataEdge;
-                Area.Graph.RemoveEdge(edge);
+                Area.Logic.Graph.RemoveEdge(edge);
                 Area.RemoveEdge(edge);
             }
             _edGeo = null;
@@ -244,12 +244,12 @@ namespace Orc.GraphExplorer
 
             _currentNavItem = vertex;
 
-            var degree = Area.Graph.Degree(vertex);
+            var degree = Area.Logic.Graph.Degree(vertex);
 
             if (degree < 1)
                 return;
 
-            NavigateTo(vertex, Area.Graph);
+            NavigateTo(vertex, Area.Logic.Graph);
         }
 
         void Area_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
@@ -266,12 +266,12 @@ namespace Orc.GraphExplorer
 
             _currentNavItem = vertex;
 
-            var degree = Area.Graph.Degree(vertex);
+            var degree = Area.Logic.Graph.Degree(vertex);
 
             if (degree < 1)
                 return;
 
-            NavigateTo(vertex, Area.Graph);
+            NavigateTo(vertex, Area.Logic.Graph);
 
             if (navTab.Visibility != System.Windows.Visibility.Visible)
                 navTab.Visibility = System.Windows.Visibility.Visible;
@@ -358,38 +358,37 @@ namespace Orc.GraphExplorer
             GraphDataService.GetEdges(OnEdgeLoaded, OnError);
         }
 
-        void ApplySetting(ZoomControl zoom, GraphArea area, bool nav = false)
-        {
+        void ApplySetting(ZoomControl zoom, GraphLogic logic, bool nav = false)
+        {            
             //Zoombox.SetViewFinderVisibility(zoom, System.Windows.Visibility.Visible);
 
             //This property sets vertex overlap removal algorithm.
             //Such algorithms help to arrange vertices in the layout so no one overlaps each other.
-            area.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
-            area.DefaultOverlapRemovalAlgorithmParams = Area.AlgorithmFactory.CreateOverlapRemovalParameters
-(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
+            logic.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
+            logic.DefaultOverlapRemovalAlgorithmParams = logic.AlgorithmFactory.CreateOverlapRemovalParameters(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
 
             if (nav)
             {
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 150;
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 100;
+                ((OverlapRemovalParameters)logic.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 150;
+                ((OverlapRemovalParameters)logic.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 100;
             }
             else
             {
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
+                ((OverlapRemovalParameters)logic.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
+                ((OverlapRemovalParameters)logic.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
             }
             //This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
             //For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
             //Bundling algorithm will try to tie different edges that follows same direction to a single channel making complex graphs more appealing.
-            area.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.None;
+            logic.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.None;
 
             //This property sets async algorithms computation so methods like: Area.RelayoutGraph() and Area.GenerateGraph()
             //will run async with the UI thread. Completion of the specified methods can be catched by corresponding events:
             //Area.RelayoutFinished and Area.GenerateGraphFinished.
-            area.AsyncAlgorithmCompute = true;
+            logic.AsyncAlgorithmCompute = true;
 
             //area.UseLayoutRounding = false;
-            area.UseNativeObjectArrange = false;
+           // area.UseNativeObjectArrange = false;
         }
 
         void OnVertexesLoaded(IEnumerable<DataVertex> vertexes)
@@ -461,7 +460,7 @@ namespace Orc.GraphExplorer
 
             graph.AddEdgeRange(edges);
 
-            area.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
+            area.Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
 
             area.GenerateGraph(graph, true, true);
         }
@@ -544,7 +543,7 @@ namespace Orc.GraphExplorer
             if (e.NewValue != null)
             {
                 var ge = (GraphExplorer)d;
-                ge.ApplySetting(ge.zoomctrl, ge.Area);
+                ge.ApplySetting(ge.zoomctrl, ge.Area.Logic);
             }
         }
 
@@ -808,13 +807,13 @@ namespace Orc.GraphExplorer
             {
 
 
-                GraphDataService.UpdateEdges(Area.Graph.Edges, (result, error) =>
+                GraphDataService.UpdateEdges(Area.Logic.Graph.Edges, (result, error) =>
                 {
                     if (!result && error != null)
                         ShowAlertMessage(error.Message);
                 });
 
-                GraphDataService.UpdateVertexes(Area.Graph.Vertices, (result, error) =>
+                GraphDataService.UpdateVertexes(Area.Logic.Graph.Vertices, (result, error) =>
                 {
                     if (!result && error != null)
                         ShowAlertMessage(error.Message);
@@ -922,18 +921,18 @@ namespace Orc.GraphExplorer
             }
         }
 
-        private void SafeRemoveVertex(VertexControl vc, GraphArea area, bool removeFromSelected = false)
+        private void SafeRemoveVertex(VertexControl vc, GraphArea area, GraphLogic logic, bool removeFromSelected = false)
         {
             //remove all adjacent edges
             foreach (var item in area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
             {
                 var ec = item as EdgeControl;
-                area.Graph.RemoveEdge(ec.Edge as DataEdge);
+                logic.Graph.RemoveEdge(ec.Edge as DataEdge);
                 area.RemoveEdge(ec.Edge as DataEdge);
             }
 
             var v = vc.Vertex as DataVertex;
-            area.Graph.RemoveVertex(v);
+            logic.Graph.RemoveVertex(v);
             area.RemoveVertex(v);
 
             if (removeFromSelected && v != null && _selectedVertices.Contains(v.Id))

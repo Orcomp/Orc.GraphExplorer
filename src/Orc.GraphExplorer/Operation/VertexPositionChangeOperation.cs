@@ -13,8 +13,8 @@ namespace Orc.GraphExplorer
         double _offsetX;
         double _offsetY;
         VertexControl _vc;
-        public VertexPositionChangeOperation(GraphArea graph, VertexControl vc, double offsetX, double offsetY, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(graph, data, callback, undoCallback)
+        public VertexPositionChangeOperation(GraphArea area, VertexControl vc, double offsetX, double offsetY, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+            : base(area, data, callback, undoCallback)
         {
             _vc = vc;
             _offsetX = offsetX;

@@ -23,10 +23,8 @@ namespace Orc.GraphExplorer
 
         public override void Do()
         {
-            _graph.Graph.AddVertex(_vertex);
             _vCtrl = new VertexControl(_vertex);
-            _graph.AddVertex(_vertex, _vCtrl);
-
+            AddVertex(_vertex, _vCtrl);
             //ArrangeVertexPosition();
 
             if (_x != double.MinValue && _y != double.MinValue)
@@ -71,9 +69,8 @@ namespace Orc.GraphExplorer
         //}
 
         public override void UnDo()
-        {
-            _graph.Graph.RemoveVertex(_vertex);
-            _graph.RemoveVertex(_vertex);
+        {            
+            RemoveVertex(_vertex);
 
             if (_undoCallback != null)
             {
@@ -81,8 +78,8 @@ namespace Orc.GraphExplorer
             }
         }
 
-        public CreateVertexOperation(GraphArea graph, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(graph, data, callback, undoCallback)
+        public CreateVertexOperation(GraphArea area, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+            : base(area, data, callback, undoCallback)
         {
             _vCtrl = new VertexControl(_vertex);
 

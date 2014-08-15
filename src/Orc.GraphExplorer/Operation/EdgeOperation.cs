@@ -3,6 +3,8 @@ using System;
 
 namespace Orc.GraphExplorer
 {
+    using System.Collections.Generic;
+
     using Models;
 
     /// <summary>
@@ -46,15 +48,39 @@ namespace Orc.GraphExplorer
         protected DataVertex _target;
         protected Action<EdgeControl> _callback;
         protected Action<EdgeControl> _undoCallback;
-        protected GraphArea _graph;
 
-        public EdgeOperation(GraphArea graph, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+        private readonly GraphArea _area;
+
+        private readonly GraphLogic _logic;
+
+        public EdgeOperation(GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
         {
-            _graph = graph;
+            _area = area;
+            _logic = _area.Logic;
             _callback = callback;
             _undoCallback = undoCallback;
             _source = source;
             _target = target;
+        }
+
+        protected void RemoveEdge(DataEdge dataEdge)
+        {
+            _logic.Graph.RemoveEdge(dataEdge);
+            _area.RemoveEdge(dataEdge);
+        }
+
+        protected void AddEdge(DataEdge dataEdge, EdgeControl edgeControl)
+        {
+            _logic.Graph.AddEdge(dataEdge);
+            _area.AddEdge(dataEdge, edgeControl);
+        }
+
+        protected IDictionary<DataVertex, VertexControl> VertexList 
+        {
+            get
+            {
+                return _area.VertexList;
+            }
         }
 
         //dispose operation, release reference
@@ -65,7 +91,6 @@ namespace Orc.GraphExplorer
             _eCtrl = null;
             _callback = null;
             _undoCallback = null;
-            _graph = null;
         }
 
         public Status Status

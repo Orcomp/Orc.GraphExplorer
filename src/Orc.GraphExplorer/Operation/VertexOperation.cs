@@ -9,6 +9,8 @@ using System.Windows.Threading;
 
 namespace Orc.GraphExplorer
 {
+    using QuickGraph;
+
     /// <summary>
     /// base class for encapsulating vertex management
     /// </summary>
@@ -45,11 +47,15 @@ namespace Orc.GraphExplorer
         protected VertexControl _vCtrl;
         protected Action<DataVertex, VertexControl> _callback;
         protected Action<DataVertex> _undoCallback;
-        protected GraphArea _graph;
 
-        public VertexOperation(GraphArea graph, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+        private readonly GraphArea _area;
+
+        private readonly GraphLogic _logic;
+
+        public VertexOperation(GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
         {
-            _graph = graph;
+            _area = area;
+            _logic = _area.Logic;
             _callback = callback;
             _undoCallback = undoCallback;
 
@@ -59,6 +65,51 @@ namespace Orc.GraphExplorer
                 _vertex = DataVertex.Create();
 
             Status = Orc.GraphExplorer.Status.Init;
+        }
+
+        protected BidirectionalGraph<DataVertex, DataEdge> Graph
+        {
+            get
+            {
+                return _logic.Graph;
+            }
+        }
+
+        protected void AddEdge(DataEdge dataEdge, EdgeControl edgeControl)
+        {
+            _logic.Graph.AddEdge(dataEdge);
+            _area.AddEdge(dataEdge, edgeControl);
+        }
+
+        protected void RemoveEdge(DataEdge dataEdge)
+        {
+            _logic.Graph.RemoveEdge(dataEdge);
+            _area.RemoveEdge(dataEdge);
+        }
+
+        protected void AddVertex(DataVertex dataVertex, VertexControl vertexControl)
+        {
+            _logic.Graph.AddVertex(dataVertex);
+            _area.AddVertex(dataVertex, vertexControl);
+        }
+
+        protected void RemoveVertex(DataVertex dataVertex)
+        {
+            _logic.Graph.RemoveVertex(dataVertex);
+            _area.RemoveVertex(dataVertex);
+        }
+
+        protected List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType controlType, EdgesType edgesType)
+        {
+            return _area.GetRelatedControls(ctrl, controlType, edgesType);
+        }
+
+        protected IDictionary<DataVertex, VertexControl> VertexList
+        {
+            get
+            {
+                return _area.VertexList;
+            }
         }
 
         public Status Status
@@ -75,7 +126,7 @@ namespace Orc.GraphExplorer
             _vCtrl = null;
             _callback = null;
             _undoCallback = null;
-            _graph = null;
+         //   _area = null;
         }
 
 

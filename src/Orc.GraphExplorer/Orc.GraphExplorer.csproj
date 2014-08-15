@@ -138,6 +138,7 @@
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Models\FilterEntity.cs" />
+    <Compile Include="Models\GraphLogic.cs" />
     <Compile Include="Operation\EditValuePropertyOperation.cs" />
     <Compile Include="Operation\EditKeyPropertyOperation.cs" />
     <Compile Include="Operation\AddPropertyOperation.cs" />

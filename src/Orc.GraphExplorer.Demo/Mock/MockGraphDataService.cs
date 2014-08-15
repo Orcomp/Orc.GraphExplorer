@@ -7,6 +7,8 @@ using System.Configuration;
 
 namespace Orc.GraphExplorer.Demo.Mock
 {
+    using Orc.GraphExplorer.Models;
+
     //mock up service for generating moce vetexes and edges
     public class MockGraphDataService : IGraphDataService
     {
