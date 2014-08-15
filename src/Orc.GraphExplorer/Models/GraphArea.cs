@@ -11,9 +11,10 @@ namespace Orc.GraphExplorer.Models
     {
         public GraphArea()
         {
-            Logic = new GraphLogic();
+            LogicCore = new GraphLogic();
+           // LogicCore = Logic;
         }
-        public GraphLogic Logic { get; private set; }
+        /*public GraphLogic Logic { get; private set; }*/
     }
 
 }

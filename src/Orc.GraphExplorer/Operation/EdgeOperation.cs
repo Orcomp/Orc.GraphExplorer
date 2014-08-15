@@ -6,6 +6,7 @@ namespace Orc.GraphExplorer
     using System.Collections.Generic;
 
     using Models;
+    using QuickGraph;
 
     /// <summary>
     /// base class for encapsulating edge management
@@ -51,12 +52,12 @@ namespace Orc.GraphExplorer
 
         private readonly GraphArea _area;
 
-        private readonly GraphLogic _logic;
+        private readonly IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> _logic;
 
         public EdgeOperation(GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
         {
             _area = area;
-            _logic = _area.Logic;
+            _logic = _area.LogicCore;
             _callback = callback;
             _undoCallback = undoCallback;
             _source = source;

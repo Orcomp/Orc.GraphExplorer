@@ -50,12 +50,12 @@ namespace Orc.GraphExplorer
 
         private readonly GraphArea _area;
 
-        private readonly GraphLogic _logic;
+        private readonly IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> _logic;
 
         public VertexOperation(GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
         {
             _area = area;
-            _logic = _area.Logic;
+            _logic = _area.LogicCore;
             _callback = callback;
             _undoCallback = undoCallback;
 

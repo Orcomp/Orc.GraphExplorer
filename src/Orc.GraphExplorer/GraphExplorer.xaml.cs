@@ -14,6 +14,8 @@ using GraphX.Controls;
 
 namespace Orc.GraphExplorer
 {
+    using QuickGraph;
+
     /// <summary>
     /// Interaction logic for GraphExplorer.xaml
     /// </summary>
@@ -61,8 +63,8 @@ namespace Orc.GraphExplorer
         {
             InitializeComponent();
 
-            ApplySetting(zoomctrl, Area.Logic);
-            ApplySetting(zoomctrlNav, AreaNav.Logic, true);
+            ApplySetting(zoomctrl, Area.LogicCore);
+            ApplySetting(zoomctrlNav, AreaNav.LogicCore, true);
 
             Area.VertexDoubleClick += Area_VertexDoubleClick;
             AreaNav.VertexDoubleClick += AreaNav_VertexDoubleClick;
@@ -162,8 +164,8 @@ namespace Orc.GraphExplorer
                         var dedge = new DataEdge(_edVertex.Vertex as DataVertex, _edFakeDV);
                         _edEdge = new EdgeControl(_edVertex, null, dedge) { ManualDrawing = true };
                         Area.AddEdge(dedge, _edEdge);
-                        Area.Logic.Graph.AddVertex(_edFakeDV);
-                        Area.Logic.Graph.AddEdge(dedge);
+                        Area.LogicCore.Graph.AddVertex(_edFakeDV);
+                        Area.LogicCore.Graph.AddEdge(dedge);
                         _edEdge.SetEdgePathManually(_edGeo);
                         _status = GraphExplorerStatus.CreateLinkSelectTarget;
                         _viewmodel.PostStatusMessage("Select Target Node");
@@ -192,11 +194,11 @@ namespace Orc.GraphExplorer
         void ClearEdgeDrawing()
         {
             if (_edFakeDV != null)
-                Area.Logic.Graph.RemoveVertex(_edFakeDV);
+                Area.LogicCore.Graph.RemoveVertex(_edFakeDV);
             if (_edEdge != null)
             {
                 var edge = _edEdge.Edge as DataEdge;
-                Area.Logic.Graph.RemoveEdge(edge);
+                Area.LogicCore.Graph.RemoveEdge(edge);
                 Area.RemoveEdge(edge);
             }
             _edGeo = null;
@@ -244,12 +246,12 @@ namespace Orc.GraphExplorer
 
             _currentNavItem = vertex;
 
-            var degree = Area.Logic.Graph.Degree(vertex);
+            var degree = Area.LogicCore.Graph.Degree(vertex);
 
             if (degree < 1)
                 return;
 
-            NavigateTo(vertex, Area.Logic.Graph);
+            NavigateTo(vertex, Area.LogicCore.Graph);
         }
 
         void Area_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
@@ -266,12 +268,12 @@ namespace Orc.GraphExplorer
 
             _currentNavItem = vertex;
 
-            var degree = Area.Logic.Graph.Degree(vertex);
+            var degree = Area.LogicCore.Graph.Degree(vertex);
 
             if (degree < 1)
                 return;
 
-            NavigateTo(vertex, Area.Logic.Graph);
+            NavigateTo(vertex, Area.LogicCore.Graph);
 
             if (navTab.Visibility != System.Windows.Visibility.Visible)
                 navTab.Visibility = System.Windows.Visibility.Visible;
@@ -358,7 +360,7 @@ namespace Orc.GraphExplorer
             GraphDataService.GetEdges(OnEdgeLoaded, OnError);
         }
 
-        void ApplySetting(ZoomControl zoom, GraphLogic logic, bool nav = false)
+        void ApplySetting(ZoomControl zoom, IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> logic, bool nav = false)
         {            
             //Zoombox.SetViewFinderVisibility(zoom, System.Windows.Visibility.Visible);
 
@@ -460,7 +462,7 @@ namespace Orc.GraphExplorer
 
             graph.AddEdgeRange(edges);
 
-            area.Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
+           ((GraphLogic)area.LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
 
             area.GenerateGraph(graph, true, true);
         }
@@ -543,7 +545,7 @@ namespace Orc.GraphExplorer
             if (e.NewValue != null)
             {
                 var ge = (GraphExplorer)d;
-                ge.ApplySetting(ge.zoomctrl, ge.Area.Logic);
+                ge.ApplySetting(ge.zoomctrl, ge.Area.LogicCore);
             }
         }
 
@@ -807,13 +809,13 @@ namespace Orc.GraphExplorer
             {
 
 
-                GraphDataService.UpdateEdges(Area.Logic.Graph.Edges, (result, error) =>
+                GraphDataService.UpdateEdges(Area.LogicCore.Graph.Edges, (result, error) =>
                 {
                     if (!result && error != null)
                         ShowAlertMessage(error.Message);
                 });
 
-                GraphDataService.UpdateVertexes(Area.Logic.Graph.Vertices, (result, error) =>
+                GraphDataService.UpdateVertexes(Area.LogicCore.Graph.Vertices, (result, error) =>
                 {
                     if (!result && error != null)
                         ShowAlertMessage(error.Message);
