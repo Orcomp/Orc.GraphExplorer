@@ -1,33 +1,21 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-namespace Orc.GraphExplorer
+﻿namespace Orc.GraphExplorer.Views
 {
+    using System;
+    using System.Configuration;
+    using System.Windows;
+    using System.Windows.Controls;
     using Events;
+    using Microsoft.Win32;
 
     /// <summary>
-    /// Interaction logic for FilePicker.xaml
+    /// Interaction logic for FilePickerView.xaml
     /// </summary>
-    public partial class FilePicker : UserControl
+    public partial class FilePickerView : UserControl
     {
         // Create a custom routed event by first registering a RoutedEventID 
         // This event uses the bubbling routing strategy 
         public static readonly RoutedEvent SettingAppliedEvent = EventManager.RegisterRoutedEvent(
-            "SettingApplied", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(FilePicker));
+            "SettingApplied", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(FilePickerView));
 
         // Provide CLR accessors for the event 
         public event RoutedEventHandler SettingApplied
@@ -39,11 +27,11 @@ namespace Orc.GraphExplorer
         // This method raises the Tap event 
         void RaiseSettingAppliedEvent(bool neeedRefresh)
         {
-            RoutedEventArgs newEventArgs = new SettingAppliedRoutedEventArgs(FilePicker.SettingAppliedEvent, this, neeedRefresh);
+            RoutedEventArgs newEventArgs = new SettingAppliedRoutedEventArgs(FilePickerView.SettingAppliedEvent, this, neeedRefresh);
             RaiseEvent(newEventArgs);
         }
 
-        public FilePicker()
+        public FilePickerView()
         {
             InitializeComponent();
 

@@ -16,6 +16,7 @@
     using Operations;
     using Operations.Interfaces;
     using Services.Interfaces;
+    using Views;
     using IValueConverter = Catel.MVVM.Converters.IValueConverter;
 
     public class GraphExplorerViewmodel : ObservableObject, IObserver<IOperation>
@@ -255,7 +256,7 @@
             }
         }
 
-        public GraphExplorer View { get; set; }
+        public GraphExplorerView View { get; set; }
 
         IGraphDataService GraphDataService { get; set; }
 
@@ -339,7 +340,7 @@
 
         private void UpdateEdgesVisibility()
         {
-            GraphExplorer.RunCodeInUiThread(() =>
+            GraphExplorerView.RunCodeInUiThread(() =>
             {
                 if (_edges != null)
                 {

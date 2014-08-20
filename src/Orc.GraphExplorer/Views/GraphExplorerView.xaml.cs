@@ -1,45 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using Orc.GraphExplorer.Models;
-using GraphX.GraphSharp.Algorithms.OverlapRemoval;
-using System.Windows.Threading;
-using Microsoft.Win32;
-using GraphX;
-using GraphX.Controls;
-
-namespace Orc.GraphExplorer
+﻿namespace Orc.GraphExplorer.Views
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Threading;
+    using DomainModel;
+    using Enums;
     using Events;
+    using GraphX;
+    using GraphX.Controls;
+    using GraphX.GraphSharp.Algorithms.OverlapRemoval;
+    using Microsoft.Win32;
     using Operations;
-    using Orc.GraphExplorer.DomainModel;
-    using Orc.GraphExplorer.Enums;
-
     using QuickGraph;
     using Services;
     using Services.Interfaces;
     using ViewModels;
 
     /// <summary>
-    /// Interaction logic for GraphExplorer.xaml
+    /// Interaction logic for GraphExplorerView.xaml
     /// </summary>
-    public partial class GraphExplorer : UserControl
+    public partial class GraphExplorerView : UserControl
     {
-        [Flags]
-        public enum GraphExplorerStatus
-        {
-            Ready,
-            Editing,
-            EnableDrag,
-            DragToCreateVertex,
-            CreateLinkSelectSource,
-            CreateLinkSelectTarget,
-            Dragging
-        }
+        
 
         private PathGeometry _edGeo;
         private VertexControl _edVertex;
@@ -67,7 +54,7 @@ namespace Orc.GraphExplorer
 
         GraphExplorerViewmodel _viewmodel;
 
-        public GraphExplorer()
+        public GraphExplorerView()
         {
             InitializeComponent();
 
@@ -233,7 +220,7 @@ namespace Orc.GraphExplorer
         }
 
         //another constructor for inject IGraphDataService to graph explorer
-        public GraphExplorer(IGraphDataService graphDataService)
+        public GraphExplorerView(IGraphDataService graphDataService)
             : this()
         {
             //load data if graphDataService is provided
@@ -488,7 +475,7 @@ namespace Orc.GraphExplorer
 
         // Using a DependencyProperty as the backing store for Vertexes.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty VertexesProperty =
-            DependencyProperty.Register("Vertexes", typeof(IEnumerable<DataVertex>), typeof(GraphExplorer), new PropertyMetadata(new List<DataVertex>(), VertexesChanged));
+            DependencyProperty.Register("Vertexes", typeof(IEnumerable<DataVertex>), typeof(GraphExplorerView), new PropertyMetadata(new List<DataVertex>(), VertexesChanged));
 
         static void VertexesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -503,7 +490,7 @@ namespace Orc.GraphExplorer
 
         // Using a DependencyProperty as the backing store for Edges.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty EdgesProperty =
-            DependencyProperty.Register("Edges", typeof(IEnumerable<DataEdge>), typeof(GraphExplorer), new PropertyMetadata(null, EdgesChanged));
+            DependencyProperty.Register("Edges", typeof(IEnumerable<DataEdge>), typeof(GraphExplorerView), new PropertyMetadata(null, EdgesChanged));
 
         static void EdgesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -518,7 +505,7 @@ namespace Orc.GraphExplorer
 
         // Using a DependencyProperty as the backing store for Error.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ErrorProperty =
-            DependencyProperty.Register("Error", typeof(Exception), typeof(GraphExplorer), new PropertyMetadata(null));
+            DependencyProperty.Register("Error", typeof(Exception), typeof(GraphExplorerView), new PropertyMetadata(null));
 
         public IGraphDataService GraphDataService
         {
@@ -528,13 +515,13 @@ namespace Orc.GraphExplorer
 
         // Using a DependencyProperty as the backing store for GraphDataService.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GraphDataServiceProperty =
-            DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorer), new PropertyMetadata(null, GraphDataServiceChanged));
+            DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorerView), new PropertyMetadata(null, GraphDataServiceChanged));
 
         static void GraphDataServiceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)
             {
-                ((GraphExplorer)d).GetEdges();
+                ((GraphExplorerView)d).GetEdges();
             }
         }
 
@@ -546,13 +533,13 @@ namespace Orc.GraphExplorer
 
         // Using a DependencyProperty as the backing store for Setting.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SettingProperty =
-            DependencyProperty.Register("Setting", typeof(GraphExplorerSetting), typeof(GraphExplorer), new PropertyMetadata(null));
+            DependencyProperty.Register("Setting", typeof(GraphExplorerSetting), typeof(GraphExplorerView), new PropertyMetadata(null));
 
         void SettingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)
             {
-                var ge = (GraphExplorer)d;
+                var ge = (GraphExplorerView)d;
                 ge.ApplySetting(ge.zoomctrl, ge.Area.LogicCore);
             }
         }
