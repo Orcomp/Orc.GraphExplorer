@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests
 {
+    using Config;
+    using Orc.GraphExplorer.Enums;
     using Orc.GraphExplorer.Models;
 
     [TestClass]

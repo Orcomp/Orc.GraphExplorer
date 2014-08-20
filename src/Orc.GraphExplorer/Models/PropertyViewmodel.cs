@@ -8,6 +8,9 @@ using System.Windows;
 namespace Orc.GraphExplorer.Models
 {
     using Catel.Data;
+    using DomainModel;
+    using Operations;
+    using Operations.Interfaces;
 
     public class PropertyViewmodel : ObservableObject, IObservable<IOperation>,IDisposable
     {

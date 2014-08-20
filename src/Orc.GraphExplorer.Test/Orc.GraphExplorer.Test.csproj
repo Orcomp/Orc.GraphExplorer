@@ -75,9 +75,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Orc.GraphExplorer.Demo\Mock\MockGraphDataService.cs">
-      <Link>Mock\MockGraphDataService.cs</Link>
-    </Compile>
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
@@ -87,6 +84,7 @@
     <Compile Include="GraphExplorerConfigurationTests.cs" />
     <Compile Include="GraphExplorerSectionTests.cs" />
     <Compile Include="GraphExplorerViewmodelTests.cs" />
+    <Compile Include="Mock\MockGraphDataService.cs" />
     <Compile Include="Mock\MockObserver.cs" />
     <Compile Include="Mock\MockOperation.cs" />
     <Compile Include="OperationTests.cs" />

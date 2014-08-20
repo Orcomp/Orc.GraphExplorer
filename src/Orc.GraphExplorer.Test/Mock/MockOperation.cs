@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests.Mock
 {
+    using Operations.Interfaces;
+    using Orc.GraphExplorer.Enums;
+
     class MockOperation : IOperation
     {
         bool summaryCalled;
@@ -54,7 +57,7 @@ namespace Orc.GraphExplorer.Tests.Mock
             set { isUnDoable = value; }
         }
 
-        public Status Status
+        public OperationStatus OperationStatus
         {
             get;
             protected set;

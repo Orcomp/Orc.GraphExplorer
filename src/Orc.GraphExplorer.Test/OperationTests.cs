@@ -7,6 +7,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests
 {
+    using DomainModel;
+    using Operations;
     using Orc.GraphExplorer.Models;
 
     [TestClass]

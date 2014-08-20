@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests.Mock
 {
+    using Operations.Interfaces;
+
     class MockObserver : IObserver<IOperation>
     {
         List<IOperation> _operations = new List<IOperation>();

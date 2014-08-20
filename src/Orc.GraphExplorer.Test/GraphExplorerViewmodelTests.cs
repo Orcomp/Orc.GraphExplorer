@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests
 {
+    using Operations;
+    using ViewModels;
+
     [TestClass]
     public class GraphExplorerViewmodelTests
     {

@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer.Tests
 {
+    using Config;
+
     [TestClass]
     public class CsvGraphDataServiceConfigTest
     {
