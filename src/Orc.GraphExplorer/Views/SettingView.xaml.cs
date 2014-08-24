@@ -8,8 +8,9 @@
     /// <summary>
     /// Interaction logic for SettingView.xaml
     /// </summary>
-    public partial class SettingView : UserControl
+    public partial class SettingView 
     {
+
         // Create a custom routed event by first registering a RoutedEventID 
         // This event uses the bubbling routing strategy 
         public static readonly RoutedEvent CloseEvent = EventManager.RegisterRoutedEvent(

@@ -17,7 +17,7 @@ namespace Orc.GraphExplorer.Tests
         [TestMethod]
         public void Constructor_Test()
         {
-            var graphVM = new GraphExplorerViewmodel();
+            var graphVM = new GraphExplorerViewModel();
 
             Assert.IsNotNull(graphVM.Operations);
             Assert.IsNotNull(graphVM.OperationsRedo);
@@ -30,7 +30,7 @@ namespace Orc.GraphExplorer.Tests
         [TestMethod]
         public void Do_CreateVertex_Operation_Test()
         {
-            var graphVM = new GraphExplorerViewmodel();
+            var graphVM = new GraphExplorerViewModel();
 
             Assert.IsNotNull(graphVM.Operations);
             Assert.IsNotNull(graphVM.OperationsRedo);
@@ -84,7 +84,7 @@ namespace Orc.GraphExplorer.Tests
             var op1 = new MockOperation();
             var op2 = new MockOperation();
 
-            var vm = new GraphExplorerViewmodel();
+            var vm = new GraphExplorerViewModel();
 
             vm.Do(op1);
 
@@ -109,7 +109,7 @@ namespace Orc.GraphExplorer.Tests
         {
             var vertex = new DataVertex();
 
-            var vm = new GraphExplorerViewmodel();
+            var vm = new GraphExplorerViewModel();
 
             vm.OnVertexLoaded(new DataVertex[] { vertex }, true);
 
@@ -136,7 +136,7 @@ namespace Orc.GraphExplorer.Tests
 
             vertex.AddProperty(new Model.PropertyViewmodel(0, "", "", vertex) { IsSelected = true});
 
-            var vm = new GraphExplorerViewmodel();
+            var vm = new GraphExplorerViewModel();
 
             vm.OnVertexLoaded(new DataVertex[] { vertex }, true);
 

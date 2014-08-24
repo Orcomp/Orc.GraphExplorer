@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using DomainModel;
     using Models;
+    using ViewModels;
 
     public class DeletePropertyOperation :PropertyOperation
     {

@@ -1,10 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer", "Orc.GraphExplorer\Orc.GraphExplorer.csproj", "{D32429C3-438E-4A21-9384-153B609E1B97}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Test", "Orc.GraphExplorer.Test\Orc.GraphExplorer.Test.csproj", "{73C72E0C-51EC-4325-A6F5-08B228F702D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}"
 EndProject
@@ -33,10 +29,6 @@ Global
 		{D32429C3-438E-4A21-9384-153B609E1B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73C72E0C-51EC-4325-A6F5-08B228F702D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73C72E0C-51EC-4325-A6F5-08B228F702D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73C72E0C-51EC-4325-A6F5-08B228F702D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73C72E0C-51EC-4325-A6F5-08B228F702D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,7 +39,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D32429C3-438E-4A21-9384-153B609E1B97} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
-		{73C72E0C-51EC-4325-A6F5-08B228F702D2} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 		{2C50CF42-66C8-4955-82F8-B76197DF5287} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 	EndGlobalSection
 EndGlobal

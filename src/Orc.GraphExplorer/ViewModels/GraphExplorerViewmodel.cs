@@ -7,6 +7,7 @@
     using System.Windows;
     using System.Windows.Data;
     using Catel.Data;
+    using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Converters;
     using Config;
@@ -15,11 +16,12 @@
     using Models;
     using Operations;
     using Operations.Interfaces;
+    using Services;
     using Services.Interfaces;
     using Views;
     using IValueConverter = Catel.MVVM.Converters.IValueConverter;
 
-    public class GraphExplorerViewmodel : ObservableObject, IObserver<IOperation>
+    public class GraphExplorerViewModel : ViewModelBase/*ObservableObject*/, IObserver<IOperation>
     {
         #region Properties
 
@@ -28,6 +30,33 @@
         IEnumerable<DataEdge> _edges;
 
         string _filterText;
+
+        protected override void Initialize()
+        {
+          //  GraphDataService = new CsvGraphDataService();
+            base.Initialize();
+        }
+
+        public GraphLogic Logic { get; set; }
+
+        /*public IGraphDataService GraphDataService
+        {
+            get { return GetValue<IGraphDataService>(GraphDataServiceProperty); }
+            set { SetValue(GraphDataServiceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GraphDataService.  This enables animation, styling, binding, etc...
+        public static readonly PropertyData GraphDataServiceProperty =
+            DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorerView), new PropertyMetadata(null, GraphDataServiceChanged));
+
+        static void GraphDataServiceChanged(PropertyData d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null)
+            {
+              //  ((GraphExplorerView)d).GetEdges();
+                throw new NotImplementedException();
+            }
+        }*/
 
         public string FilterText
         {
@@ -256,9 +285,19 @@
             }
         }
 
-        public GraphExplorerView View { get; set; }
-
-        IGraphDataService GraphDataService { get; set; }
+        public GraphExplorerView View
+        {
+            get
+            {
+                if (_view == null)
+                {
+                    var viewLocator = (IViewLocator)ServiceLocator.Default.ResolveType(typeof(IViewLocator));
+                    var viewType = viewLocator.ResolveView(this.GetType());
+                    _view = (GraphExplorerView) ServiceLocator.Default.ResolveType(viewType);
+                }
+                return _view;
+            }
+        }
 
         List<IOperation> _operations;
 
@@ -287,14 +326,16 @@
         #endregion
 
         //Summary
-        //    constructor of GraphExplorerViewmodel
-        public GraphExplorerViewmodel()
+        //    constructor of GraphExplorerViewModel
+        public GraphExplorerViewModel()
         {
             _operationsRedo = new List<IOperation>();
             _operations = new List<IOperation>();
 
             IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
+
+            Logic = new GraphLogic();
         }
 
         //Summary
@@ -539,6 +580,7 @@
         }
 
         Command _redoCommand;
+        private GraphExplorerView _view;
 
         public Command RedoCommand
         {

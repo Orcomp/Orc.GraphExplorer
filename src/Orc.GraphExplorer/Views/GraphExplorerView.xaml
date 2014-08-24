@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Orc.GraphExplorer.Views.GraphExplorerView"
+﻿<catel:UserControl x:Class="Orc.GraphExplorer.Views.GraphExplorerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -99,7 +99,7 @@
                     </Border>
 
                     <controls:ZoomControl x:Name="zoomctrl" AllowDrop="True"  DragEnter="zoomctrl_DragEnter"  PreviewMouseMove="zoomctrl_PreviewMouseMove"  PreviewDrop="zoomctrl_PreviewDrop" MinZoom=".1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1">
-                        <domainModel:GraphArea x:Name="Area"/>
+                        <domainModel:GraphArea x:Name="Area" />
                     </controls:ZoomControl>
                 </Grid>
             </TabItem>
@@ -149,16 +149,8 @@
             </TabItem>
         </TabControl>
 
-        <!--the menu bar-->
-        <!--<Border VerticalAlignment="Top" Height="32" HorizontalAlignment="Stretch" Visibility="Collapsed">
-            <Border.Effect>
-                <DropShadowEffect Color="Black" Opacity=".5" RenderingBias="Performance" ShadowDepth="1"/>
-            </Border.Effect>
-            <StackPanel Background="AliceBlue" Orientation="Horizontal">
-                <Button x:Name="btnBack" Content="&lt;-"/>
-                <Button x:Name="btnForward" Content="->"/>
-            </StackPanel>
-        </Border>-->
+        <!--~2~the menu bar@2@-->
+
         <Button Height="22" Width="22" Margin="2,1" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource SettingButtonStyle}" ToolTip="Open Setting" Name="btnSetting" Click="btnSetting_Click"/>
         <Border x:Name="StatusBar" Grid.Row="1" Background="{DynamicResource StatusBar.Backround}">
             <StackPanel Orientation="Horizontal" Margin="6,2">
@@ -168,4 +160,4 @@
         </Border>
         <views1:SettingView Grid.RowSpan="3" Visibility="Collapsed" Margin="-1" SettingApplied="settingView_SettingApplied" x:Name="settingView"/>
     </Grid>
-</UserControl>
+</catel:UserControl>

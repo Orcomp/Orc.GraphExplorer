@@ -5,7 +5,7 @@
     /// <summary>
     /// Interaction logic for VertexFilterView.xaml
     /// </summary>
-    public partial class VertexFilterView : UserControl
+    public partial class VertexFilterView
     {
         public VertexFilterView()
         {

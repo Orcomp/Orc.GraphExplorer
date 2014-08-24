@@ -8,6 +8,7 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Threading;
+    using Catel.IoC;
     using DomainModel;
     using Enums;
     using Events;
@@ -24,16 +25,61 @@
     /// <summary>
     /// Interaction logic for GraphExplorerView.xaml
     /// </summary>
-    public partial class GraphExplorerView : UserControl
+    public partial class GraphExplorerView 
     {
-        
-
         private PathGeometry _edGeo;
         private VertexControl _edVertex;
         private EdgeControl _edEdge;
         private DataVertex _edFakeDV;
 
         GraphExplorerStatus _status;
+
+        //another constructor for inject IGraphDataService to graph explorer
+        public GraphExplorerView(IGraphDataService graphDataService)
+            : this()
+        {
+            //load data if graphDataService is provided
+            if (graphDataService != null)
+                this.Loaded += (s, e) =>
+                {
+                    GraphDataService = graphDataService;
+                };
+        }
+
+        public GraphExplorerView()
+        {
+            InitializeComponent();
+           
+            ApplySetting(zoomctrl, Area.LogicCore);
+            ApplySetting(zoomctrlNav, AreaNav.LogicCore, true);
+
+            Area.VertexDoubleClick += Area_VertexDoubleClick;
+            AreaNav.VertexDoubleClick += AreaNav_VertexDoubleClick;
+
+            Area.VertexSelected += Area_VertexSelected;
+            Area.EdgeSelected += Area_EdgeSelected;
+
+            AreaNav.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrlNav);
+            Area.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrl);
+
+            this.Loaded += (s, e) =>
+            {
+                var defaultSvc = GraphExplorerSection.Current.DefaultGraphDataService;
+
+                switch (defaultSvc)
+                {
+                    case GraphDataServiceEnum.Csv:
+                        GraphDataService = new CsvGraphDataService();
+                        break;
+                    case GraphDataServiceEnum.Factory:
+                        break;
+                    default:
+                        break;
+                }
+            };
+
+            ServiceLocator.Default.RegisterInstance(this.GetType(), this);
+        }
 
         public GraphExplorerStatus Status
         {
@@ -52,44 +98,7 @@
             get { return tbtnCanEdit.IsChecked.HasValue && tbtnCanEdit.IsChecked.Value; }
         }
 
-        GraphExplorerViewmodel _viewmodel;
-
-        public GraphExplorerView()
-        {
-            InitializeComponent();
-
-            ApplySetting(zoomctrl, Area.LogicCore);
-            ApplySetting(zoomctrlNav, AreaNav.LogicCore, true);
-
-            Area.VertexDoubleClick += Area_VertexDoubleClick;
-            AreaNav.VertexDoubleClick += AreaNav_VertexDoubleClick;
-
-            Area.VertexSelected += Area_VertexSelected;
-            Area.EdgeSelected += Area_EdgeSelected;
-
-            AreaNav.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrlNav);
-            Area.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrl);
-
-            _viewmodel = new GraphExplorerViewmodel();
-            _viewmodel.View = this;
-            DataContext = _viewmodel;
-
-            this.Loaded += (s, e) =>
-            {
-                var defaultSvc = GraphExplorerSection.Current.DefaultGraphDataService;
-
-                switch (defaultSvc)
-                {
-                    case GraphDataServiceEnum.Csv:
-                        GraphDataService = new CsvGraphDataService();
-                        break;
-                    case GraphDataServiceEnum.Factory:
-                        break;
-                    default:
-                        break;
-                }
-            };
-        }
+        
 
         void Area_RelayoutFinished(object sender, EventArgs e, ZoomControl zoom)
         {
@@ -97,7 +106,7 @@
 
             FitToBounds(null, zoom);
 
-            _viewmodel.SetVertexPropertiesBinding();
+            ((GraphExplorerViewModel)ViewModel).SetVertexPropertiesBinding();
         }
 
         private void ShowAllEdgesLabels(GraphArea area, bool show)
@@ -133,7 +142,7 @@
                     //do nothing
                 });
 
-                _viewmodel.Do(op);
+                ((GraphExplorerViewModel)ViewModel).Do(op);
             }
             //throw new NotImplementedException();
         }
@@ -163,11 +172,11 @@
                         Area.LogicCore.Graph.AddEdge(dedge);
                         _edEdge.SetEdgePathManually(_edGeo);
                         _status = GraphExplorerStatus.CreateLinkSelectTarget;
-                        _viewmodel.PostStatusMessage("Select Target Node");
+                        ((GraphExplorerViewModel)ViewModel).PostStatusMessage("Select Target Node");
                     }
                     else if (_edVertex != args.VertexControl && _status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
                     {
-                        _viewmodel.CreateEdge((_edVertex.Vertex as DataVertex).Id, (args.VertexControl.Vertex as DataVertex).Id);
+                        ((GraphExplorerViewModel)ViewModel).CreateEdge((_edVertex.Vertex as DataVertex).Id, (args.VertexControl.Vertex as DataVertex).Id);
 
                         ClearEdgeDrawing();
 
@@ -215,21 +224,11 @@
                     Area.RelayoutGraph(true);
                 });
 
-                _viewmodel.Do(op);
+                ((GraphExplorerViewModel)ViewModel).Do(op);
             }
         }
 
-        //another constructor for inject IGraphDataService to graph explorer
-        public GraphExplorerView(IGraphDataService graphDataService)
-            : this()
-        {
-            //load data if graphDataService is provided
-            if (graphDataService != null)
-                this.Loaded += (s, e) =>
-                {
-                    GraphDataService = graphDataService;
-                };
-        }
+        
 
         void AreaNav_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
         {
@@ -396,7 +395,7 @@
 
             HookVertexEvent(Area);
 
-            _viewmodel.OnVertexLoaded(Vertexes);
+            ((GraphExplorerViewModel)ViewModel).OnVertexLoaded(Vertexes);
             //FitToBounds(Area.Dispatcher, zoomctrl);
         }
 
@@ -555,7 +554,7 @@
                     tbtnCanDrag.IsChecked = false;
                     tbtnIsFilterApplied.IsChecked = false;
                     InnerRefreshGraph();
-                    _viewmodel.PostStatusMessage("Graph Refreshed");
+                    ((GraphExplorerViewModel)ViewModel).PostStatusMessage("Graph Refreshed");
                 }
                 else
                 {
@@ -819,7 +818,7 @@
                 _selectedVertices.Clear();
 
                 //clear dirty flag
-                _viewmodel.Commit();
+                ((GraphExplorerViewModel)ViewModel).Commit();
 
                 tbtnCanEdit.IsChecked = false;
 
@@ -843,12 +842,12 @@
                 if (tbnNewEdge.IsChecked.HasValue && tbnNewEdge.IsChecked.Value)
                 {
                     _status = _status | GraphExplorerStatus.CreateLinkSelectSource;
-                    _viewmodel.PostStatusMessage("Select Source Node");
+                    ((GraphExplorerViewModel)ViewModel).PostStatusMessage("Select Source Node");
                 }
                 else
                 {
                     ClearEdgeDrawing();
-                    _viewmodel.PostStatusMessage("Exit Create Link");
+                    ((GraphExplorerViewModel)ViewModel).PostStatusMessage("Exit Create Link");
                 }
             }
             catch (Exception ex)
@@ -871,7 +870,7 @@
 
         private void CreateVertex(GraphArea area, ZoomControl zoom, DataVertex data = null, double x = double.MinValue, double y = double.MinValue)
         {
-            _viewmodel.Do(new CreateVertexOperation(Area, data, x, y,
+            ((GraphExplorerViewModel)ViewModel).Do(new CreateVertexOperation(Area, data, x, y,
                 (v, vc) =>
                 {
                     _selectedVertices.Add(v.Id);
@@ -914,7 +913,7 @@
             {
                 var vc = Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
-                _viewmodel.Do(new VertexPositionChangeOperation(Area, vc, e.OffsetX, e.OffsetY, vertex));
+                ((GraphExplorerViewModel)ViewModel).Do(new VertexPositionChangeOperation(Area, vc, e.OffsetX, e.OffsetY, vertex));
             }
         }
 

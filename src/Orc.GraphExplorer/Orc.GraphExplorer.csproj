@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="DomainModel\FilterEntity.cs" />
     <Compile Include="DomainModel\GraphLogic.cs" />
+    <Compile Include="Models\FilePicker.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Operations\EditValuePropertyOperation.cs" />
     <Compile Include="Operations\EditKeyPropertyOperation.cs" />
@@ -164,11 +165,11 @@
     <Compile Include="Views\GraphExplorerView.xaml.cs">
       <DependentUpon>GraphExplorerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\GraphExplorerViewmodel.cs" />
+    <Compile Include="ViewModels\GraphExplorerViewModel.cs" />
     <Compile Include="Interfaces\IDataProvider.cs" />
     <Compile Include="Services\Interfaces\IGraphDataService.cs" />
     <Compile Include="Operations\Interfaces\IOperation.cs" />
-    <Compile Include="Models\PropertyViewmodel.cs" />
+    <Compile Include="ViewModels\PropertyViewmodel.cs" />
     <Compile Include="DomainModel\Result.cs" />
     <Compile Include="NavigateHistoryItem.cs" />
     <Compile Include="Operations\DeleteVertexOperation.cs" />

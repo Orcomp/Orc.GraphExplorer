@@ -11,6 +11,7 @@
     using Models;
     using Operations;
     using Operations.Interfaces;
+    using ViewModels;
     using YAXLib;
 
     public class DataVertex : VertexBase, INotifyPropertyChanged, IDisposable, IObservable<IOperation>, IObserver<IOperation>

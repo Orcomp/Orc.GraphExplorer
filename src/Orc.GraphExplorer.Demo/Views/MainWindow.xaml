@@ -1,13 +1,16 @@
-﻿<Window x:Class="Orc.GraphExplorer.Demo.MainWindow"
+﻿<catel:UserControl x:Class="Orc.GraphExplorer.Demo.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ge="clr-namespace:Orc.GraphExplorer;assembly=Orc.GraphExplorer"
+        xmlns:catel="http://catel.codeplex.com"
         xmlns:views="clr-namespace:Orc.GraphExplorer.Views;assembly=Orc.GraphExplorer"
-        Title="Graph Explorer Demo" Height="600" Width="780">
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+
+    
     <Grid>
+        
         <!--<Grid.Effect>
             <DropShadowEffect Color="Gray" Direction="315" Opacity=".5" RenderingBias="Performance" ShadowDepth="6"/>
         </Grid.Effect>-->
-        <views:GraphExplorerView/>
+        <views:GraphExplorerView />
     </Grid>
-</Window>
+</catel:UserControl>

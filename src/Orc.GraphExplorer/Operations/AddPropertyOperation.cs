@@ -2,6 +2,7 @@
 {
     using DomainModel;
     using Models;
+    using ViewModels;
 
     public class AddPropertyOperation : PropertyOperation
     {

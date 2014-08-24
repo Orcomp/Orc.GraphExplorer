@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-
-namespace Orc.GraphExplorer.Models
+﻿namespace Orc.GraphExplorer.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
     using Catel.Data;
     using DomainModel;
     using Operations;

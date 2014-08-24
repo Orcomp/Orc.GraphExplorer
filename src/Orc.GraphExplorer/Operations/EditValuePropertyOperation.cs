@@ -2,6 +2,7 @@
 {
     using System;
     using Models;
+    using ViewModels;
 
     public class EditValuePropertyOperation : PropertyOperation
     {

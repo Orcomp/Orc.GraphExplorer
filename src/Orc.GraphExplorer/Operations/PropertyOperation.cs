@@ -4,6 +4,7 @@
     using Enums;
     using Models;
     using Operations.Interfaces;
+    using ViewModels;
 
     public abstract class PropertyOperation : IOperation
     {
