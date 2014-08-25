@@ -1,0 +1,97 @@
+﻿<catel:UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:catel="http://catel.codeplex.com"
+             xmlns:controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
+             xmlns:toolkit="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+             xmlns:views="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
+             xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
+             xmlns:ViewModels="clr-namespace:Orc.GraphExplorer.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             x:Class="Orc.GraphExplorer.Views.ToolBoxView"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <catel:UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Style\ThemedGraphXTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
+            <converters:DoubleToLog10Converter x:Key="log10Converter" />
+            <converters:EqualityToBooleanConverter x:Key="equalityConverter" />
+        </ResourceDictionary>
+    </catel:UserControl.Resources>
+
+    <catel:UserControl.DataContext>
+        <ViewModels:ToolBoxViewModel/>
+    </catel:UserControl.DataContext>
+
+    <Grid>
+        <Border Margin="0" Height="32" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
+            <DockPanel>
+                <Button DockPanel.Dock="Left" ToolTip="Save Layout To Xml"  Height="28" Width="28"
+					Style="{StaticResource SaveButtonStyle}" Command="{Binding SaveToXml}" />
+                <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Load Layout From Xml"
+                        Style="{StaticResource LoadButtonStyle}" Command="{Binding LoadFromXml}"/>
+                <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Save As Image"
+                        Style="{StaticResource ExportButtonStyle}" Command="{Binding SaveAsImage}"/>
+                <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding CanDrag,Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" />
+                <ToggleButton DockPanel.Dock="Left" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing,Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Edit Mode"/>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"
+                            Visibility="{Binding IsInEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ToggleButton Height="28" DockPanel.Dock="Left" IsChecked="{Binding IsDrawingEdge}" ToolTip="Create Link" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" />
+                    <Button Height="28" DockPanel.Dock="Left" ToolTip="Drag To Treate Node" Name="tbnNewNode" Width="28" Style="{StaticResource VertexButtonStyle}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                <catel:EventToCommand Command="{Binding StartDrag}" DisableAssociatedObjectOnCannotExecute="False" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <Button Height="28" DockPanel.Dock="Left" ToolTip="Undo"
+                            Command="{Binding UndoCommand}" Width="28" Style="{StaticResource UndoButtonStyle}"/>
+                    <Button Height="28" DockPanel.Dock="Left" ToolTip="Redo"
+                            Command="{Binding RedoCommand}" Width="28" Style="{StaticResource RedoButtonStyle}"/>
+                    <Button Height="28" DockPanel.Dock="Left" ToolTip="Save Changes To Data Source"
+                            Command="{Binding SaveChanges}" Width="28" Style="{StaticResource SaveButtonStyle}"/>
+                </StackPanel>
+                <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                <Button DockPanel.Dock="Left" Height="28" ToolTip="Refresh Graph" Width="28" Style="{StaticResource RefershButtonStyle}" Command="{Binding Refresh}"/>
+                <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                <Slider DockPanel.Dock="Left" Style="{StaticResource SliderStyle}" Width="100"
+                                            Minimum="{Binding MinZoom,ElementName=zoomctrl,Converter={StaticResource log10Converter}}"
+                                            Maximum="{Binding MaxZoom,ElementName=zoomctrl,Converter={StaticResource log10Converter}}"
+                                            Value="{Binding Zoom,ElementName=zoomctrl,Mode=TwoWay,Converter={StaticResource log10Converter}}"
+                                            VerticalAlignment="Center"
+                                            Ticks="0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2"
+                                            AutoToolTipPlacement="BottomRight"
+                                            AutoToolTipPrecision="1"
+                                            TickPlacement="None"
+                                            TickFrequency="1"
+                                            LargeChange="0.2"
+                                            SmallChange="0.1"
+                                            Orientation="Horizontal" />
+                <!--                                    
+               
+               
+                <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Path=Zoom,ElementName=zoomctrl,StringFormat='{}{0:P0}'}" FontSize="10" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
+                <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Fill}}" />
+                <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode,ElementName=zoomctrl,Converter={StaticResource equalityConverter},ConverterParameter={x:Static controls:ZoomControlModes.Original}}" />
+                <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                <toolkit:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
+                    <StackPanel Height="200" Width="320">
+                        <views:FilterBuilderControl Margin="2,2,6,2" RawCollection="{Binding Entities}" FilteredCollection="{Binding FilteredEntities}"/>
+                        <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes,Mode=TwoWay}">Hide vertexes been filtered</CheckBox>
+                        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
+                    </StackPanel>
+                </toolkit:DropDownButton>
+                <StackPanel Visibility="Collapsed" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBox Width="120" VerticalContentAlignment="Center" Height="22" Text="{Binding FilterText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <ToggleButton Name="tbtnIsFilterApplied" Margin="1" Height="24" Width="24" Style="{StaticResource FilterToggleButtonStyle}" ToolTip="Apply Filter" IsChecked="{Binding IsFilterApplied}"/>
+                </StackPanel>-->
+            </DockPanel>
+        </Border>
+    </Grid>
+</catel:UserControl>

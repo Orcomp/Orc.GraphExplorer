@@ -17,34 +17,6 @@ namespace Orc.GraphExplorer.Models
         {
             
         }
-        //TODO: Move into servise
-        public void Load()
-        {
-            Configuration exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-            GraphExplorerSection section = (GraphExplorerSection)exeConfiguration.GetSection("graphExplorer");
-
-            var config = section.CsvGraphDataServiceConfig;
-
-            RelationshipsText = config.EdgesFilePath;
-
-            PropertiesText = config.VertexesFilePath;
-
-            EnableProperty = config.EnableProperty;
-        }
-
-        public void Save()
-        {
-            var config = GraphExplorerSection.Current.CsvGraphDataServiceConfig;
-
-            config.EdgesFilePath = RelationshipsText;
-
-            config.VertexesFilePath = PropertiesText;
-
-            config.EnableProperty = EnableProperty ?? false;
-
-            GraphExplorerSection.Current.Save();
-        }
 
         /// <summary>
         /// Gets or sets the property value.

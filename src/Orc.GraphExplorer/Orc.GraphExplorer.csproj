@@ -122,6 +122,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ToolBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\VertexFilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -156,8 +160,22 @@
     <Compile Include="Services\CsvGraphDataService.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Events\DataLoadedEventArgs.cs" />
+    <Compile Include="Services\FilePickerService.cs" />
+    <Compile Include="Services\Interfaces\IFilePickerService.cs" />
     <Compile Include="ViewModels\FilePickerViewModel.cs" />
+    <Compile Include="ViewModels\Messages\CanDragChangedMessage.cs" />
+    <Compile Include="ViewModels\Messages\IsDrawingEdgeChangedMessage.cs" />
+    <Compile Include="ViewModels\Messages\IsInEditingChangedMessage.cs" />
+    <Compile Include="ViewModels\Messages\LoadMeaasge.cs" />
+    <Compile Include="ViewModels\Messages\RedoMessage.cs" />
+    <Compile Include="ViewModels\Messages\RefreshMessage.cs" />
+    <Compile Include="ViewModels\Messages\SaveChangesMessage.cs" />
+    <Compile Include="ViewModels\Messages\SaveMessage.cs" />
+    <Compile Include="ViewModels\Messages\Enums\StoredDataType.cs" />
+    <Compile Include="ViewModels\Messages\StartDragMessage.cs" />
+    <Compile Include="ViewModels\Messages\UndoMessage.cs" />
     <Compile Include="ViewModels\SettingViewModel.cs" />
+    <Compile Include="ViewModels\ToolBoxViewModel.cs" />
     <Compile Include="Views\FilePickerView.xaml.cs">
       <DependentUpon>FilePickerView.xaml</DependentUpon>
     </Compile>
@@ -188,6 +206,9 @@
     <Compile Include="DomainModel\GraphArea.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Config\GraphExplorerConfiguration.cs" />
+    <Compile Include="Views\ToolBoxView.xaml.cs">
+      <DependentUpon>ToolBoxView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VertexFilterView.xaml.cs">
       <DependentUpon>VertexFilterView.xaml</DependentUpon>
     </Compile>

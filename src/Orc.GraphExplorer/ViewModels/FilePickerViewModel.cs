@@ -11,12 +11,17 @@ namespace Orc.GraphExplorer.ViewModels
     using System;
     using System.Windows;
     using Catel.Data;
+    using Catel.IoC;
     using Catel.MVVM;
     using Microsoft.Win32;
     using Models;
 
+    using Orc.GraphExplorer.Services.Interfaces;
+
     public class FilePickerViewModel : ViewModelBase
     {
+        private readonly IFilePickerService _filePickerService;
+
         #region Constants
         /// <summary>
         /// Register the FilePicker property so it is known in the class.
@@ -40,8 +45,10 @@ namespace Orc.GraphExplorer.ViewModels
         #endregion
 
         #region Constructors
-        public FilePickerViewModel()
+        public FilePickerViewModel(/*IFilePickerService filePickerService*/)// TODO: doesn't work if pass service as parameter in constructor
         {
+            var filePickerService = ServiceLocator.Default.ResolveType<IFilePickerService>();
+            _filePickerService = filePickerService;            
             ChangeRelationships = new Command(OnChangeRelationshipsExecute);
             ChangeProperties = new Command(OnChangePropertiesExecute, () => EnableProperty ?? false);
             Save = new Command(OnSaveExecute);
@@ -137,7 +144,7 @@ namespace Orc.GraphExplorer.ViewModels
         {
             try
             {
-                FilePicker.Save();
+                _filePickerService.Save(FilePicker);
                 // TODO: this should be changed:
                 //RaiseSettingAppliedEvent(true);
             }
@@ -150,8 +157,7 @@ namespace Orc.GraphExplorer.ViewModels
 
         protected override void Initialize()
         {
-            FilePicker = new FilePicker();
-            FilePicker.Load();
+            FilePicker = _filePickerService.Load();            
             base.Initialize();
         }
         #endregion

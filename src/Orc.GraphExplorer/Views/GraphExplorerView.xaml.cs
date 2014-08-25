@@ -8,48 +8,78 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Threading;
+
     using Catel.IoC;
-    using DomainModel;
-    using Enums;
-    using Events;
+
     using GraphX;
     using GraphX.Controls;
     using GraphX.GraphSharp.Algorithms.OverlapRemoval;
+    using GraphX.Models;
+
     using Microsoft.Win32;
-    using Operations;
+
+    using Orc.GraphExplorer.DomainModel;
+    using Orc.GraphExplorer.Enums;
+    using Orc.GraphExplorer.Events;
+    using Orc.GraphExplorer.Operations;
+    using Orc.GraphExplorer.Services;
+    using Orc.GraphExplorer.Services.Interfaces;
+    using Orc.GraphExplorer.ViewModels;
+
     using QuickGraph;
-    using Services;
-    using Services.Interfaces;
-    using ViewModels;
 
     /// <summary>
     /// Interaction logic for GraphExplorerView.xaml
     /// </summary>
-    public partial class GraphExplorerView 
+    public partial class GraphExplorerView
     {
+        #region Constants
+        public static readonly DependencyProperty VertexesProperty = DependencyProperty.Register("Vertexes", typeof(IEnumerable<DataVertex>), typeof(GraphExplorerView), new PropertyMetadata(new List<DataVertex>(), VertexesChanged));
+
+        public static readonly DependencyProperty EdgesProperty = DependencyProperty.Register("Edges", typeof(IEnumerable<DataEdge>), typeof(GraphExplorerView), new PropertyMetadata(null, EdgesChanged));
+
+        public static readonly DependencyProperty ErrorProperty = DependencyProperty.Register("Error", typeof(Exception), typeof(GraphExplorerView), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty GraphDataServiceProperty = DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorerView), new PropertyMetadata(null, GraphDataServiceChanged));
+
+        public static readonly DependencyProperty SettingProperty = DependencyProperty.Register("Setting", typeof(GraphExplorerSetting), typeof(GraphExplorerView), new PropertyMetadata(null));
+        #endregion
+
+        #region Fields
+        private readonly List<int> _selectedVertices = new List<int>();
+
         private PathGeometry _edGeo;
+
         private VertexControl _edVertex;
+
         private EdgeControl _edEdge;
+
         private DataVertex _edFakeDV;
 
-        GraphExplorerStatus _status;
+        private GraphExplorerStatus _status;
+
+        private Queue<NavigateHistoryItem> _navigateHistory = new Queue<NavigateHistoryItem>();
+
+        private DataVertex _currentNavItem;
+        #endregion
 
         //another constructor for inject IGraphDataService to graph explorer
+
+        #region Constructors
         public GraphExplorerView(IGraphDataService graphDataService)
             : this()
         {
             //load data if graphDataService is provided
             if (graphDataService != null)
-                this.Loaded += (s, e) =>
-                {
-                    GraphDataService = graphDataService;
-                };
+            {
+                Loaded += (s, e) => { GraphDataService = graphDataService; };
+            }
         }
 
         public GraphExplorerView()
         {
             InitializeComponent();
-           
+
             ApplySetting(zoomctrl, Area.LogicCore);
             ApplySetting(zoomctrlNav, AreaNav.LogicCore, true);
 
@@ -62,9 +92,9 @@
             AreaNav.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrlNav);
             Area.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, zoomctrl);
 
-            this.Loaded += (s, e) =>
+            Loaded += (s, e) =>
             {
-                var defaultSvc = GraphExplorerSection.Current.DefaultGraphDataService;
+                GraphDataServiceEnum defaultSvc = GraphExplorerSection.Current.DefaultGraphDataService;
 
                 switch (defaultSvc)
                 {
@@ -78,29 +108,94 @@
                 }
             };
 
-            ServiceLocator.Default.RegisterInstance(this.GetType(), this);
+            ServiceLocator.Default.RegisterInstance(GetType(), this);
         }
+        #endregion
 
+        #region Properties
         public GraphExplorerStatus Status
         {
-            get { return _status; }
-            private set { _status = value; }
+            get
+            {
+                return _status;
+            }
+            private set
+            {
+                _status = value;
+            }
         }
-
-        private List<int> _selectedVertices = new List<int>();
-
-        Queue<NavigateHistoryItem> _navigateHistory = new Queue<NavigateHistoryItem>();
-
-        DataVertex _currentNavItem;
 
         public bool IsInEditMode
         {
-            get { return tbtnCanEdit.IsChecked.HasValue && tbtnCanEdit.IsChecked.Value; }
+            get
+            {
+                return tbtnCanEdit.IsChecked.HasValue && tbtnCanEdit.IsChecked.Value;
+            }
         }
 
-        
+        public IEnumerable<DataVertex> Vertexes
+        {
+            get
+            {
+                return (IEnumerable<DataVertex>)GetValue(VertexesProperty);
+            }
+            set
+            {
+                SetValue(VertexesProperty, value);
+            }
+        }
 
-        void Area_RelayoutFinished(object sender, EventArgs e, ZoomControl zoom)
+        public IEnumerable<DataEdge> Edges
+        {
+            get
+            {
+                return (IEnumerable<DataEdge>)GetValue(EdgesProperty);
+            }
+            set
+            {
+                SetValue(EdgesProperty, value);
+            }
+        }
+
+        public Exception Error
+        {
+            get
+            {
+                return (Exception)GetValue(ErrorProperty);
+            }
+            set
+            {
+                SetValue(ErrorProperty, value);
+            }
+        }
+
+        public IGraphDataService GraphDataService
+        {
+            get
+            {
+                return (IGraphDataService)GetValue(GraphDataServiceProperty);
+            }
+            set
+            {
+                SetValue(GraphDataServiceProperty, value);
+            }
+        }
+
+        public GraphExplorerSetting Setting
+        {
+            get
+            {
+                return (GraphExplorerSetting)GetValue(SettingProperty);
+            }
+            set
+            {
+                SetValue(SettingProperty, value);
+            }
+        }
+        #endregion
+
+        #region Methods
+        private void Area_RelayoutFinished(object sender, EventArgs e, ZoomControl zoom)
         {
             ShowAllEdgesLabels(sender as GraphArea, true);
 
@@ -115,29 +210,28 @@
             area.InvalidateVisual();
         }
 
-        private void Area_EdgeSelected(object sender, GraphX.Models.EdgeSelectedEventArgs args)
+        private void Area_EdgeSelected(object sender, EdgeSelectedEventArgs args)
         {
             if (IsInEditMode)
             {
-                args.EdgeControl.ContextMenu = new System.Windows.Controls.ContextMenu();
-                var miDeleteLink = new System.Windows.Controls.MenuItem() { Header = "Delete Link", Tag = args.EdgeControl };
+                args.EdgeControl.ContextMenu = new ContextMenu();
+                var miDeleteLink = new MenuItem { Header = "Delete Link", Tag = args.EdgeControl };
                 miDeleteLink.Click += miDeleteLink_Click;
                 args.EdgeControl.ContextMenu.Items.Add(miDeleteLink);
             }
         }
 
-        void miDeleteLink_Click(object sender, RoutedEventArgs e)
+        private void miDeleteLink_Click(object sender, RoutedEventArgs e)
         {
-            var eCtrl = (sender as System.Windows.Controls.MenuItem).Tag as EdgeControl;
+            var eCtrl = (sender as MenuItem).Tag as EdgeControl;
             if (eCtrl != null)
             {
                 var edge = eCtrl.Edge as DataEdge;
 
-                var op = new DeleteEdgeOperation(Area, edge.Source, edge.Target, edge, (ec) =>
+                var op = new DeleteEdgeOperation(Area, edge.Source, edge.Target, edge, ec =>
                 {
                     //do nothing
-                },
-                (ec) =>
+                }, ec =>
                 {
                     //do nothing
                 });
@@ -147,7 +241,7 @@
             //throw new NotImplementedException();
         }
 
-        void Area_VertexSelected(object sender, GraphX.Models.VertexSelectedEventArgs args)
+        private void Area_VertexSelected(object sender, VertexSelectedEventArgs args)
         {
             if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
             {
@@ -159,9 +253,9 @@
                     if (_edVertex == null) //select starting vertex
                     {
                         _edVertex = args.VertexControl;
-                        _edFakeDV = new DataVertex() { ID = -666 };
-                        _edGeo = new PathGeometry(new PathFigureCollection() { new PathFigure() { IsClosed = false, StartPoint = _edVertex.GetPosition(), Segments = new PathSegmentCollection() { new PolyLineSegment(new List<Point>() { new Point() }, true) } } });
-                        var pos = zoomctrl.TranslatePoint(args.VertexControl.GetPosition(), Area);
+                        _edFakeDV = new DataVertex { ID = -666 };
+                        _edGeo = new PathGeometry(new PathFigureCollection { new PathFigure { IsClosed = false, StartPoint = _edVertex.GetPosition(), Segments = new PathSegmentCollection { new PolyLineSegment(new List<Point> { new Point() }, true) } } });
+                        Point pos = zoomctrl.TranslatePoint(args.VertexControl.GetPosition(), Area);
                         var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
                         lastseg.Points[lastseg.Points.Count - 1] = pos;
 
@@ -188,17 +282,19 @@
             }
             else if (args.MouseArgs.RightButton == MouseButtonState.Pressed && IsInEditMode)
             {
-                args.VertexControl.ContextMenu = new System.Windows.Controls.ContextMenu();
-                var miDeleteVertex = new System.Windows.Controls.MenuItem() { Header = "Delete", Tag = args.VertexControl };
+                args.VertexControl.ContextMenu = new ContextMenu();
+                var miDeleteVertex = new MenuItem { Header = "Delete", Tag = args.VertexControl };
                 miDeleteVertex.Click += miDeleteVertex_Click;
                 args.VertexControl.ContextMenu.Items.Add(miDeleteVertex);
             }
         }
 
-        void ClearEdgeDrawing()
+        private void ClearEdgeDrawing()
         {
             if (_edFakeDV != null)
+            {
                 Area.LogicCore.Graph.RemoveVertex(_edFakeDV);
+            }
             if (_edEdge != null)
             {
                 var edge = _edEdge.Edge as DataEdge;
@@ -211,44 +307,40 @@
             _edEdge = null;
         }
 
-        void miDeleteVertex_Click(object sender, RoutedEventArgs e)
+        private void miDeleteVertex_Click(object sender, RoutedEventArgs e)
         {
-            var vCtrl = (sender as System.Windows.Controls.MenuItem).Tag as VertexControl;
+            var vCtrl = (sender as MenuItem).Tag as VertexControl;
             if (vCtrl != null)
             {
-                var op = new DeleteVertexOperation(Area, vCtrl.Vertex as DataVertex, (dv, vc) =>
-                {
-
-                }, dv =>
-                {
-                    Area.RelayoutGraph(true);
-                });
+                var op = new DeleteVertexOperation(Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { Area.RelayoutGraph(true); });
 
                 ((GraphExplorerViewModel)ViewModel).Do(op);
             }
         }
 
-        
-
-        void AreaNav_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
+        private void AreaNav_VertexDoubleClick(object sender, VertexSelectedEventArgs args)
         {
             //throw new NotImplementedException();
             var vertex = args.VertexControl.DataContext as DataVertex;
 
             if (vertex == null || vertex == _currentNavItem)
+            {
                 return;
+            }
 
             _currentNavItem = vertex;
 
-            var degree = Area.LogicCore.Graph.Degree(vertex);
+            int degree = Area.LogicCore.Graph.Degree(vertex);
 
             if (degree < 1)
+            {
                 return;
+            }
 
             NavigateTo(vertex, Area.LogicCore.Graph);
         }
 
-        void Area_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
+        private void Area_VertexDoubleClick(object sender, VertexSelectedEventArgs args)
         {
             if (tbtnCanEdit.IsChecked.HasValue && tbtnCanEdit.IsChecked.Value)
             {
@@ -258,27 +350,33 @@
             var vertex = args.VertexControl.DataContext as DataVertex;
 
             if (vertex == null)
+            {
                 return;
+            }
 
             _currentNavItem = vertex;
 
-            var degree = Area.LogicCore.Graph.Degree(vertex);
+            int degree = Area.LogicCore.Graph.Degree(vertex);
 
             if (degree < 1)
+            {
                 return;
+            }
 
             NavigateTo(vertex, Area.LogicCore.Graph);
 
-            if (navTab.Visibility != System.Windows.Visibility.Visible)
-                navTab.Visibility = System.Windows.Visibility.Visible;
+            if (navTab.Visibility != Visibility.Visible)
+            {
+                navTab.Visibility = Visibility.Visible;
+            }
 
             navTab.IsSelected = true;
         }
 
-        private void NavigateTo(DataVertex dataVertex, QuickGraph.BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
+        private void NavigateTo(DataVertex dataVertex, BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
         {
             //overrallGraph.get
-            var historyItem = GetHistoryItem(dataVertex, overrallGraph);
+            NavigateHistoryItem historyItem = GetHistoryItem(dataVertex, overrallGraph);
 
             CreateGraphArea(AreaNav, historyItem.Vertexes, historyItem.Edges, 0);
 
@@ -287,12 +385,11 @@
             //FitToBounds(dispatcher, zoomctrlNav);
         }
 
-        private void FitToBounds(System.Windows.Threading.Dispatcher dispatcher, ZoomControl zoom)
+        private void FitToBounds(Dispatcher dispatcher, ZoomControl zoom)
         {
             if (dispatcher != null)
             {
-                dispatcher.BeginInvoke(new Action(()
-                    =>
+                dispatcher.BeginInvoke(new Action(() =>
                 {
                     zoom.ZoomToFill();
                     zoom.Mode = ZoomControlModes.Custom;
@@ -306,7 +403,7 @@
             }
         }
 
-        private NavigateHistoryItem GetHistoryItem(DataVertex v, QuickGraph.BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
+        private NavigateHistoryItem GetHistoryItem(DataVertex v, BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
         {
             var hisItem = new NavigateHistoryItem();
 
@@ -329,8 +426,8 @@
 
             if (edges.Count > 0)
             {
-                List<DataVertex> vertexes = new List<DataVertex>();
-                foreach (var e in edges)
+                var vertexes = new List<DataVertex>();
+                foreach (DataEdge e in edges)
                 {
                     if (!vertexes.Contains(e.Source))
                     {
@@ -349,19 +446,19 @@
             return hisItem;
         }
 
-        void GetEdges()
+        private void GetEdges()
         {
             GraphDataService.GetEdges(OnEdgeLoaded, OnError);
         }
 
-        void ApplySetting(ZoomControl zoom, IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> logic, bool nav = false)
-        {            
+        private void ApplySetting(ZoomControl zoom, IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> logic, bool nav = false)
+        {
             //Zoombox.SetViewFinderVisibility(zoom, System.Windows.Visibility.Visible);
 
             //This property sets vertex overlap removal algorithm.
             //Such algorithms help to arrange vertices in the layout so no one overlaps each other.
-            logic.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
-            logic.DefaultOverlapRemovalAlgorithmParams = logic.AlgorithmFactory.CreateOverlapRemovalParameters(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
+            logic.DefaultOverlapRemovalAlgorithm = OverlapRemovalAlgorithmTypeEnum.FSA;
+            logic.DefaultOverlapRemovalAlgorithmParams = logic.AlgorithmFactory.CreateOverlapRemovalParameters(OverlapRemovalAlgorithmTypeEnum.FSA);
 
             if (nav)
             {
@@ -376,7 +473,7 @@
             //This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
             //For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
             //Bundling algorithm will try to tie different edges that follows same direction to a single channel making complex graphs more appealing.
-            logic.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.None;
+            logic.DefaultEdgeRoutingAlgorithm = EdgeRoutingAlgorithmTypeEnum.None;
 
             //This property sets async algorithms computation so methods like: Area.RelayoutGraph() and Area.GenerateGraph()
             //will run async with the UI thread. Completion of the specified methods can be catched by corresponding events:
@@ -384,10 +481,10 @@
             logic.AsyncAlgorithmCompute = true;
 
             //area.UseLayoutRounding = false;
-           // area.UseNativeObjectArrange = false;
+            // area.UseNativeObjectArrange = false;
         }
 
-        void OnVertexesLoaded(IEnumerable<DataVertex> vertexes)
+        private void OnVertexesLoaded(IEnumerable<DataVertex> vertexes)
         {
             Vertexes = new List<DataVertex>(vertexes);
 
@@ -408,20 +505,22 @@
             //throw new NotImplementedException();
         }
 
-        void vertex_IsExpandedChanged(object sender, EventArgs e)
+        private void vertex_IsExpandedChanged(object sender, EventArgs e)
         {
             var vertex = (DataVertex)sender;
 
             if (vertex.IsExpanded || vertex.Properties == null || vertex.Properties.Count < 1 || !Area.VertexList.ContainsKey(vertex))
+            {
                 return;
+            }
 
-            var vc = Area.VertexList[vertex];
+            VertexControl vc = Area.VertexList[vertex];
 
             if (tbtnCanDrag.IsChecked.HasValue && tbtnCanDrag.IsChecked.Value)
             {
                 RunCodeInUiThread(() =>
                 {
-                    foreach (var edge in Area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
+                    foreach (IGraphControl edge in Area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
                     {
                         var ec = (EdgeControl)edge;
                         var op = new DeleteEdgeOperation(Area, ec.Source.Vertex as DataVertex, ec.Target.Vertex as DataVertex, ec.Edge as DataEdge);
@@ -440,7 +539,7 @@
             }
         }
 
-        void OnEdgeLoaded(IEnumerable<DataEdge> edges)
+        private void OnEdgeLoaded(IEnumerable<DataEdge> edges)
         {
             Edges = edges;
             GraphDataService.GetVertexes(OnVertexesLoaded, OnError);
@@ -456,67 +555,24 @@
 
             graph.AddEdgeRange(edges);
 
-           ((GraphLogic)area.LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
+            ((GraphLogic)area.LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
 
             area.GenerateGraph(graph, true, true);
         }
 
-        void OnError(Exception ex)
+        private void OnError(Exception ex)
         {
-
         }
 
-        public IEnumerable<DataVertex> Vertexes
+        private static void VertexesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get { return (IEnumerable<DataVertex>)GetValue(VertexesProperty); }
-            set { SetValue(VertexesProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Vertexes.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty VertexesProperty =
-            DependencyProperty.Register("Vertexes", typeof(IEnumerable<DataVertex>), typeof(GraphExplorerView), new PropertyMetadata(new List<DataVertex>(), VertexesChanged));
-
-        static void VertexesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void EdgesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-
         }
 
-        public IEnumerable<DataEdge> Edges
-        {
-            get { return (IEnumerable<DataEdge>)GetValue(EdgesProperty); }
-            set { SetValue(EdgesProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Edges.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty EdgesProperty =
-            DependencyProperty.Register("Edges", typeof(IEnumerable<DataEdge>), typeof(GraphExplorerView), new PropertyMetadata(null, EdgesChanged));
-
-        static void EdgesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-
-        }
-
-        public Exception Error
-        {
-            get { return (Exception)GetValue(ErrorProperty); }
-            set { SetValue(ErrorProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Error.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ErrorProperty =
-            DependencyProperty.Register("Error", typeof(Exception), typeof(GraphExplorerView), new PropertyMetadata(null));
-
-        public IGraphDataService GraphDataService
-        {
-            get { return (IGraphDataService)GetValue(GraphDataServiceProperty); }
-            set { SetValue(GraphDataServiceProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for GraphDataService.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty GraphDataServiceProperty =
-            DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorerView), new PropertyMetadata(null, GraphDataServiceChanged));
-
-        static void GraphDataServiceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void GraphDataServiceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)
             {
@@ -524,17 +580,7 @@
             }
         }
 
-        public GraphExplorerSetting Setting
-        {
-            get { return (GraphExplorerSetting)GetValue(SettingProperty); }
-            set { SetValue(SettingProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Setting.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SettingProperty =
-            DependencyProperty.Register("Setting", typeof(GraphExplorerSetting), typeof(GraphExplorerView), new PropertyMetadata(null));
-
-        void SettingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void SettingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)
             {
@@ -547,8 +593,7 @@
         {
             if (tbtnCanEdit.IsChecked.HasValue && tbtnCanEdit.IsChecked.Value)
             {
-                if (MessageBox.Show("Refresh view in edit mode will discard changes you made, will you want to continue?",
-                 "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     tbtnCanEdit.IsChecked = false;
                     tbtnCanDrag.IsChecked = false;
@@ -556,16 +601,11 @@
                     InnerRefreshGraph();
                     ((GraphExplorerViewModel)ViewModel).PostStatusMessage("Graph Refreshed");
                 }
-                else
-                {
-                    // Do nothing
-                }
             }
             else
             {
                 InnerRefreshGraph();
             }
-
         }
 
         private void InnerRefreshGraph()
@@ -577,14 +617,13 @@
         {
             AreaNav.ClearLayout();
 
-            navTab.Visibility = System.Windows.Visibility.Hidden;
+            navTab.Visibility = Visibility.Hidden;
 
             overrallTab.IsSelected = true;
         }
 
         private void btnRefresh_Click_1(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -594,7 +633,7 @@
 
             try
             {
-                var dlg = new SaveFileDialog() { Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml" };
+                var dlg = new SaveFileDialog { Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml" };
                 if (dlg.ShowDialog() == true)
                 {
                     //gg_Area.SaveVisual(dlg.FileName);
@@ -612,7 +651,7 @@
             //select overrall tab
             overrallTab.IsSelected = true;
 
-            var dlg = new OpenFileDialog() { Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml" };
+            var dlg = new OpenFileDialog { Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml" };
             if (dlg.ShowDialog() == true)
             {
                 try
@@ -622,7 +661,7 @@
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("Failed to load layout file:\n {0}", ex.ToString()));
+                    MessageBox.Show(string.Format("Failed to load layout file:\n {0}", ex));
                 }
             }
         }
@@ -643,7 +682,7 @@
             {
                 AreaNav.ClearLayout();
 
-                navTab.Visibility = System.Windows.Visibility.Hidden;
+                navTab.Visibility = Visibility.Hidden;
 
                 overrallTab.IsSelected = true;
 
@@ -654,12 +693,12 @@
                 tbtnIsFilterApplied.IsChecked = false;
             }
 
-            ((SettingView)sender).Visibility = System.Windows.Visibility.Collapsed;
+            ((SettingView)sender).Visibility = Visibility.Collapsed;
         }
 
         private void btnSetting_Click(object sender, RoutedEventArgs e)
         {
-            settingView.Visibility = System.Windows.Visibility.Visible;
+            settingView.Visibility = Visibility.Visible;
         }
 
         private void tbtnCanDrag_Click(object sender, RoutedEventArgs e)
@@ -675,13 +714,13 @@
             }
         }
 
-        void Value_PositionChanged(object sender, GraphX.Models.VertexPositionEventArgs args)
+        private void Value_PositionChanged(object sender, VertexPositionEventArgs args)
         {
-            var zoomtop = zoomctrl.TranslatePoint(new Point(0, 0), Area);
+            Point zoomtop = zoomctrl.TranslatePoint(new Point(0, 0), Area);
 
             var zoombottom = new Point(Area.ActualWidth, Area.ActualHeight);
 
-            var pos = args.OffsetPosition;
+            Point pos = args.OffsetPosition;
 
             if (pos.X < zoomtop.X)
             {
@@ -693,16 +732,23 @@
                 GraphAreaBase.SetY(args.VertexControl, zoomtop.Y + 1, true);
             }
 
-            if (pos.X > zoombottom.X) { GraphAreaBase.SetX(args.VertexControl, zoombottom.X, true); }
-            if (pos.Y > zoombottom.Y) { GraphAreaBase.SetY(args.VertexControl, zoombottom.Y, true); }
-
+            if (pos.X > zoombottom.X)
+            {
+                GraphAreaBase.SetX(args.VertexControl, zoombottom.X, true);
+            }
+            if (pos.Y > zoombottom.Y)
+            {
+                GraphAreaBase.SetY(args.VertexControl, zoombottom.Y, true);
+            }
         }
 
         private void SelectVertex(VertexControl vc)
         {
             var v = vc.Vertex as DataVertex;
             if (v == null)
+            {
                 return;
+            }
 
             if (_selectedVertices.Contains(v.Id))
             {
@@ -732,7 +778,9 @@
         private void UpdateIsInEditMode(IDictionary<DataVertex, VertexControl> dictionary, bool isInEditMode)
         {
             if (dictionary == null)
+            {
                 return;
+            }
 
             foreach (var v in dictionary)
             {
@@ -750,7 +798,7 @@
             //throw new NotImplementedException();
         }
 
-        void Key_ChangedCommited(object sender, EventArgs e)
+        private void Key_ChangedCommited(object sender, EventArgs e)
         {
             var data = (DataVertex)sender;
 
@@ -767,7 +815,9 @@
         private void UpdateHighlightBehaviour(bool clearSelectedVertices)
         {
             if (clearSelectedVertices)
+            {
                 _selectedVertices.Clear();
+            }
 
             if (tbtnCanEdit.IsChecked.Value)
             {
@@ -801,18 +851,20 @@
         {
             try
             {
-
-
                 GraphDataService.UpdateEdges(Area.LogicCore.Graph.Edges, (result, error) =>
                 {
                     if (!result && error != null)
+                    {
                         ShowAlertMessage(error.Message);
+                    }
                 });
 
                 GraphDataService.UpdateVertexes(Area.LogicCore.Graph.Vertices, (result, error) =>
                 {
                     if (!result && error != null)
+                    {
                         ShowAlertMessage(error.Message);
+                    }
                 });
 
                 _selectedVertices.Clear();
@@ -829,7 +881,8 @@
             }
             catch (Exception ex)
             {
-                ShowAlertMessage(ex.Message); ;
+                ShowAlertMessage(ex.Message);
+                ;
             }
         }
 
@@ -870,48 +923,46 @@
 
         private void CreateVertex(GraphArea area, ZoomControl zoom, DataVertex data = null, double x = double.MinValue, double y = double.MinValue)
         {
-            ((GraphExplorerViewModel)ViewModel).Do(new CreateVertexOperation(Area, data, x, y,
-                (v, vc) =>
+            ((GraphExplorerViewModel)ViewModel).Do(new CreateVertexOperation(Area, data, x, y, (v, vc) =>
+            {
+                _selectedVertices.Add(v.Id);
+
+                //area.RelayoutGraph(true);
+
+                UpdateHighlightBehaviour(false);
+
+                foreach (int selectedV in _selectedVertices)
                 {
-                    _selectedVertices.Add(v.Id);
+                    VertexControl localvc = area.VertexList.Where(pair => pair.Key.Id == selectedV).Select(pair => pair.Value).FirstOrDefault();
+                    HighlightBehaviour.SetHighlighted(localvc, true);
+                }
 
-                    //area.RelayoutGraph(true);
-
-                    UpdateHighlightBehaviour(false);
-
-                    foreach (var selectedV in _selectedVertices)
-                    {
-                        var localvc = area.VertexList.Where(pair => pair.Key.Id == selectedV).Select(pair => pair.Value).FirstOrDefault();
-                        HighlightBehaviour.SetHighlighted(localvc, true);
-                    }
-
-                    if (tbtnCanDrag.IsChecked.Value)
-                    {
-                        DragBehaviour.SetIsDragEnabled(vc, true);
-                    }
-                    else
-                    {
-                        DragBehaviour.SetIsDragEnabled(vc, false);
-                    }
-
-                    v.IsEditing = true;
-                    v.OnPositionChanged -= v_OnPositionChanged;
-                    v.OnPositionChanged += v_OnPositionChanged;
-                },
-                (v) =>
+                if (tbtnCanDrag.IsChecked.Value)
                 {
-                    _selectedVertices.Remove(v.Id);
-                    //on vertex recreated
-                }));
+                    DragBehaviour.SetIsDragEnabled(vc, true);
+                }
+                else
+                {
+                    DragBehaviour.SetIsDragEnabled(vc, false);
+                }
+
+                v.IsEditing = true;
+                v.OnPositionChanged -= v_OnPositionChanged;
+                v.OnPositionChanged += v_OnPositionChanged;
+            }, v =>
+            {
+                _selectedVertices.Remove(v.Id);
+                //on vertex recreated
+            }));
             //FitToBounds(area.Dispatcher, zoom);
         }
 
-        void v_OnPositionChanged(object sender, DataVertex.VertexPositionChangedEventArgs e)
+        private void v_OnPositionChanged(object sender, DataVertex.VertexPositionChangedEventArgs e)
         {
             var vertex = (DataVertex)sender;
             if (Area.VertexList.Keys.Any(v => v.Id == vertex.Id))
             {
-                var vc = Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
+                VertexControl vc = Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
                 ((GraphExplorerViewModel)ViewModel).Do(new VertexPositionChangeOperation(Area, vc, e.OffsetX, e.OffsetY, vertex));
             }
@@ -920,7 +971,7 @@
         private void SafeRemoveVertex(VertexControl vc, GraphArea area, GraphLogic logic, bool removeFromSelected = false)
         {
             //remove all adjacent edges
-            foreach (var item in area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
+            foreach (IGraphControl item in area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
             {
                 var ec = item as EdgeControl;
                 logic.Graph.RemoveEdge(ec.Edge as DataEdge);
@@ -932,10 +983,12 @@
             area.RemoveVertex(v);
 
             if (removeFromSelected && v != null && _selectedVertices.Contains(v.Id))
+            {
                 _selectedVertices.Remove(v.Id);
+            }
         }
 
-        void ShowAlertMessage(string message)
+        private void ShowAlertMessage(string message)
         {
             MessageBox.Show(message);
         }
@@ -943,7 +996,9 @@
         public static void RunCodeInUiThread<T>(Action<T> action, T parameter, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
         {
             if (action == null)
+            {
                 return;
+            }
 
             if (dispatcher != null)
             {
@@ -958,10 +1013,14 @@
         public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Loaded)
         {
             if (action == null)
+            {
                 return;
+            }
 
             if (dispatcher == null && Application.Current != null)
+            {
                 dispatcher = Application.Current.Dispatcher;
+            }
 
             if (dispatcher != null)
             {
@@ -985,11 +1044,11 @@
             if (e.Data.GetDataPresent(typeof(object)))
             {
                 //how to get dragged data by its type
-                var myobject = e.Data.GetData(typeof(object)) as object;
+                object myobject = e.Data.GetData(typeof(object));
 
-                var pos = zoomctrl.TranslatePoint(e.GetPosition(zoomctrl), Area);
+                Point pos = zoomctrl.TranslatePoint(e.GetPosition(zoomctrl), Area);
 
-                var data = DataVertex.Create();
+                DataVertex data = DataVertex.Create();
 
                 CreateVertex(Area, zoomctrl, data, pos.X, pos.Y);
             }
@@ -1000,7 +1059,7 @@
         {
             if (_status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && _edGeo != null && _edEdge != null && _edVertex != null)
             {
-                var pos = zoomctrl.TranslatePoint(e.GetPosition(zoomctrl), Area);
+                Point pos = zoomctrl.TranslatePoint(e.GetPosition(zoomctrl), Area);
                 var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
                 lastseg.Points[lastseg.Points.Count - 1] = pos;
                 _edEdge.SetEdgePathManually(_edGeo);
@@ -1014,5 +1073,6 @@
                 e.Effects = DragDropEffects.None;
             }
         }
+        #endregion
     }
 }

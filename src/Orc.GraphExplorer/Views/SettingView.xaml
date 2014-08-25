@@ -17,20 +17,20 @@
         </ResourceDictionary>
     </catel:UserControl.Resources>
     <Grid>
-        <Border Name="maskLayer" Background="Black" Opacity=".8"/>
+        <Border Background="Black" Opacity=".8"/>
         <Border  SnapsToDevicePixels="true" BorderBrush="{StaticResource NormalBorderBrush}" BorderThickness="1">
             <Grid  SnapsToDevicePixels="true" Height="300" Width="500" Background="{StaticResource RootBackGround}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="28"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Border Name="headerBackground" />
+                <Border />
                 <TextBlock Foreground="{StaticResource AccentBrush}" FontSize="16" VerticalAlignment="Center" Margin="6,0" FontWeight="Bold" HorizontalAlignment="Left" Text="Settings"/>
-                <Button Foreground="{StaticResource AccentBrush}" Style="{StaticResource CloseButtonStyle}" HorizontalAlignment="Right" Name="btnClose" Click="btnClose_Click" Height="22" Width="22"/>
+                <Button Foreground="{StaticResource AccentBrush}" Style="{StaticResource CloseButtonStyle}" HorizontalAlignment="Right"
+                        Click="btnClose_Click" Height="22" Width="22"/>
                 <TabControl Grid.Row="1">
                     <TabItem Header="Config File Location" FontWeight="Bold">
                         <views:FilePickerView />
-                        <!--<views:FilePickerView SettingApplied="FileLocationSaved_Loaded"/>-->
                     </TabItem>
                 </TabControl>
             </Grid>
