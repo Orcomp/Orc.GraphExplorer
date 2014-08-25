@@ -10,7 +10,7 @@
              xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
              xmlns:ViewModels="clr-namespace:Orc.GraphExplorer.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             x:Class="Orc.GraphExplorer.Views.ToolBoxView"
+             x:Class="Orc.GraphExplorer.Views.ToolBarView"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <catel:UserControl.Resources>
@@ -25,7 +25,7 @@
     </catel:UserControl.Resources>
 
     <catel:UserControl.DataContext>
-        <ViewModels:ToolBoxViewModel/>
+        <ViewModels:ToolBarViewModel/>
     </catel:UserControl.DataContext>
 
     <Grid>

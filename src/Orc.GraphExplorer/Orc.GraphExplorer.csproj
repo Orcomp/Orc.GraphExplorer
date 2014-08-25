@@ -122,7 +122,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ToolBoxView.xaml">
+    <Page Include="Views\ToolBarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -175,7 +175,7 @@
     <Compile Include="ViewModels\Messages\StartDragMessage.cs" />
     <Compile Include="ViewModels\Messages\UndoMessage.cs" />
     <Compile Include="ViewModels\SettingViewModel.cs" />
-    <Compile Include="ViewModels\ToolBoxViewModel.cs" />
+    <Compile Include="ViewModels\ToolBarViewModel.cs" />
     <Compile Include="Views\FilePickerView.xaml.cs">
       <DependentUpon>FilePickerView.xaml</DependentUpon>
     </Compile>
@@ -206,8 +206,8 @@
     <Compile Include="DomainModel\GraphArea.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Config\GraphExplorerConfiguration.cs" />
-    <Compile Include="Views\ToolBoxView.xaml.cs">
-      <DependentUpon>ToolBoxView.xaml</DependentUpon>
+    <Compile Include="Views\ToolBarView.xaml.cs">
+      <DependentUpon>ToolBarView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VertexFilterView.xaml.cs">
       <DependentUpon>VertexFilterView.xaml</DependentUpon>

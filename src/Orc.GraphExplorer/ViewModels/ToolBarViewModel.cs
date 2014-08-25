@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="ToolBoxViewModel.cs" company="Orcomp development team">
+// <copyright file="ToolBarViewModel.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -21,9 +21,9 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.ViewModels.Messages.Enums;
     using Orc.GraphExplorer.Views;
 
-    public class ToolBoxViewModel : ViewModelBase
+    public class ToolBarViewModel : ViewModelBase
     {
-        public ToolBoxViewModel()
+        public ToolBarViewModel()
         {
             // var mediator = ServiceLocator.Default.ResolveType<IMessageMediator>();
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -95,7 +95,7 @@ namespace Orc.GraphExplorer.ViewModels
                 throw new NotImplementedException();
             }
 
-            var view = (ToolBoxView) views.First();
+            var view = (ToolBarView) views.First();
 
             StartDragMessage.SendWith(view.tbnNewNode);
         }
@@ -167,7 +167,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the CanDrag property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData CanDragProperty = RegisterProperty("CanDrag", typeof (bool), false, (sender, e) => ((ToolBoxViewModel) sender).OnCanDragChanged());
+        public static readonly PropertyData CanDragProperty = RegisterProperty("CanDrag", typeof (bool), false, (sender, e) => ((ToolBarViewModel) sender).OnCanDragChanged());
 
         /// <summary>
         /// Called when the CanDrag property has changed.
@@ -189,7 +189,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsInEditing property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof (bool), false, (sender, e) => ((ToolBoxViewModel) sender).OnIsInEditingChanged());
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof (bool), false, (sender, e) => ((ToolBarViewModel) sender).OnIsInEditingChanged());
 
         /// <summary>
         /// Called when the IsInEditing property has changed.
@@ -211,7 +211,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsDrawingEdge property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsDrawingEdgeProperty = RegisterProperty("IsDrawingEdge", typeof (bool), false, (sender, e) => ((ToolBoxViewModel) sender).OnIsDrawingEdgeChanged());
+        public static readonly PropertyData IsDrawingEdgeProperty = RegisterProperty("IsDrawingEdge", typeof (bool), false, (sender, e) => ((ToolBarViewModel) sender).OnIsDrawingEdgeChanged());
 
         /// <summary>
         /// Called when the IsDrawingEdge property has changed.

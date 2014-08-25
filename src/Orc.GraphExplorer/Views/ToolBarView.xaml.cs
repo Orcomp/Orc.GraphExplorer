@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Orc.GraphExplorer.Views
 {
     /// <summary>
-    /// Логика взаимодействия для ToolBoxView.xaml
+    /// Логика взаимодействия для ToolBarView.xaml
     /// </summary>
-    public partial class ToolBoxView 
+    public partial class ToolBarView 
     {
-        public ToolBoxView()
+        public ToolBarView()
         {
             InitializeComponent();
         }

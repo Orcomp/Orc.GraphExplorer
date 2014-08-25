@@ -49,7 +49,7 @@
                     </Grid.RowDefinitions>
                     <Border Margin="0" Height="32" Background="{StaticResource ScrollViewBackground}" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
                         <DockPanel>
-                            <views1:ToolBoxView/>
+                            <views1:ToolBarView/>
                             <Button DockPanel.Dock="Left" ToolTip="Save Layout To Xml"  Height="28" Width="28"
 					Style="{StaticResource SaveButtonStyle}" Command="{Binding SaveToXml}"/>
                             <Button DockPanel.Dock="Left" Visibility="Collapsed" ToolTip="Save Layout To Xml"  Height="28" Width="28" Name="btnSave" Style="{StaticResource SaveButtonStyle}" Click="btnSave_Click"/>
