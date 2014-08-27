@@ -362,34 +362,36 @@ namespace Orc.GraphExplorer
         {
             //Zoombox.SetViewFinderVisibility(zoom, System.Windows.Visibility.Visible);
 
-            //This property sets vertex overlap removal algorithm.
-            //Such algorithms help to arrange vertices in the layout so no one overlaps each other.
-            area.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
-            area.DefaultOverlapRemovalAlgorithmParams = Area.AlgorithmFactory.CreateOverlapRemovalParameters
-(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
+            // TODO: GHK: how to fix?
 
-            if (nav)
-            {
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 150;
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 100;
-            }
-            else
-            {
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
-                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
-            }
-            //This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
-            //For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
-            //Bundling algorithm will try to tie different edges that follows same direction to a single channel making complex graphs more appealing.
-            area.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.None;
+//            //This property sets vertex overlap removal algorithm.
+//            //Such algorithms help to arrange vertices in the layout so no one overlaps each other.
+//            area.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
+//            area.DefaultOverlapRemovalAlgorithmParams = Area.AlgorithmFactory.CreateOverlapRemovalParameters
+//(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
 
-            //This property sets async algorithms computation so methods like: Area.RelayoutGraph() and Area.GenerateGraph()
-            //will run async with the UI thread. Completion of the specified methods can be catched by corresponding events:
-            //Area.RelayoutFinished and Area.GenerateGraphFinished.
-            area.AsyncAlgorithmCompute = true;
+//            if (nav)
+//            {
+//                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 150;
+//                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 100;
+//            }
+//            else
+//            {
+//                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
+//                ((OverlapRemovalParameters)area.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
+//            }
+//            //This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
+//            //For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
+//            //Bundling algorithm will try to tie different edges that follows same direction to a single channel making complex graphs more appealing.
+//            area.DefaultEdgeRoutingAlgorithm = GraphX.EdgeRoutingAlgorithmTypeEnum.None;
 
-            //area.UseLayoutRounding = false;
-            area.UseNativeObjectArrange = false;
+//            //This property sets async algorithms computation so methods like: Area.RelayoutGraph() and Area.GenerateGraph()
+//            //will run async with the UI thread. Completion of the specified methods can be catched by corresponding events:
+//            //Area.RelayoutFinished and Area.GenerateGraphFinished.
+//            area.AsyncAlgorithmCompute = true;
+
+//            //area.UseLayoutRounding = false;
+//            area.UseNativeObjectArrange = false;
         }
 
         void OnVertexesLoaded(IEnumerable<DataVertex> vertexes)
@@ -461,7 +463,8 @@ namespace Orc.GraphExplorer
 
             graph.AddEdgeRange(edges);
 
-            area.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
+            // TODO: GHK: how to fix?
+            //area.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, QuickGraph.BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
 
             area.GenerateGraph(graph, true, true);
         }
