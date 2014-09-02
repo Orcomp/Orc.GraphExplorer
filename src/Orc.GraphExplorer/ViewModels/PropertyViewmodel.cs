@@ -7,7 +7,7 @@
     using Operations;
     using Operations.Interfaces;
 
-    public class PropertyViewmodel : ObservableObject, IObservable<IOperation>,IDisposable
+    public class PropertyViewModel : ObservableObject, IObservable<IOperation>,IDisposable
     {
         #region Properties
 
@@ -102,7 +102,7 @@
 
         #endregion
 
-        public PropertyViewmodel(int index,string key, string value, DataVertex data)
+        public PropertyViewModel(int index,string key, string value, DataVertex data)
         {
             _index = index;
             _originalKey = _key = key;
@@ -134,9 +134,9 @@
 
         public class PropertyObserverable : IDisposable
         {
-            PropertyViewmodel _property;
+            PropertyViewModel _property;
             Guid _observerId;
-            public PropertyObserverable(PropertyViewmodel property, Guid observerId)
+            public PropertyObserverable(PropertyViewModel property, Guid observerId)
             {
                 _property = property;
                 _observerId = observerId;

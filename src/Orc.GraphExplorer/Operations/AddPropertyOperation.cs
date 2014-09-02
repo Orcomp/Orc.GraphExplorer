@@ -6,7 +6,7 @@
 
     public class AddPropertyOperation : PropertyOperation
     {
-        public AddPropertyOperation(DataVertex vertex, PropertyViewmodel property = null)
+        public AddPropertyOperation(DataVertex vertex, PropertyViewModel property = null)
             : base(vertex, property)
         {
             base.Sammary = "Add Property";

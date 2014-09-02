@@ -252,13 +252,13 @@
         public int Id { get; set; }
 
         Dictionary<string, string> _properties;
-        ObservableCollection<PropertyViewmodel> propertiesVMs = null;
-        public ObservableCollection<PropertyViewmodel> Properties
+        ObservableCollection<PropertyViewModel> propertiesVMs = null;
+        public ObservableCollection<PropertyViewModel> Properties
         {
             get
             {
                 if (propertiesVMs == null)
-                    propertiesVMs = new ObservableCollection<PropertyViewmodel>();
+                    propertiesVMs = new ObservableCollection<PropertyViewModel>();
                 return propertiesVMs;
             }
             set
@@ -328,13 +328,13 @@
             Properties = GenerateProperties(dictionary, this);
         }
 
-        private static ObservableCollection<PropertyViewmodel> GenerateProperties(Dictionary<string, string> dictionary, DataVertex data)
+        private static ObservableCollection<PropertyViewModel> GenerateProperties(Dictionary<string, string> dictionary, DataVertex data)
         {
             int index = 0;
 
-            var pvs = from pair in dictionary select new PropertyViewmodel(index++, pair.Key, pair.Value, data);
+            var pvs = from pair in dictionary select new PropertyViewModel(index++, pair.Key, pair.Value, data);
 
-            return new ObservableCollection<PropertyViewmodel>(pvs);
+            return new ObservableCollection<PropertyViewModel>(pvs);
         }
 
         #region INotifyPropertyChanged
@@ -382,9 +382,9 @@
             Observe(apo);
         }
 
-        private PropertyViewmodel NewProperty()
+        private PropertyViewModel NewProperty()
         {
-            return new PropertyViewmodel(GetIndex(), "", "", this) { IsEditing = true };
+            return new PropertyViewModel(GetIndex(), "", "", this) { IsEditing = true };
         }
 
         private int GetIndex()
@@ -392,10 +392,10 @@
             return Properties.Count;
         }
 
-        public PropertyViewmodel AddProperty(PropertyViewmodel property = null)
+        public PropertyViewModel AddProperty(PropertyViewModel property = null)
         {
             if (Properties == null)
-                Properties = new ObservableCollection<PropertyViewmodel>();
+                Properties = new ObservableCollection<PropertyViewModel>();
 
             if (property == null)
                 property = NewProperty();
@@ -408,22 +408,22 @@
             return property;
         }
 
-        public void AddPropertyRange(IEnumerable<PropertyViewmodel> properties)
+        public void AddPropertyRange(IEnumerable<PropertyViewModel> properties)
         {
             foreach (var p in properties)
             {
                 Properties.Add(p);
             }
 
-            Properties = new ObservableCollection<PropertyViewmodel>(Properties.OrderBy(p => p.Index));
+            Properties = new ObservableCollection<PropertyViewModel>(Properties.OrderBy(p => p.Index));
         }
 
-        public IEnumerable<PropertyViewmodel> RemoveSelectedProperties()
+        public IEnumerable<PropertyViewModel> RemoveSelectedProperties()
         {
             if (Properties == null && Properties.Any(p => p.IsSelected))
                 return null;
 
-            List<PropertyViewmodel> list = new List<PropertyViewmodel>();
+            List<PropertyViewModel> list = new List<PropertyViewModel>();
 
             var deleteList = Properties.Where(p => p.IsSelected).ToList();
 
@@ -438,7 +438,7 @@
             return list;
         }
 
-        public PropertyViewmodel RemoveProperty(PropertyViewmodel property)
+        public PropertyViewModel RemoveProperty(PropertyViewModel property)
         {
             Properties.Remove(property);
 
@@ -480,7 +480,7 @@
             //throw new NotImplementedException();
         }
 
-        private void Update(PropertyViewmodel vm)
+        private void Update(PropertyViewModel vm)
         {
             Update(vm.OriginalKey, vm.Key, vm.Value);
         }

@@ -7,7 +7,7 @@
 
     public class DeletePropertyOperation :PropertyOperation
     {
-        IEnumerable<PropertyViewmodel> _list;
+        IEnumerable<PropertyViewModel> _list;
 
         public DeletePropertyOperation(DataVertex vertex)
             : base(vertex, null)

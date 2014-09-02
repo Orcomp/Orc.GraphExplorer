@@ -8,16 +8,16 @@
 
     public abstract class PropertyOperation : IOperation
     {
-        private PropertyViewmodel _property;
+        private PropertyViewModel _property;
 
-        public PropertyViewmodel Property
+        public PropertyViewModel Property
         {
             get { return _property; }
             protected set { _property = value; }
         }
 
         protected DataVertex _vertex;
-        public PropertyOperation(DataVertex vertex,PropertyViewmodel property)
+        public PropertyOperation(DataVertex vertex,PropertyViewModel property)
         {
             _property = property;
             _vertex = vertex;
