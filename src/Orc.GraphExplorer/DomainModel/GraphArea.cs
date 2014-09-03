@@ -8,10 +8,6 @@
 
     public class GraphArea : GraphArea<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>>
     {
-        public GraphArea()
-        {
-            LogicCore = new GraphLogic();
-        }
     }
 
 }

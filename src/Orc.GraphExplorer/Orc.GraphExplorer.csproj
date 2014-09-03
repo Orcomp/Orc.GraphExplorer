@@ -146,6 +146,7 @@
     <Compile Include="DomainModel\FilterEntity.cs" />
     <Compile Include="DomainModel\GraphLogic.cs" />
     <Compile Include="Models\FilePicker.cs" />
+    <Compile Include="Models\GraphExplorer.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Operations\EditValuePropertyOperation.cs" />
     <Compile Include="Operations\EditKeyPropertyOperation.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="ViewModels\Messages\UndoMessage.cs" />
     <Compile Include="ViewModels\SettingViewModel.cs" />
     <Compile Include="ViewModels\ToolBarViewModel.cs" />
+    <Compile Include="Views\Enums\GraphExplorerTab.cs" />
     <Compile Include="Views\FilePickerView.xaml.cs">
       <DependentUpon>FilePickerView.xaml</DependentUpon>
     </Compile>
@@ -193,6 +195,7 @@
     <Compile Include="Operations\DeleteVertexOperation.cs" />
     <Compile Include="Operations\VertexPositionChangeOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\Interfaces\IGraphExplorerView.cs" />
     <Compile Include="Views\SettingView.xaml.cs">
       <DependentUpon>SettingView.xaml</DependentUpon>
     </Compile>

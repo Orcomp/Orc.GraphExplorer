@@ -133,7 +133,22 @@
                                 <catel:EventToCommand Command="{Binding DropEnterCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                        <domainModel:GraphArea x:Name="Area" />
+                        <domainModel:GraphArea x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="VertexDoubleClick">
+                                    <catel:EventToCommand Command="{Binding NavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="EdgeSelected">
+                                    <catel:EventToCommand Command="{Binding EdgeSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="VertexSelected">
+                                    <catel:EventToCommand Command="{Binding VertexSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="GenerateGraphFinished">
+                                    <catel:EventToCommand Command="{Binding RelayoutAreaFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>                            
+                        </domainModel:GraphArea>
                     </controls:ZoomControl>
                 </Grid>
             </TabItem>
@@ -180,8 +195,17 @@
                     </Border>
                     <controls:ZoomControl Grid.Row="1"  MinZoom="{Binding MinZoomNav}" MaxZoom="{Binding MaxZoomNav}" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav"
                                           Zoom="{Binding ZoomNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                          Mode="{Binding ZoomModeNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <domainModel:GraphArea x:Name="AreaNav" />
+                                          Mode="{Binding ZoomModeNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                        <domainModel:GraphArea x:Name="AreaNav" LogicCore="{Binding Path=DataContext.NavLogic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="VertexDoubleClick">
+                                    <catel:EventToCommand Command="{Binding FurtherNavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="GenerateGraphFinished">
+                                    <catel:EventToCommand Command="{Binding RelayoutAreaNavFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </domainModel:GraphArea>
                     </controls:ZoomControl>
                 </Grid>
             </TabItem>

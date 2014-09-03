@@ -33,6 +33,8 @@
     using Orc.GraphExplorer.Operations.Interfaces;
     using Orc.GraphExplorer.Services;
     using Orc.GraphExplorer.Views;
+    using Orc.GraphExplorer.Views.Enums;
+    using Orc.GraphExplorer.Views.Interfaces;
 
     using QuickGraph;
 
@@ -45,11 +47,7 @@
         #region Fields
         private DataVertex _currentNavItem;
 
-        private PathGeometry _edGeo;
-
-        private VertexControl _edVertex;
-
-        private EdgeControl _edEdge;
+        private PathGeometry _edGeo;        
 
         private DataVertex _edFakeDV;
 
@@ -69,10 +67,6 @@
 
         private bool _isHideVertexes;
 
-        private ObservableCollection<FilterEntity> filteredEntities = new ObservableCollection<FilterEntity>();
-
-        private ObservableCollection<FilterEntity> entities;
-
         private bool _hasUnCommitChange;
 
         private List<IOperation> _operations;
@@ -88,8 +82,6 @@
 
             IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
-
-            Logic = new GraphLogic();
 
             SaveToXml = new Command(OnSaveToXmlExecute);
             LoadFromXml = new Command(OnLoadFromXmlExecute);
@@ -109,10 +101,190 @@
             SaveNavToImage = new Command(OnSaveNavToImageExecute);
             OpenSettingsCommand = new Command(OnOpenSettingsCommandExecute);
             SettingAppliedCommand = new Command<SettingAppliedRoutedEventArgs>(OnSettingAppliedCommandExecute);
+            FurtherNavigateCommand = new Command<VertexSelectedEventArgs>(OnFurtherNavigateCommandExecute);
+            RelayoutAreaNavFinishedCommand = new Command(OnRelayoutAreaNavFinishedCommandExecute);
+            NavigateCommand = new Command<VertexSelectedEventArgs>(OnNavigateCommandExecute);
+            EdgeSelectedCommand = new Command<EdgeSelectedEventArgs>(OnEdgeSelectedCommandExecute);
+            VertexSelectedCommand = new Command<VertexSelectedEventArgs>(OnVertexSelectedCommandExecute);
+            RelayoutAreaFinishedCommand = new Command(OnRelayoutAreaFinishedCommandExecute);
         }
         #endregion
 
         #region Commands
+        /// <summary>
+        /// Gets the RelayoutAreaFinishedCommand command.
+        /// </summary>
+        public Command RelayoutAreaFinishedCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the RelayoutAreaFinishedCommand command is executed.
+        /// </summary>
+        private void OnRelayoutAreaFinishedCommandExecute()
+        {
+            OnRelayoutFinished(GraphExplorerTab.Main);
+        }
+
+        /// <summary>
+        /// Gets the RelayoutAreaNavFinishedCommand command.
+        /// </summary>
+        public Command RelayoutAreaNavFinishedCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the RelayoutAreaNavFinishedCommand command is executed.
+        /// </summary>
+        private void OnRelayoutAreaNavFinishedCommandExecute()
+        {
+            OnRelayoutFinished(GraphExplorerTab.Navigation);
+        }
+
+        /// <summary>
+        /// Gets the VertexSelectedCommand command.
+        /// </summary>
+        public Command<VertexSelectedEventArgs> VertexSelectedCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the VertexSelectedCommand command is executed.
+        /// </summary>
+        private void OnVertexSelectedCommandExecute(VertexSelectedEventArgs eventArgs)
+        {
+            if (eventArgs.MouseArgs.LeftButton == MouseButtonState.Pressed)
+            {
+                //if (DragBehaviour.GetIsDragging(args.VertexControl)) return;
+                SelectVertex(eventArgs.VertexControl);
+
+                if (IsInEditing && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectSource))
+                {
+                    if (!View.IsVertexEditing) //select starting vertex
+                    {
+                        View.SetEdVertex(eventArgs.VertexControl);
+                        _edFakeDV = new DataVertex { ID = -666 };
+                        _edGeo = View.CreatePathGeometry();
+                        Point pos = View.zoomctrl.TranslatePoint(eventArgs.VertexControl.GetPosition(), View.Area);
+                        var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
+                        lastseg.Points[lastseg.Points.Count - 1] = pos;
+
+                        var dedge = new DataEdge(View.GetEdVertex(), _edFakeDV);
+                        View.AddEdge(dedge);
+                        Logic.Graph.AddVertex(_edFakeDV);
+                        Logic.Graph.AddEdge(dedge);
+                        View.SetEdgePathManually(_edGeo);
+                        Status = GraphExplorerStatus.CreateLinkSelectTarget;
+                        PostStatusMessage("Select Target Node");
+                    }
+                    else if (!View.IsEdVertex(eventArgs.VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
+                    {
+                        CreateEdge(View.GetEdVertex().Id, (eventArgs.VertexControl.Vertex as DataVertex).Id);
+
+                        ClearEdgeDrawing();
+
+                        Status = GraphExplorerStatus.Ready;
+
+                        IsAddingNewEdge = false;
+                    }
+                }
+            }
+            else if (eventArgs.MouseArgs.RightButton == MouseButtonState.Pressed && IsInEditing)
+            {
+                eventArgs.VertexControl.ContextMenu = new ContextMenu();
+                var miDeleteVertex = new MenuItem { Header = "Delete", Tag = eventArgs.VertexControl };
+                miDeleteVertex.Click += miDeleteVertex_Click;
+                eventArgs.VertexControl.ContextMenu.Items.Add(miDeleteVertex);
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the EdgeSelectedCommand command.
+        /// </summary>
+        public Command<EdgeSelectedEventArgs> EdgeSelectedCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the EdgeSelectedCommand command is executed.
+        /// </summary>
+        private void OnEdgeSelectedCommandExecute(EdgeSelectedEventArgs eventArgs)
+        {
+            if (IsInEditing)
+            {
+                eventArgs.EdgeControl.ContextMenu = new ContextMenu();
+                var miDeleteLink = new MenuItem { Header = "Delete Link", Tag = eventArgs.EdgeControl };
+                miDeleteLink.Click += miDeleteLink_Click;
+                eventArgs.EdgeControl.ContextMenu.Items.Add(miDeleteLink);
+            }
+        }
+
+        /// <summary>
+        /// Gets the NavigateCommand command.
+        /// </summary>
+        public Command<VertexSelectedEventArgs> NavigateCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the NavigateCommand command is executed.
+        /// </summary>
+        private void OnNavigateCommandExecute(VertexSelectedEventArgs eventArgs)
+        {
+            if (IsInEditing)
+            {
+                return;
+            }
+
+            var vertex = eventArgs.VertexControl.DataContext as DataVertex;
+
+            if (vertex == null)
+            {
+                return;
+            }
+
+            _currentNavItem = vertex;
+
+            int degree = Logic.Graph.Degree(vertex);
+
+            if (degree < 1)
+            {
+                return;
+            }
+
+            NavigateTo(vertex, Logic.Graph);
+
+            if (!IsNavTabVisible)
+            {
+                IsNavTabVisible = true;
+            }
+
+            IsNavTabSelected = true;
+        }
+
+
+
+        /// <summary>
+        /// Gets the FurtherNavigateCommand command.
+        /// </summary>
+        public Command<VertexSelectedEventArgs> FurtherNavigateCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the FurtherNavigateCommand command is executed.
+        /// </summary>
+        private void OnFurtherNavigateCommandExecute(VertexSelectedEventArgs eventArgs)
+        {
+            //throw new NotImplementedException();
+            var vertex = eventArgs.VertexControl.DataContext as DataVertex;
+
+            if (vertex == null || vertex == _currentNavItem)
+            {
+                return;
+            }
+
+            _currentNavItem = vertex;
+
+            int degree = Logic.Graph.Degree(vertex);
+
+            if (degree < 1)
+            {
+                return;
+            }
+
+            NavigateTo(vertex, Logic.Graph);
+        }
+
         /// <summary>
         /// Gets the SettingAppliedCommand command.
         /// </summary>
@@ -364,7 +536,7 @@
         {
             try
             {
-                GraphDataService.UpdateEdges(View.Area.LogicCore.Graph.Edges, (result, error) =>
+                GraphDataService.UpdateEdges(Logic.Graph.Edges, (result, error) =>
                 {
                     if (!result && error != null)
                     {
@@ -372,7 +544,7 @@
                     }
                 });
 
-                GraphDataService.UpdateVertexes(View.Area.LogicCore.Graph.Vertices, (result, error) =>
+                GraphDataService.UpdateVertexes(Logic.Graph.Vertices, (result, error) =>
                 {
                     if (!result && error != null)
                     {
@@ -424,12 +596,12 @@
         /// <remarks>handle create link between two node</remarks>
         private void DragEdgeCommandExecute(MouseEventArgs eventArgs)
         {
-            if (Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && _edGeo != null && _edEdge != null && _edVertex != null)
+            if (Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && _edGeo != null && View.IsEdgeEditing && View.IsVertexEditing)
             {
                 Point pos = View.zoomctrl.TranslatePoint(eventArgs.GetPosition(View.zoomctrl), View.Area);
                 var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
                 lastseg.Points[lastseg.Points.Count - 1] = pos;
-                _edEdge.SetEdgePathManually(_edGeo);
+                View.SetEdgePathManually(_edGeo);                
             }
         }
 
@@ -484,18 +656,18 @@
         {
             if (_edFakeDV != null)
             {
-                View.Area.LogicCore.Graph.RemoveVertex(_edFakeDV);
+                Logic.Graph.RemoveVertex(_edFakeDV);
             }
-            if (_edEdge != null)
+            if (View.IsEdgeEditing)
             {
-                var edge = _edEdge.Edge as DataEdge;
-                View.Area.LogicCore.Graph.RemoveEdge(edge);
-                View.Area.RemoveEdge(edge);
+                var edge = View.GetEdEdge();
+                Logic.Graph.RemoveEdge(edge);
+                View.RemoveEdge(edge);
             }
             _edGeo = null;
             _edFakeDV = null;
-            _edVertex = null;
-            _edEdge = null;
+            View.ClearEdEdge();
+            View.ClearEdVertex();
         }
 
         /// <summary>
@@ -760,6 +932,46 @@
         #endregion // Commands
 
         #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public GraphLogic NavLogic
+        {
+            get
+            {
+                return GetValue<GraphLogic>(NavLogicProperty);
+            }
+            set
+            {
+                SetValue(NavLogicProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Register the NavLogic property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData NavLogicProperty = RegisterProperty("NavLogic", typeof(GraphLogic), () => new GraphLogic());
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public GraphLogic Logic
+        {
+            get
+            {
+                return GetValue<GraphLogic>(LogicProperty);
+            }
+            set
+            {
+                SetValue(LogicProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Register the Logic property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic), () => new GraphLogic());
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -1299,8 +1511,6 @@
             }
         }
 
-        public GraphLogic Logic { get; set; }
-
         /*public IGraphDataService GraphDataService
         {
             get { return GetValue<IGraphDataService>(GraphDataServiceProperty); }
@@ -1418,17 +1628,8 @@
             MinZoomNav = 0.1;
             MaxZoomNav = 2;
 
-            ApplySetting(View.zoomctrl, View.Area.LogicCore);
-            ApplySetting(View.zoomctrlNav, View.AreaNav.LogicCore, true);
-
-            View.Area.VertexDoubleClick += Area_VertexDoubleClick;
-            View.AreaNav.VertexDoubleClick += AreaNav_VertexDoubleClick;
-
-            View.Area.EdgeSelected += Area_EdgeSelected;
-            View.Area.VertexSelected += Area_VertexSelected;
-
-            View.AreaNav.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, View.zoomctrlNav);
-            View.Area.GenerateGraphFinished += (s, e) => Area_RelayoutFinished(s, e, View.zoomctrl);
+            ApplySetting(Logic);
+            ApplySetting(NavLogic, true);
 
             GraphDataServiceEnum defaultSvc = GraphExplorerSection.Current.DefaultGraphDataService;
 
@@ -1482,21 +1683,6 @@
             }
         }
 
-        private void Area_RelayoutFinished(object sender, EventArgs e, ZoomControl zoom)
-        {
-            ShowAllEdgesLabels(sender as GraphArea, true);
-
-            FitToBounds(null, zoom);
-
-            SetVertexPropertiesBinding();
-        }
-
-        private void ShowAllEdgesLabels(GraphArea area, bool show)
-        {
-            area.ShowAllEdgesLabels(show);
-            area.InvalidateVisual();
-        }
-
         private void FitToBounds(Dispatcher dispatcher, ZoomControl zoom)
         {
             if (dispatcher != null)
@@ -1515,16 +1701,7 @@
             }
         }
 
-        private void Area_EdgeSelected(object sender, EdgeSelectedEventArgs args)
-        {
-            if (IsInEditing)
-            {
-                args.EdgeControl.ContextMenu = new ContextMenu();
-                var miDeleteLink = new MenuItem { Header = "Delete Link", Tag = args.EdgeControl };
-                miDeleteLink.Click += miDeleteLink_Click;
-                args.EdgeControl.ContextMenu.Items.Add(miDeleteLink);
-            }
-        }
+
 
         private void miDeleteLink_Click(object sender, RoutedEventArgs e)
         {
@@ -1544,61 +1721,6 @@
                 Do(op);
             }
             //throw new NotImplementedException();
-        }
-
-        private void AreaNav_VertexDoubleClick(object sender, VertexSelectedEventArgs args)
-        {
-            //throw new NotImplementedException();
-            var vertex = args.VertexControl.DataContext as DataVertex;
-
-            if (vertex == null || vertex == _currentNavItem)
-            {
-                return;
-            }
-
-            _currentNavItem = vertex;
-
-            int degree = View.Area.LogicCore.Graph.Degree(vertex);
-
-            if (degree < 1)
-            {
-                return;
-            }
-
-            NavigateTo(vertex, View.Area.LogicCore.Graph);
-        }
-
-        private void Area_VertexDoubleClick(object sender, VertexSelectedEventArgs args)
-        {
-            if (IsInEditing)
-            {
-                return;
-            }
-
-            var vertex = args.VertexControl.DataContext as DataVertex;
-
-            if (vertex == null)
-            {
-                return;
-            }
-
-            _currentNavItem = vertex;
-
-            int degree = View.Area.LogicCore.Graph.Degree(vertex);
-
-            if (degree < 1)
-            {
-                return;
-            }
-
-            NavigateTo(vertex, View.Area.LogicCore.Graph);
-
-            if (!IsNavTabVisible)
-            {
-                IsNavTabVisible = true;
-            }
-
-            IsNavTabSelected = true;
         }
 
         private void NavigateTo(DataVertex dataVertex, BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
@@ -1656,7 +1778,7 @@
             return hisItem;
         }
 
-        private void ApplySetting(ZoomControl zoom, IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> logic, bool nav = false)
+        private void ApplySetting(GraphLogic logic, bool nav = false)
         {
             //Zoombox.SetViewFinderVisibility(zoom, System.Windows.Visibility.Visible);
 
@@ -1689,53 +1811,7 @@
             // area.UseNativeObjectArrange = false;
         }
 
-        private void Area_VertexSelected(object sender, VertexSelectedEventArgs args)
-        {
-            if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
-            {
-                //if (DragBehaviour.GetIsDragging(args.VertexControl)) return;
-                SelectVertex(args.VertexControl);
 
-                if (IsInEditing && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectSource))
-                {
-                    if (_edVertex == null) //select starting vertex
-                    {
-                        _edVertex = args.VertexControl;
-                        _edFakeDV = new DataVertex { ID = -666 };
-                        _edGeo = new PathGeometry(new PathFigureCollection { new PathFigure { IsClosed = false, StartPoint = _edVertex.GetPosition(), Segments = new PathSegmentCollection { new PolyLineSegment(new List<Point> { new Point() }, true) } } });
-                        Point pos = View.zoomctrl.TranslatePoint(args.VertexControl.GetPosition(), View.Area);
-                        var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                        lastseg.Points[lastseg.Points.Count - 1] = pos;
-
-                        var dedge = new DataEdge(_edVertex.Vertex as DataVertex, _edFakeDV);
-                        _edEdge = new EdgeControl(_edVertex, null, dedge) { ManualDrawing = true };
-                        View.Area.AddEdge(dedge, _edEdge);
-                        View.Area.LogicCore.Graph.AddVertex(_edFakeDV);
-                        View.Area.LogicCore.Graph.AddEdge(dedge);
-                        _edEdge.SetEdgePathManually(_edGeo);
-                        Status = GraphExplorerStatus.CreateLinkSelectTarget;
-                        PostStatusMessage("Select Target Node");
-                    }
-                    else if (_edVertex != args.VertexControl && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
-                    {
-                        CreateEdge((_edVertex.Vertex as DataVertex).Id, (args.VertexControl.Vertex as DataVertex).Id);
-
-                        ClearEdgeDrawing();
-
-                        Status = GraphExplorerStatus.Ready;
-
-                        IsAddingNewEdge = false;
-                    }
-                }
-            }
-            else if (args.MouseArgs.RightButton == MouseButtonState.Pressed && IsInEditing)
-            {
-                args.VertexControl.ContextMenu = new ContextMenu();
-                var miDeleteVertex = new MenuItem { Header = "Delete", Tag = args.VertexControl };
-                miDeleteVertex.Click += miDeleteVertex_Click;
-                args.VertexControl.ContextMenu.Items.Add(miDeleteVertex);
-            }
-        }
 
         private void miDeleteVertex_Click(object sender, RoutedEventArgs e)
         {
@@ -2260,5 +2336,16 @@
             IsFilterApplied = false;
         }
         #endregion
+
+        #region Methods
+        private void OnRelayoutFinished(GraphExplorerTab tab)
+        {
+            View.ShowAllEdgesLabels(tab, true);
+
+            View.FitToBounds(tab);
+
+            SetVertexPropertiesBinding();
+        }
+        #endregion // Methods
     }
 }
