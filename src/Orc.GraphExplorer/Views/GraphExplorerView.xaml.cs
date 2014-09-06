@@ -10,6 +10,7 @@ namespace Orc.GraphExplorer.Views
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Media;
 
@@ -58,19 +59,7 @@ namespace Orc.GraphExplorer.Views
 
         public void ShowAllEdgesLabels(GraphExplorerTab tab, bool show)
         {
-            GraphArea area;
-            switch (tab)
-            {
-                case GraphExplorerTab.Main:
-                    area = Area;
-                    break;
-                case GraphExplorerTab.Navigation:
-                    area = AreaNav;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
+            var area = GetAreaByTab(tab);
             area.ShowAllEdgesLabels(show);
             area.InvalidateVisual();
         }
@@ -144,6 +133,54 @@ namespace Orc.GraphExplorer.Views
         public void ClearEdVertex()
         {
             _edVertex = null;
+        }
+
+        public void ClearLayout(GraphExplorerTab tab)
+        {
+            var area = GetAreaByTab(tab);
+            area.ClearLayout();
+        }
+
+        private GraphArea GetAreaByTab(GraphExplorerTab tab)
+        {
+            GraphArea area;
+            switch (tab)
+            {
+                case GraphExplorerTab.Main:
+                    area = Area;
+                    break;
+                case GraphExplorerTab.Navigation:
+                    area = AreaNav;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            return area;
+        }
+
+        public DataVertex GetVertexById(GraphExplorerTab tab, int vertexId)
+        {
+            var area = GetAreaByTab(tab);
+            return area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Key).FirstOrDefault();
+        }
+
+        public void SetVertexHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value)
+        {
+            var area = GetAreaByTab(tab);
+            HighlightBehaviour.SetHighlighted(area.VertexList[dataVertex], value);
+        }
+
+        public void SetVertexHighlighted(GraphExplorerTab tab, int vertexId, bool value)
+        {
+            var area = GetAreaByTab(tab);
+            VertexControl vertex = area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Value).FirstOrDefault();
+            HighlightBehaviour.SetHighlighted(vertex, value);
+        }
+
+        public bool ContainsVertexId(GraphExplorerTab tab, int vertexId)
+        {
+            var area = GetAreaByTab(tab);
+            return area.VertexList.Keys.Any(v => v.Id == vertexId);
         }
     }
 }

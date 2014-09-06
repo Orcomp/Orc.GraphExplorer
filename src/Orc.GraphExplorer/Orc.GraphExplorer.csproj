@@ -163,6 +163,8 @@
     <Compile Include="Events\DataLoadedEventArgs.cs" />
     <Compile Include="Services\FilePickerService.cs" />
     <Compile Include="Services\Interfaces\IFilePickerService.cs" />
+    <Compile Include="Services\Interfaces\IOperationObserver.cs" />
+    <Compile Include="Models\OperationObserver.cs" />
     <Compile Include="ViewModels\FilePickerViewModel.cs" />
     <Compile Include="ViewModels\Messages\CanDragChangedMessage.cs" />
     <Compile Include="ViewModels\Messages\IsDrawingEdgeChangedMessage.cs" />
