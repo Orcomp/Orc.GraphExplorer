@@ -1,9 +1,10 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.Common
 {
     using System;
     using System.ComponentModel;
+
     using GraphX;
-    using Models;
+
     using YAXLib;
 
     [Serializable]

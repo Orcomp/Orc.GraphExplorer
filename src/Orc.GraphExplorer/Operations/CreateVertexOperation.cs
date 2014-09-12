@@ -3,9 +3,12 @@
     using System;
     using System.Windows;
     using System.Windows.Threading;
-    using DomainModel;
+
     using GraphX;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
+    using Orc.GraphExplorer.Views;
 
     public class CreateVertexOperation : VertexOperation
     {

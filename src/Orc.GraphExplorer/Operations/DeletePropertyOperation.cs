@@ -1,8 +1,11 @@
 ﻿namespace Orc.GraphExplorer.Operations
 {
     using System.Collections.Generic;
-    using DomainModel;
+
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
+
     using ViewModels;
 
     public class DeletePropertyOperation :PropertyOperation

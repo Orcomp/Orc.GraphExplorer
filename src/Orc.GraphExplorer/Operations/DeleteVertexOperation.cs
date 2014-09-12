@@ -3,9 +3,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using DomainModel;
+
     using GraphX;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
+    using Orc.GraphExplorer.Views;
 
     public class DeleteVertexOperation : VertexOperation
     {
@@ -73,7 +76,7 @@
             : base(area, data, callback, undoCallback)
         {
             if (area.VertexList.ContainsKey(_vertex))
-                _vCtrl = area.VertexList[_vertex];
+                _vCtrl = area.VertexList[_vertex] as VertexControl;
             else
             {
                 //throw new ArgumentNullException("Vertex Control");

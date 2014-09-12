@@ -14,6 +14,7 @@
 
     using Catel.Data;
     using Catel.IoC;
+    using Catel.Logging;
     using Catel.MVVM;
     using Catel.MVVM.Converters;
 
@@ -27,8 +28,8 @@
     using Microsoft.Win32;
     using Models;
     using Orc.GraphExplorer.Config;
-    using Orc.GraphExplorer.DomainModel;
     using Orc.GraphExplorer.Events;
+    using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Operations;
     using Orc.GraphExplorer.Operations.Interfaces;
     using Orc.GraphExplorer.Services;
@@ -45,15 +46,11 @@
     public class GraphExplorerViewModel : ViewModelBase
     {
         #region Fields
-        private DataVertex _currentNavItem;
-
-        private PathGeometry _edGeo;        
+        private DataVertex _currentNavItem;       
 
         private DataVertex _edFakeDV;
 
-        private readonly List<IDisposable> _observers = new List<IDisposable>();
-
-        private readonly List<int> _selectedVertices = new List<int>();
+        private readonly List<IDisposable> _observers = new List<IDisposable>();        
 
         private IEnumerable<DataVertex> _vertexes;
 
@@ -77,6 +74,7 @@
         #region Constructors
         public GraphExplorerViewModel()
         {
+            SelectedVertices = new List<int>();
             OperationObserver = new OperationObserver();
             IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
@@ -86,14 +84,10 @@
             SaveToImage = new Command(OnSaveToImageExecute);
             CanEditCommand = new Command(OnCanEditCommandExecute);
             CreateLinkCommand = new Command(OnCreateLinkCommandExecute);
-            DragEdgeCommand = new Command<MouseEventArgs>(DragEdgeCommandExecute);
-            StartDragNodeCommand = new Command<MouseButtonEventArgs>(OnStartDragNodeCommandExecute);
             UndoCommand = new Command(OnUndoCommandExecute, OnUndoCommandCanExecute);
             RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);
             SaveChangesCommand = new Command(OnSaveChangesCommandExecute);
             RefreshCommand = new Command(OnRefreshCommandExecute);
-            DropEdgeCommand = new Command<DragEventArgs>(OnDropEdgeCommandExecute);
-            DropEnterCommand = new Command<DragEventArgs>(OnDropEnterCommandExecute);
             ClearFilterCommand = new Command(OnClearFilterCommandExecute, OnClearFilterCommandCanExecute);
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
             SaveNavToImage = new Command(OnSaveNavToImageExecute);
@@ -154,22 +148,22 @@
                 {
                     if (!View.IsVertexEditing) //select starting vertex
                     {
-                        View.SetEdVertex(eventArgs.VertexControl);
+                        View.SetEdVertex(eventArgs.VertexControl as VertexControl);
                         _edFakeDV = new DataVertex { ID = -666 };
-                        _edGeo = View.CreatePathGeometry();
+                        EdGeometry = View.CreatePathGeometry();
                         Point pos = View.zoomctrl.TranslatePoint(eventArgs.VertexControl.GetPosition(), View.Area);
-                        var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
+                        var lastseg = EdGeometry.Figures[0].Segments[EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
                         lastseg.Points[lastseg.Points.Count - 1] = pos;
 
                         var dedge = new DataEdge(View.GetEdVertex(), _edFakeDV);
                         View.AddEdge(dedge);
                         Logic.Graph.AddVertex(_edFakeDV);
                         Logic.Graph.AddEdge(dedge);
-                        View.SetEdgePathManually(_edGeo);
+                        View.SetEdgePathManually(EdGeometry);
                         Status = GraphExplorerStatus.CreateLinkSelectTarget;
                         PostStatusMessage("Select Target Node");
                     }
-                    else if (!View.IsEdVertex(eventArgs.VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
+                    else if (!View.IsEdVertex(eventArgs.VertexControl as VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
                     {
                         CreateEdge(View.GetEdVertex().Id, (eventArgs.VertexControl.Vertex as DataVertex).Id);
 
@@ -364,29 +358,6 @@
         }
 
         /// <summary>
-        /// Gets the DropEdgeCommand command.
-        /// </summary>
-        public Command<DragEventArgs> DropEdgeCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the DropEdgeCommand command is executed.
-        /// </summary>
-        private void OnDropEdgeCommandExecute(DragEventArgs eventArgs)
-        {
-            if (eventArgs.Data.GetDataPresent(typeof(object)))
-            {
-                //how to get dragged data by its type
-                object myobject = eventArgs.Data.GetData(typeof(object));
-
-                Point pos = View.zoomctrl.TranslatePoint(eventArgs.GetPosition(View.zoomctrl), View.Area);
-
-                DataVertex data = DataVertex.Create();
-
-                CreateVertex(View.Area, View.zoomctrl, data, pos.X, pos.Y);
-            }
-        }
-
-        /// <summary>
         /// Gets the RefreshCommand command.
         /// </summary>
         public Command RefreshCommand { get; private set; }
@@ -435,17 +406,17 @@
 
             CreateGraphArea(View.Area, Vertexes, Edges, 600);
 
-            HookVertexEvent(View.Area);
+            HookVertexEvent();
 
             OnVertexLoaded(Vertexes);
             //FitToBounds(Area.Dispatcher, zoomctrl);
         }
 
-        private void HookVertexEvent(GraphArea Area)
+        private void HookVertexEvent()
         {
-            foreach (var vertex in Area.VertexList)
+            foreach (var vertex in Logic.Graph.Vertices)
             {
-                vertex.Key.IsExpandedChanged += (s, e) => vertex_IsExpandedChanged(s, e);
+                vertex.IsExpandedChanged += (s, e) => vertex_IsExpandedChanged(s, e);
             }
             //throw new NotImplementedException();
         }
@@ -454,7 +425,7 @@
         {
             var vertex = (DataVertex)sender;
 
-            if (vertex.IsExpanded || vertex.Properties == null || vertex.Properties.Count < 1 || !View.Area.VertexList.ContainsKey(vertex))
+            if (vertex.IsExpanded || vertex.Properties == null || vertex.Properties.Count < 1 || !Logic.Graph.ContainsVertex(vertex))
             {
                 return;
             }
@@ -472,14 +443,6 @@
                         op.Do();
                         op.UnDo();
                     }
-
-                    //    Area.GenerateAllEdges();
-                    //    Area.ShowAllEdgesLabels();
-                    //Area.ComputeEdgeRoutesByVertex(vc);
-                    //Area.InvalidateVisual();
-                    //////Area.UpdateAllEdges();
-                    //Area.ComputeEdgeRoutesByVertex(vc);
-                    //vc.InvalidateVisual();
                 }, priority: DispatcherPriority.Loaded);
             }
         }
@@ -550,14 +513,14 @@
                     }
                 });
 
-                _selectedVertices.Clear();
+                SelectedVertices.Clear();
 
                 //clear dirty flag
                 Commit();
 
                 IsInEditing = false;
 
-                UpdateIsInEditMode(View.Area.VertexList, IsInEditing);
+                UpdateIsInEditMode(IsInEditing);
 
                 UpdateHighlightBehaviour(true);
                 //GetEdges();
@@ -568,56 +531,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets the StartDragNodeCommand command.
-        /// </summary>
-        public Command<MouseButtonEventArgs> StartDragNodeCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the StartDragNodeCommand command is executed.
-        /// </summary>
-        /// <remarks>drag to add new node</remarks>
-        private void OnStartDragNodeCommandExecute(MouseButtonEventArgs eventArgs)
-        {
-            var data = new DataObject(typeof(object), new object());
-            DragDrop.DoDragDrop((Button)eventArgs.Source, data, DragDropEffects.Copy);
-        }
-
-        /// <summary>
-        /// Gets the DragEdgeCommand command.
-        /// </summary>
-        public Command<MouseEventArgs> DragEdgeCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the DragEdgeCommand command is executed.
-        /// </summary>
-        /// <remarks>handle create link between two node</remarks>
-        private void DragEdgeCommandExecute(MouseEventArgs eventArgs)
-        {
-            if (Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && _edGeo != null && View.IsEdgeEditing && View.IsVertexEditing)
-            {
-                Point pos = View.zoomctrl.TranslatePoint(eventArgs.GetPosition(View.zoomctrl), View.Area);
-                var lastseg = _edGeo.Figures[0].Segments[_edGeo.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                lastseg.Points[lastseg.Points.Count - 1] = pos;
-                View.SetEdgePathManually(_edGeo);                
-            }
-        }
-
-        /// <summary>
-        /// Gets the DropEnterCommand command.
-        /// </summary>
-        public Command<DragEventArgs> DropEnterCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the DropEnterCommand command is executed.
-        /// </summary>
-        private void OnDropEnterCommandExecute(DragEventArgs eventArgs)
-        {
-            if (!eventArgs.Data.GetDataPresent(typeof(object)))
-            {
-                eventArgs.Effects = DragDropEffects.None;
-            }
-        }
 
         /// <summary>
         /// Gets the CreateLinkCommand command.
@@ -662,7 +575,7 @@
                 Logic.Graph.RemoveEdge(edge);
                 View.RemoveEdge(edge);
             }
-            _edGeo = null;
+            EdGeometry = null;
             _edFakeDV = null;
             View.ClearEdEdge();
             View.ClearEdVertex();
@@ -765,41 +678,41 @@
             //    tbtnCanDrag.IsChecked = false;
             //    UpdateCanDrag(Area, tbtnCanDrag.IsChecked.Value);
             //}
-            UpdateIsInEditMode(View.Area.VertexList, IsInEditing);
+            UpdateIsInEditMode(IsInEditing);
             UpdateHighlightBehaviour(true);
         }
 
-        private void UpdateHighlightBehaviour(bool clearSelectedVertices)
+        public void UpdateHighlightBehaviour(bool clearSelectedVertices)
         {
             if (clearSelectedVertices)
             {
-                _selectedVertices.Clear();
+                SelectedVertices.Clear();
             }
 
             if (IsInEditing)
             {
-                foreach (var v in View.Area.VertexList)
+                foreach (var v in Logic.Graph.Vertices)
                 {
-                    HighlightBehaviour.SetIsHighlightEnabled(v.Value, false);
-                    HighlightBehaviour.SetHighlighted(v.Value, false);
+                    View.SetIsHighlightEnabled(GraphExplorerTab.Main, v, false);
+                    View.SetHighlighted(GraphExplorerTab.Main, v, false);
                 }
-                foreach (var edge in View.Area.EdgesList)
+                foreach (var edge in Logic.Graph.Edges)
                 {
-                    HighlightBehaviour.SetIsHighlightEnabled(edge.Value, false);
-                    HighlightBehaviour.SetHighlighted(edge.Value, false);
+                    View.SetIsHighlightEnabled(GraphExplorerTab.Main, edge, false);
+                    View.SetHighlighted(GraphExplorerTab.Main, edge, false);
                 }
             }
             else
             {
-                foreach (var v in View.Area.VertexList)
+                foreach (var v in Logic.Graph.Vertices)
                 {
-                    HighlightBehaviour.SetIsHighlightEnabled(v.Value, true);
-                    HighlightBehaviour.SetHighlighted(v.Value, false);
+                    View.SetIsHighlightEnabled(GraphExplorerTab.Main, v, true);
+                    View.SetHighlighted(GraphExplorerTab.Main, v, false);
                 }
-                foreach (var edge in View.Area.EdgesList)
+                foreach (var edge in Logic.Graph.Edges)
                 {
-                    HighlightBehaviour.SetIsHighlightEnabled(edge.Value, true);
-                    HighlightBehaviour.SetHighlighted(edge.Value, false);
+                    View.SetIsHighlightEnabled(GraphExplorerTab.Main, edge, true);
+                    View.SetHighlighted(GraphExplorerTab.Main, edge, false);
                 }
             }
         }
@@ -823,24 +736,19 @@
             MessageBox.Show(message);
         }
 
-        private void UpdateIsInEditMode(IDictionary<DataVertex, VertexControl> dictionary, bool isInEditMode)
+        private void UpdateIsInEditMode(bool isInEditMode)
         {
-            if (dictionary == null)
+            foreach (var v in Logic.Graph.Vertices)
             {
-                return;
-            }
-
-            foreach (var v in dictionary)
-            {
-                v.Key.IsEditing = isInEditMode;
+                v.IsEditing = isInEditMode;
 
                 if (isInEditMode)
                 {
-                    v.Key.ChangedCommited += Key_ChangedCommited;
+                    v.ChangedCommited += Key_ChangedCommited;
                 }
                 else
                 {
-                    v.Key.ChangedCommited -= Key_ChangedCommited;
+                    v.ChangedCommited -= Key_ChangedCommited;
                 }
             }
             //throw new NotImplementedException();
@@ -1460,7 +1368,7 @@
         /// </summary>
         private void OnIsInEditingChanged()
         {
-            _selectedVertices.Clear();
+            SelectedVertices.Clear();
             UpdateIsInEditing(IsInEditing);
             if (IsInEditing)
             {
@@ -1603,9 +1511,9 @@
             logic.Graph.RemoveVertex(v);
             area.RemoveVertex(v);
 
-            if (removeFromSelected && v != null && _selectedVertices.Contains(v.Id))
+            if (removeFromSelected && v != null && SelectedVertices.Contains(v.Id))
             {
-                _selectedVertices.Remove(v.Id);
+                SelectedVertices.Remove(v.Id);
             }
         }
 
@@ -1777,15 +1685,15 @@
                 return;
             }
 
-            if (_selectedVertices.Contains(v.Id))
+            if (SelectedVertices.Contains(v.Id))
             {
-                _selectedVertices.Remove(v.Id);
+                SelectedVertices.Remove(v.Id);
                 HighlightBehaviour.SetHighlighted(vc, false);
                 //DragBehaviour.SetIsTagged(vc, false);
             }
             else
             {
-                _selectedVertices.Add(v.Id);
+                SelectedVertices.Add(v.Id);
                 HighlightBehaviour.SetHighlighted(vc, true);
                 //DragBehaviour.SetIsTagged(vc, true);
             }
@@ -1802,18 +1710,18 @@
             GraphArea area = View.Area;
             bool highlightEnable = !value;
             bool highlighted = false;
-            foreach (var v in area.VertexList)
+            foreach (var vertex in Logic.Graph.Vertices)
             {
-                v.Key.IsEditing = value;
+                vertex.IsEditing = value;
 
-                HighlightBehaviour.SetIsHighlightEnabled(v.Value, highlightEnable);
-                HighlightBehaviour.SetHighlighted(v.Value, highlighted);
+                View.SetIsHighlightEnabled(GraphExplorerTab.Main, vertex, highlightEnable);
+                View.SetHighlighted(GraphExplorerTab.Main, vertex, highlighted);
             }
 
-            foreach (var edge in area.EdgesList)
+            foreach (var edge in Logic.Graph.Edges)
             {
-                HighlightBehaviour.SetIsHighlightEnabled(edge.Value, highlightEnable);
-                HighlightBehaviour.SetHighlighted(edge.Value, highlighted);
+                View.SetIsHighlightEnabled(GraphExplorerTab.Main, edge, highlightEnable);
+                View.SetHighlighted(GraphExplorerTab.Main, edge, highlighted);
             }
         }
 
@@ -1825,9 +1733,9 @@
             }
 
             GraphArea area = View.Area;
-            foreach (var item in area.VertexList)
+            foreach (var vertex in Logic.Graph.Vertices)
             {
-                DragBehaviour.SetIsDragEnabled(item.Value, value);
+                View.SetIsDragEnabled(GraphExplorerTab.Main, vertex, value);               
             }
         }
 
@@ -1980,7 +1888,7 @@
         //    Commit changes to data source, after commit, clear undo/redo list
         public void Commit()
         {
-            _selectedVertices.Clear();
+            SelectedVertices.Clear();
             OperationObserver.Clear();
             
             UndoCommand.RaiseCanExecuteChanged();
@@ -1991,6 +1899,8 @@
 
             PostStatusMessage("Ready");
         }
+
+        public PathGeometry EdGeometry { get; private set; }
         #endregion
 
         #region Commands
@@ -2018,8 +1928,8 @@
             }
 
             GraphArea area = View.Area;
-            DataVertex source = View.GetVertexById(GraphExplorerTab.Main, fromId);
-            DataVertex target = View.GetVertexById(GraphExplorerTab.Main, toId);
+            DataVertex source = Logic.Graph.Vertices.FirstOrDefault(x => x.Id == fromId);
+            DataVertex target = Logic.Graph.Vertices.FirstOrDefault(x => x.Id == toId);
             if (source == null || target == null)
             {
                 return;
@@ -2028,68 +1938,23 @@
             OperationObserver.Do(new CreateEdgeOperation(area, source, target, e =>
             {
                 //on vertex created
-                //_selectedVertices.Add(v.Id);
+                //SelectedVertices.Add(v.Id);
 
                 HighlightBehaviour.SetIsHighlightEnabled(e, false);
                 HighlightBehaviour.SetHighlighted(e, false);
 
-                View.SetVertexHighlighted(GraphExplorerTab.Main, source, false);
-                View.SetVertexHighlighted(GraphExplorerTab.Main, target, false);
+                View.SetHighlighted(GraphExplorerTab.Main, source, false);
+                View.SetHighlighted(GraphExplorerTab.Main, target, false);
 
                 //UpdateIsInEditing(true);
             }, e =>
             {
-                //_selectedVertices.Remove(v.Id);
+                //SelectedVertices.Remove(v.Id);
                 //on vertex recreated
             }));
         }
 
-        private void CreateVertex(GraphArea area, ZoomControl zoom, DataVertex data = null, double x = Double.MinValue, double y = Double.MinValue)
-        {
-            OperationObserver.Do(new CreateVertexOperation(View.Area, data, x, y, (v, vc) =>
-            {
-                _selectedVertices.Add(v.Id);
-
-                //area.RelayoutGraph(true);
-
-                UpdateHighlightBehaviour(false);
-
-                foreach (int selectedV in _selectedVertices)
-                {
-                    View.SetVertexHighlighted(GraphExplorerTab.Main, selectedV, true);
-                }
-
-                if (CanDrag)
-                {
-                    DragBehaviour.SetIsDragEnabled(vc, true);
-                }
-                else
-                {
-                    DragBehaviour.SetIsDragEnabled(vc, false);
-                }
-
-                v.IsEditing = true;
-                v.OnPositionChanged -= v_OnPositionChanged;
-                v.OnPositionChanged += v_OnPositionChanged;
-            }, v =>
-            {
-                _selectedVertices.Remove(v.Id);
-                //on vertex recreated
-            }));
-            //FitToBounds(area.Dispatcher, zoom);
-        }
-
-        private void v_OnPositionChanged(object sender, DataVertex.VertexPositionChangedEventArgs e)
-        {
-            var vertex = (DataVertex)sender;
-
-            if (View.ContainsVertexId(GraphExplorerTab.Main, vertex.Id))
-            {
-                VertexControl vc = View.Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
-
-                OperationObserver.Do(new VertexPositionChangeOperation(View.Area, vc, e.OffsetX, e.OffsetY, vertex));
-            }
-        }
+        public List<int> SelectedVertices { get; private set; }
 
         #endregion
 
@@ -2139,7 +2004,7 @@
             }
 
             var vertex = (DataVertex)sender;
-            if (View.Area.VertexList.Keys.Any(v => v.Id == vertex.Id))
+            if (Logic.Graph.Vertices.Any(v => v.Id == vertex.Id))
             {
                 VertexControl vc = View.Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
@@ -2150,35 +2015,6 @@
 
         #endregion
 
-        #region Set Vertex Binding
-        //Summary
-        //    binding in style will be overrided in graph control, so need create binding after data loaded
-        public void SetVertexPropertiesBinding()
-        {
-            GraphArea graph = View.Area;
-            IValueConverter conv = new BooleanToHidingVisibilityConverter();
-
-            foreach (var vertex in graph.VertexList)
-            {
-                var bindingIsVisible = new Binding("IsVisible") { Source = vertex.Key, Mode = BindingMode.TwoWay, Converter = conv };
-
-                var bindingIsEnabled = new Binding("IsEnabled") { Source = vertex.Key, Mode = BindingMode.TwoWay };
-
-                vertex.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
-                vertex.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
-            }
-
-            foreach (var edge in graph.EdgesList)
-            {
-                var bindingIsVisible = new Binding("IsVisible") { Source = edge.Key, Mode = BindingMode.TwoWay, Converter = conv };
-
-                var bindingIsEnabled = new Binding("IsEnabled") { Source = edge.Key, Mode = BindingMode.TwoWay };
-
-                edge.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
-                edge.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
-            }
-        }
-        #endregion
 
         #region Post Status Message
         public void PostStatusMessage(string message)
@@ -2236,7 +2072,7 @@
 
             View.FitToBounds(tab);
 
-            SetVertexPropertiesBinding();
+            View.SetVertexPropertiesBinding(tab);
         }
         #endregion // Methods
     }

@@ -6,9 +6,11 @@
     using System.Linq;
     using Config;
     using CsvHelper;
-    using DomainModel;
+
     using Interfaces;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     // Summary:
     //     Represents a service loading data 

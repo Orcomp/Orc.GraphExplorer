@@ -12,16 +12,21 @@ namespace Orc.GraphExplorer.Views
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
     using System.Windows.Media;
 
     using Catel.IoC;
-
+    using Catel.MVVM.Converters;
     using GraphX;
     using GraphX.Controls;
 
-    using Orc.GraphExplorer.DomainModel;
+    using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Views.Enums;
     using Orc.GraphExplorer.Views.Interfaces;
+
+    using QuickGraph;
+    using IValueConverter = Catel.MVVM.Converters.IValueConverter;
 
     /// <summary>
     /// Interaction logic for GraphExplorerView.xaml
@@ -39,7 +44,28 @@ namespace Orc.GraphExplorer.Views
         {
             InitializeComponent();
 
-            ServiceLocator.Default.RegisterInstance(GetType(), this);            
+            ServiceLocator.Default.RegisterInstance(GetType(), this);
+
+            RplaceAreaGridParent(Area, zoomctrl);
+            RplaceAreaGridParent(AreaNav, zoomctrlNav);
+        }
+
+        // TODO: this method is like hack. It should be removed in future
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="areaView"></param>
+        /// <param name="zoomView"></param>
+        private void RplaceAreaGridParent(AreaView areaView, ZoomView zoomView)
+        {
+            var grid = areaView.Parent as Grid;
+            if (grid == null)
+            {
+                return;
+            }
+            grid.Children.Remove(areaView);
+            zoomView.Content = areaView;
+
         }
 
         public bool IsEdgeEditing {
@@ -158,29 +184,69 @@ namespace Orc.GraphExplorer.Views
             return area;
         }
 
-        public DataVertex GetVertexById(GraphExplorerTab tab, int vertexId)
-        {
-            var area = GetAreaByTab(tab);
-            return area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Key).FirstOrDefault();
-        }
-
-        public void SetVertexHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value)
+        public void SetHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value)
         {
             var area = GetAreaByTab(tab);
             HighlightBehaviour.SetHighlighted(area.VertexList[dataVertex], value);
         }
 
-        public void SetVertexHighlighted(GraphExplorerTab tab, int vertexId, bool value)
+        public void SetHighlighted(GraphExplorerTab tab, int vertexId, bool value)
         {
             var area = GetAreaByTab(tab);
-            VertexControl vertex = area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Value).FirstOrDefault();
+            VertexControl vertex = area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Value).Cast<VertexControl>().FirstOrDefault();
             HighlightBehaviour.SetHighlighted(vertex, value);
         }
 
-        public bool ContainsVertexId(GraphExplorerTab tab, int vertexId)
+        public void SetIsHighlightEnabled(GraphExplorerTab tab, DataVertex vertex, bool value)
         {
             var area = GetAreaByTab(tab);
-            return area.VertexList.Keys.Any(v => v.Id == vertexId);
+            HighlightBehaviour.SetIsHighlightEnabled(area.VertexList[vertex], value);
+        }
+
+        public void SetIsHighlightEnabled(GraphExplorerTab tab, DataEdge edge, bool value)
+        {
+            var area = GetAreaByTab(tab);
+            HighlightBehaviour.SetIsHighlightEnabled(area.EdgesList[edge], value);
+        }
+
+        public void SetHighlighted(GraphExplorerTab tab, DataEdge edge, bool value)
+        {
+            var area = GetAreaByTab(tab);
+            HighlightBehaviour.SetHighlighted(area.EdgesList[edge], value);
+        }
+
+        public void SetIsDragEnabled(GraphExplorerTab tab, DataVertex vertex, bool value)
+        {
+            var area = GetAreaByTab(tab);
+            DragBehaviour.SetIsDragEnabled(area.VertexList[vertex], value);
+        }
+
+        //Summary
+        //    binding in style will be overrided in graph control, so need create binding after data loaded
+        public void SetVertexPropertiesBinding(GraphExplorerTab tab)
+        {
+            GraphArea area = GetAreaByTab(tab);;
+            IValueConverter conv = new BooleanToHidingVisibilityConverter();
+
+            foreach (var vertex in area.VertexList)
+            {
+                var bindingIsVisible = new Binding("IsVisible") { Source = vertex.Key, Mode = BindingMode.TwoWay, Converter = conv };
+
+                var bindingIsEnabled = new Binding("IsEnabled") { Source = vertex.Key, Mode = BindingMode.TwoWay };
+
+                vertex.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
+                vertex.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
+            }
+
+            foreach (var edge in area.EdgesList)
+            {
+                var bindingIsVisible = new Binding("IsVisible") { Source = edge.Key, Mode = BindingMode.TwoWay, Converter = conv };
+
+                var bindingIsEnabled = new Binding("IsEnabled") { Source = edge.Key, Mode = BindingMode.TwoWay };
+
+                edge.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
+                edge.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
+            }
         }
     }
 }

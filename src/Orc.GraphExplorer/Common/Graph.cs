@@ -1,6 +1,5 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.Common
 {
-    using Models;
     using QuickGraph;
 
     public class Graph : BidirectionalGraph<DataVertex, DataEdge>

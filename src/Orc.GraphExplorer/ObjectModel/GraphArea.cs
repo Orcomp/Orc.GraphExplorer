@@ -1,8 +1,6 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.ObjectModel
 {
     using GraphX;
-
-    using Orc.GraphExplorer.Models;
 
     using QuickGraph;
 

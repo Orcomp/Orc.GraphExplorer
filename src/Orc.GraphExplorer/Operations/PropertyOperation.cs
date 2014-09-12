@@ -1,9 +1,11 @@
 ﻿namespace Orc.GraphExplorer.Operations
 {
-    using DomainModel;
     using Enums;
     using Models;
     using Operations.Interfaces;
+
+    using Orc.GraphExplorer.ObjectModel;
+
     using ViewModels;
 
     public abstract class PropertyOperation : IOperation

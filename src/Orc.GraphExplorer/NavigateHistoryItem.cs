@@ -5,8 +5,9 @@ using System.Text;
 
 namespace Orc.GraphExplorer
 {
-    using DomainModel;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     public class NavigateHistoryItem
     {

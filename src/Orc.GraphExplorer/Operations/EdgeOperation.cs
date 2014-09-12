@@ -2,11 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
-    using DomainModel;
+
     using Enums;
     using GraphX;
     using Models;
     using Operations.Interfaces;
+
+    using Orc.GraphExplorer.ObjectModel;
+
     using QuickGraph;
 
     /// <summary>

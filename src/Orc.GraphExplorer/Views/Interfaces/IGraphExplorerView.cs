@@ -9,8 +9,10 @@ namespace Orc.GraphExplorer.Views.Interfaces
 {
     using System.Windows.Media;
     using Catel.MVVM.Views;
-    using DomainModel;
+
     using GraphX;
+
+    using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Views.Enums;
 
     public interface IGraphExplorerView : IView
@@ -30,8 +32,7 @@ namespace Orc.GraphExplorer.Views.Interfaces
         void ClearEdEdge();
         void ClearEdVertex();
         void ClearLayout(GraphExplorerTab tab);
-        DataVertex GetVertexById(GraphExplorerTab tab, int vertexId);
-        void SetVertexHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value);
-        void SetVertexHighlighted(GraphExplorerTab tab, int vertexId, bool value);
+        void SetHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value);
+        void SetHighlighted(GraphExplorerTab tab, int vertexId, bool value);
     }
 }

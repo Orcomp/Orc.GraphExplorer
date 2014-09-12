@@ -143,8 +143,13 @@
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DomainModel\FilterEntity.cs" />
-    <Compile Include="DomainModel\GraphLogic.cs" />
+    <Compile Include="Behaviors\DragBehavior.cs" />
+    <Compile Include="Behaviors\DrawEdgeBehavior.cs" />
+    <Compile Include="Behaviors\DropBehavior.cs" />
+    <Compile Include="Behaviors\IDragable.cs" />
+    <Compile Include="Behaviors\IDropable.cs" />
+    <Compile Include="ObjectModel\FilterEntity.cs" />
+    <Compile Include="ObjectModel\GraphLogic.cs" />
     <Compile Include="Models\FilePicker.cs" />
     <Compile Include="Models\GraphExplorer.cs" />
     <Compile Include="ModuleInitializer.cs" />
@@ -158,6 +163,7 @@
     <Compile Include="Operations\VertexOperation.cs" />
     <Compile Include="Operations\CreateEdgeOperation.cs" />
     <Compile Include="Operations\CreateVertexOperation.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\CsvGraphDataService.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Events\DataLoadedEventArgs.cs" />
@@ -165,6 +171,9 @@
     <Compile Include="Services\Interfaces\IFilePickerService.cs" />
     <Compile Include="Services\Interfaces\IOperationObserver.cs" />
     <Compile Include="Models\OperationObserver.cs" />
+    <Compile Include="ViewModels\AreaViewModel.cs" />
+    <Compile Include="ViewModels\DragableButtonViewModel.cs" />
+    <Compile Include="ViewModels\EdgeViewModel.cs" />
     <Compile Include="ViewModels\FilePickerViewModel.cs" />
     <Compile Include="ViewModels\Messages\CanDragChangedMessage.cs" />
     <Compile Include="ViewModels\Messages\IsDrawingEdgeChangedMessage.cs" />
@@ -179,6 +188,10 @@
     <Compile Include="ViewModels\Messages\UndoMessage.cs" />
     <Compile Include="ViewModels\SettingViewModel.cs" />
     <Compile Include="ViewModels\ToolBarViewModel.cs" />
+    <Compile Include="ViewModels\VertexViewModel.cs" />
+    <Compile Include="ViewModels\ZoomViewModel.cs" />
+    <Compile Include="Views\AreaView.cs" />
+    <Compile Include="Views\DragableButtonView.cs" />
     <Compile Include="Views\Enums\GraphExplorerTab.cs" />
     <Compile Include="Views\FilePickerView.xaml.cs">
       <DependentUpon>FilePickerView.xaml</DependentUpon>
@@ -192,7 +205,7 @@
     <Compile Include="Services\Interfaces\IGraphDataService.cs" />
     <Compile Include="Operations\Interfaces\IOperation.cs" />
     <Compile Include="ViewModels\PropertyViewmodel.cs" />
-    <Compile Include="DomainModel\Result.cs" />
+    <Compile Include="ObjectModel\Result.cs" />
     <Compile Include="NavigateHistoryItem.cs" />
     <Compile Include="Operations\DeleteVertexOperation.cs" />
     <Compile Include="Operations\VertexPositionChangeOperation.cs" />
@@ -203,12 +216,12 @@
     </Compile>
     <Compile Include="Events\SettingViewCloseEventHandler.cs" />
     <Compile Include="Enums\OperationStatus.cs" />
-    <Compile Include="DomainModel\TopologicalLayoutAlgorithm.cs" />
-    <Compile Include="DomainModel\DataEdge.cs" />
-    <Compile Include="DomainModel\DataVertex.cs" />
+    <Compile Include="ObjectModel\TopologicalLayoutAlgorithm.cs" />
+    <Compile Include="ObjectModel\DataEdge.cs" />
+    <Compile Include="ObjectModel\DataVertex.cs" />
     <Compile Include="Enums\DisplayMode.cs" />
-    <Compile Include="DomainModel\Graph.cs" />
-    <Compile Include="DomainModel\GraphArea.cs" />
+    <Compile Include="ObjectModel\Graph.cs" />
+    <Compile Include="ObjectModel\GraphArea.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Config\GraphExplorerConfiguration.cs" />
     <Compile Include="Views\ToolBarView.xaml.cs">
@@ -217,6 +230,7 @@
     <Compile Include="Views\VertexFilterView.xaml.cs">
       <DependentUpon>VertexFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ZoomView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Style\appbar.people.png" />

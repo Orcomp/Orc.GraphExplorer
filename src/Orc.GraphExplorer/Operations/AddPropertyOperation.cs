@@ -1,7 +1,9 @@
 ﻿namespace Orc.GraphExplorer.Operations
 {
-    using DomainModel;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
+
     using ViewModels;
 
     public class AddPropertyOperation : PropertyOperation

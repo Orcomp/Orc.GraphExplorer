@@ -2,9 +2,11 @@
 {
     using System;
     using System.Linq;
-    using DomainModel;
+
     using GraphX;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     public class CreateEdgeOperation : EdgeOperation
     {

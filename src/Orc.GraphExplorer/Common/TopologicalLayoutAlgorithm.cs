@@ -1,8 +1,9 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.Common
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows;
+
     using GraphX.GraphSharp.Algorithms.Layout;
     using GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical;
 

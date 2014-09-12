@@ -1,4 +1,4 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.ObjectModel
 {
     using System;
 

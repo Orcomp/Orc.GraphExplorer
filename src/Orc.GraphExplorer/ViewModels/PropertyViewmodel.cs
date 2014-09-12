@@ -3,9 +3,11 @@
     using System;
     using System.Collections.Generic;
     using Catel.Data;
-    using DomainModel;
+
     using Operations;
     using Operations.Interfaces;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     public class PropertyViewModel : ObservableObject, IObservable<IOperation>,IDisposable
     {

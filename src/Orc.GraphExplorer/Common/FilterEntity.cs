@@ -1,8 +1,7 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.Common
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Models;
 
     public class FilterEntity
     {

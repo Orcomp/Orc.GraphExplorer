@@ -1,21 +1,19 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphLogic.cs" company="Orcomp development team">
+// <copyright file="IDragable.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-
-namespace Orc.GraphExplorer.DomainModel
+namespace Orc.GraphExplorer.Behaviors
 {
-    using GraphX.Logic;
+    using System;
+    using System.Windows;
 
-    using Orc.GraphExplorer.Models;
-
-    using QuickGraph;
-
-    public class GraphLogic : GXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>>
+    public interface IDragable
     {
-         
+        DragDropEffects GetDragEffects();
+      //  object GetData(object dataContext);
+        Type DataType { get; }
     }
 }

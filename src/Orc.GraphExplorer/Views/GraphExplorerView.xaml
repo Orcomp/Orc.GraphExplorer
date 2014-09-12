@@ -7,13 +7,15 @@
              xmlns:local="clr-namespace:Orc.GraphExplorer"
              xmlns:catel="http://catel.codeplex.com"
              xmlns:controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
-             xmlns:views="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
+             xmlns:filterViews="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
              xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
              xmlns:toolkit="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
-             xmlns:domainModel="clr-namespace:Orc.GraphExplorer.DomainModel"
-             xmlns:views1="clr-namespace:Orc.GraphExplorer.Views"
+    xmlns:views="clr-namespace:Orc.GraphExplorer.Views"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:ViewModels="clr-namespace:Orc.GraphExplorer.ViewModels" x:Class="Orc.GraphExplorer.Views.GraphExplorerView" 
+             xmlns:ViewModels="clr-namespace:Orc.GraphExplorer.ViewModels"
+             xmlns:objectModel="clr-namespace:Orc.GraphExplorer.ObjectModel"
+             xmlns:b="clr-namespace:Orc.GraphExplorer.Behaviors"
+             x:Class="Orc.GraphExplorer.Views.GraphExplorerView" 
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -69,14 +71,12 @@
 								Visibility="{Binding IsInEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ToggleButton Height="28" DockPanel.Dock="Left" ToolTip="Create Link"
 									IsChecked="{Binding IsAddingNewEdge}" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" Command="{Binding CreateLinkCommand}"/>
-                                <Button Height="28" DockPanel.Dock="Left" ToolTip="Drag To Treate Node"
+                                <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Treate Node"
 									Width="28" Style="{StaticResource VertexButtonStyle}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                                            <catel:EventToCommand Command="{Binding StartDragNodeCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </Button>
+                                    <i:Interaction.Behaviors>
+                                        <b:DragBehavior/>
+                                    </i:Interaction.Behaviors>
+                                </views:DragableButtonView>
                                 <Button Height="28" DockPanel.Dock="Left" ToolTip="Undo"
 									Command="{Binding UndoCommand}" Width="28" Style="{StaticResource UndoButtonStyle}"/>
                                 <Button Height="28" DockPanel.Dock="Left" ToolTip="Redo"
@@ -107,7 +107,7 @@
                             <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                             <toolkit:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
                                 <StackPanel Height="200" Width="320">
-                                    <views:FilterBuilderControl Margin="2,2,6,2" RawCollection="{Binding Entities}" FilteredCollection="{Binding FilteredEntities}"/>
+                                    <filterViews:FilterBuilderControl Margin="2,2,6,2" RawCollection="{Binding Entities}" FilteredCollection="{Binding FilteredEntities}"/>
                                     <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes, Mode=TwoWay}" Content="Hide vertexes been filtered"/>
                                     <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
                                 </StackPanel>
@@ -119,37 +119,30 @@
                         </DockPanel>
                     </Border>
 
-                    <controls:ZoomControl x:Name="zoomctrl" AllowDrop="True" MinZoom="{Binding MinZoom}" MaxZoom="{Binding MaxZoom}" ZoomDeltaMultiplier="20" Grid.Row="1"
+                    <views:ZoomView x:Name="zoomctrl" AllowDrop="True" MinZoom="{Binding MinZoom}" MaxZoom="{Binding MaxZoom}" ZoomDeltaMultiplier="20" Grid.Row="1"
                                           Zoom="{Binding Zoom, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           Mode="{Binding ZoomMode, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="PreviewMouseMove">
-                                <catel:EventToCommand Command="{Binding DragEdgeCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="PreviewDrop">
-                                <catel:EventToCommand Command="{Binding DropEdgeCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="DragEnter">
-                                <catel:EventToCommand Command="{Binding DropEnterCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <domainModel:GraphArea x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="VertexDoubleClick">
-                                    <catel:EventToCommand Command="{Binding NavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="EdgeSelected">
-                                    <catel:EventToCommand Command="{Binding EdgeSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="VertexSelected">
-                                    <catel:EventToCommand Command="{Binding VertexSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="GenerateGraphFinished">
-                                    <catel:EventToCommand Command="{Binding RelayoutAreaFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>                            
-                        </domainModel:GraphArea>
-                    </controls:ZoomControl>
+                        <i:Interaction.Behaviors>
+                            <b:DrawEdgeBehavior/>
+                            <b:DropBehavior/>
+                        </i:Interaction.Behaviors>
+                            <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="VertexDoubleClick">
+                                        <catel:EventToCommand Command="{Binding NavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="EdgeSelected">
+                                        <catel:EventToCommand Command="{Binding EdgeSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="VertexSelected">
+                                        <catel:EventToCommand Command="{Binding VertexSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="GenerateGraphFinished">
+                                        <catel:EventToCommand Command="{Binding RelayoutAreaFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </views:AreaView>
+                    </views:ZoomView>
                 </Grid>
             </TabItem>
             <TabItem Visibility="{Binding IsNavTabVisible, Converter={StaticResource BooleanToHidingVisibilityConverter}}" IsSelected="{Binding IsNavTabSelected}" Padding="1" FontWeight="Bold">
@@ -193,20 +186,23 @@
                             <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding ZoomModeNav, ConverterParameter={x:Static controls:ZoomControlModes.Original}, Converter={StaticResource equalityConverter}}" />
                         </StackPanel>
                     </Border>
-                    <controls:ZoomControl Grid.Row="1"  MinZoom="{Binding MinZoomNav}" MaxZoom="{Binding MaxZoomNav}" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav"
+                    <views:ZoomView Grid.Row="1"  MinZoom="{Binding MinZoomNav}" MaxZoom="{Binding MaxZoomNav}" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav"
                                           Zoom="{Binding ZoomNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                           Mode="{Binding ZoomModeNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                        <domainModel:GraphArea x:Name="AreaNav" LogicCore="{Binding Path=DataContext.NavLogic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="VertexDoubleClick">
-                                    <catel:EventToCommand Command="{Binding FurtherNavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="GenerateGraphFinished">
-                                    <catel:EventToCommand Command="{Binding RelayoutAreaNavFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </domainModel:GraphArea>
-                    </controls:ZoomControl>
+                        <views:ZoomView.Content>
+                            <views:AreaView x:Name="AreaNav" LogicCore="{Binding Path=DataContext.NavLogic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="VertexDoubleClick">
+                                        <catel:EventToCommand Command="{Binding FurtherNavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="GenerateGraphFinished">
+                                        <catel:EventToCommand Command="{Binding RelayoutAreaNavFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </views:AreaView>
+                        </views:ZoomView.Content>
+                        
+                    </views:ZoomView>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -221,12 +217,12 @@
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" Text="{Binding StatusMessage, Mode=OneWay}"/>
             </StackPanel>
         </Border>
-        <views1:SettingView Grid.RowSpan="3" Visibility="{Binding IsSettingsVisible, Mode=TwoWay, Converter={StaticResource BooleanToHidingVisibilityConverter}}" Margin="-1" >
+        <views:SettingView Grid.RowSpan="3" Visibility="{Binding IsSettingsVisible, Mode=TwoWay, Converter={StaticResource BooleanToHidingVisibilityConverter}}" Margin="-1" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SettingApplied">
                     <catel:EventToCommand Command="{Binding SettingAppliedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </views1:SettingView>
+        </views:SettingView>
     </Grid>
 </catel:UserControl>

@@ -8,7 +8,8 @@
     xmlns:gxllogic="clr-namespace:GraphX;assembly=GraphX.Logic"
     xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
     xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"       
-    xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit">
+    xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+    xmlns:views="clr-namespace:Orc.GraphExplorer.Views;assembly=Orc.GraphExplorer">
 
     <!--TabControl-->
     <Color x:Key="AccentColor" >#FF205A95</Color>
@@ -1625,10 +1626,10 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="{x:Type Controls:ZoomControl}">
+    <Style TargetType="{x:Type views:ZoomView}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Controls:ZoomControl}">
+                <ControlTemplate TargetType="{x:Type views:ZoomView}">
                     <Grid>
                         <Border BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
@@ -1645,7 +1646,7 @@
                                     Canvas.Left="20"
                                     Canvas.Top="20"
                                     ToolTipService.InitialShowDelay="0"
-                                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:ZoomControl}}, Path=HideZoom}">
+                                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ZoomView}}, Path=HideZoom}">
                                 <Border.ToolTip>
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock><Run FontWeight="Bold">CTRL + Wheel:</Run> Zoom In / Out</TextBlock>

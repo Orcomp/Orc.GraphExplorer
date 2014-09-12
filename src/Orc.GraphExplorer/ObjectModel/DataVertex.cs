@@ -1,4 +1,4 @@
-﻿namespace Orc.GraphExplorer.DomainModel
+﻿namespace Orc.GraphExplorer.ObjectModel
 {
     using System;
     using System.Collections.Generic;
@@ -6,12 +6,15 @@
     using System.ComponentModel;
     using System.Linq;
     using System.Windows.Media;
+
     using Catel.MVVM;
+
     using GraphX;
-    using Models;
-    using Operations;
-    using Operations.Interfaces;
-    using ViewModels;
+
+    using Orc.GraphExplorer.Operations;
+    using Orc.GraphExplorer.Operations.Interfaces;
+    using Orc.GraphExplorer.ViewModels;
+
     using YAXLib;
 
     public class DataVertex : VertexBase, INotifyPropertyChanged, IDisposable, IObservable<IOperation>, IObserver<IOperation>

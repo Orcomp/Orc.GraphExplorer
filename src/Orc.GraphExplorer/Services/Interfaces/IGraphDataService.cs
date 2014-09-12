@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Configuration;
-    using DomainModel;
+
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     public interface IGraphDataService
     {

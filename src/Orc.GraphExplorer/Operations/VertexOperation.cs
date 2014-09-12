@@ -4,11 +4,15 @@
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Threading;
-    using DomainModel;
+
     using Enums;
     using GraphX;
     using Models;
     using Operations.Interfaces;
+
+    using Orc.GraphExplorer.ObjectModel;
+    using Orc.GraphExplorer.Views;
+
     using QuickGraph;
 
     /// <summary>

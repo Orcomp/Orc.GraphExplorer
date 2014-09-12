@@ -2,10 +2,12 @@
 {
     using System;
     using System.Windows;
-    using DomainModel;
+
     using Enums;
     using GraphX;
     using Models;
+
+    using Orc.GraphExplorer.ObjectModel;
 
     public class VertexPositionChangeOperation : VertexOperation
     {
