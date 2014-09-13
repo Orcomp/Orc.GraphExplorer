@@ -40,7 +40,7 @@ namespace Orc.GraphExplorer.Behaviors
             }
         }
 
-        void AssociatedObject_PreviewDrop(object sender, DragEventArgs e)
+        private void AssociatedObject_PreviewDrop(object sender, DragEventArgs e)
         {
             var zoomCtrl = AssociatedObject as ZoomView;
             if (zoomCtrl == null)
@@ -60,11 +60,8 @@ namespace Orc.GraphExplorer.Behaviors
                 return;
             }
 
-            if (e.Data.GetDataPresent(typeof(object)))
-            {
-                Point pos = zoomCtrl.TranslatePoint(e.GetPosition(zoomCtrl), area);
-                dropable.Drop(e.Data, pos);                
-            }
-        }        
+            Point pos = zoomCtrl.TranslatePoint(e.GetPosition(zoomCtrl), area);
+            dropable.Drop(e.Data, pos);
+        }
     }
 }

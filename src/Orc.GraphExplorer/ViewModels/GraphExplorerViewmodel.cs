@@ -45,6 +45,7 @@
 
     public class GraphExplorerViewModel : ViewModelBase
     {
+        
         #region Fields
         private DataVertex _currentNavItem;       
 
@@ -66,7 +67,7 @@
 
         private bool _hasUnCommitChange;
 
-        
+        private readonly IOperationObserver _operationObserver;
 
        
         #endregion
@@ -75,9 +76,12 @@
         public GraphExplorerViewModel()
         {
             SelectedVertices = new List<int>();
-            OperationObserver = new OperationObserver();
+            Editor = new EditorModel();
             IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
+            Editor = new EditorModel();
+            var serviceLocator = ServiceLocator.Default;
+            _operationObserver = serviceLocator.ResolveType<IOperationObserver>();
 
             SaveToXml = new Command(OnSaveToXmlExecute);
             LoadFromXml = new Command(OnLoadFromXmlExecute);
@@ -391,13 +395,13 @@
 
         public void GetEdges()
         {
-            GraphDataService.GetEdges(OnEdgeLoaded, OperationObserver.OnError);
+            GraphDataService.GetEdges(OnEdgeLoaded, _operationObserver.OnError);
         }
 
         private void OnEdgeLoaded(IEnumerable<DataEdge> edges)
         {
             Edges = edges;
-            GraphDataService.GetVertexes(OnVertexesLoaded, OperationObserver.OnError);
+            GraphDataService.GetVertexes(OnVertexesLoaded, _operationObserver.OnError);
         }
 
         private void OnVertexesLoaded(IEnumerable<DataVertex> vertexes)
@@ -766,7 +770,7 @@
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
         private bool OnUndoCommandCanExecute()
         {
-            return OperationObserver.HasUndoable;
+            return Editor.HasUndoable;
         }
 
         /// <summary>
@@ -774,7 +778,7 @@
         /// </summary>
         private void OnUndoCommandExecute()
         {
-            OperationObserver.Undo();
+            _operationObserver.Undo();
         }
 
         /// <summary>
@@ -788,7 +792,7 @@
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
         private bool OnRedoCommandCanExecute()
         {
-            return OperationObserver.HasRedoable;
+            return Editor.HasRedoable;
         }
 
         /// <summary>
@@ -796,7 +800,7 @@
         /// </summary>
         private void OnRedoCommandExecute()
         {
-            OperationObserver.Redo();
+            _operationObserver.Redo();
         }
 
         #endregion // Commands
@@ -1405,22 +1409,22 @@
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public OperationObserver OperationObserver
+        public EditorModel Editor
         {
-            get { return GetValue<OperationObserver>(OperationObserverProperty); }
+            get { return GetValue<EditorModel>(OperationObserverProperty); }
             set { SetValue(OperationObserverProperty, value); }
         }
 
         /// <summary>
-        /// Register the OperationObserver property so it is known in the class.
+        /// Register the Editor property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData OperationObserverProperty = RegisterProperty("OperationObserver", typeof(OperationObserver), null);
+        public static readonly PropertyData OperationObserverProperty = RegisterProperty("Editor", typeof(EditorModel), null);
 
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("OperationObserver")]
+        [ViewModelToModel("Editor")]
         public bool HasChange
         {
             get { return GetValue<bool>(HasChangeProperty); }
@@ -1435,7 +1439,7 @@
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("OperationObserver")]
+        [ViewModelToModel("Editor")]
         public string OperationStatus
         {
             get { return GetValue<string>(OperationStatusProperty); }
@@ -1497,63 +1501,6 @@
         }
 
 
-        private void SafeRemoveVertex(VertexControl vc, GraphArea area, GraphLogic logic, bool removeFromSelected = false)
-        {
-            //remove all adjacent edges
-            foreach (IGraphControl item in area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
-            {
-                var ec = item as EdgeControl;
-                logic.Graph.RemoveEdge(ec.Edge as DataEdge);
-                area.RemoveEdge(ec.Edge as DataEdge);
-            }
-
-            var v = vc.Vertex as DataVertex;
-            logic.Graph.RemoveVertex(v);
-            area.RemoveVertex(v);
-
-            if (removeFromSelected && v != null && SelectedVertices.Contains(v.Id))
-            {
-                SelectedVertices.Remove(v.Id);
-            }
-        }
-
-        public static void RunCodeInUiThread<T>(Action<T> action, T parameter, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
-        {
-            if (action == null)
-            {
-                return;
-            }
-
-            if (dispatcher != null)
-            {
-                dispatcher.BeginInvoke(action, priority, parameter);
-            }
-            else
-            {
-                action.Invoke(parameter);
-            }
-        }
-
-        private void FitToBounds(Dispatcher dispatcher, ZoomControl zoom)
-        {
-            if (dispatcher != null)
-            {
-                dispatcher.BeginInvoke(new Action(() =>
-                {
-                    zoom.ZoomToFill();
-                    zoom.Mode = ZoomControlModes.Custom;
-                    //zoom.FitToBounds();
-                }), DispatcherPriority.Loaded);
-            }
-            else
-            {
-                zoom.ZoomToFill();
-                zoom.Mode = ZoomControlModes.Custom;
-            }
-        }
-
-
-
         private void miDeleteLink_Click(object sender, RoutedEventArgs e)
         {
             var eCtrl = (sender as MenuItem).Tag as EdgeControl;
@@ -1569,7 +1516,7 @@
                     //do nothing
                 });
 
-                OperationObserver.Do(op);
+                _operationObserver.Do(op);
             }
             //throw new NotImplementedException();
         }
@@ -1671,7 +1618,7 @@
             {
                 var op = new DeleteVertexOperation(View.Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { View.Area.RelayoutGraph(true); });
 
-                OperationObserver.Do(op);
+                _operationObserver.Do(op);
             }
         }
 
@@ -1841,22 +1788,6 @@
             if (vertex != null)
             {
                 vertex.IsVisible = true;
-
-                //foreach (var edgeIn in _edges.Where(e => e.Target.Id == vertex.Id))
-                //{
-                //    if (edgeIn.Source.IsVisible)
-                //        edgeIn.IsVisible = true;
-                //    else
-                //        edgeIn.IsVisible = false;
-                //}
-
-                //foreach (var edgeOut in _edges.Where(e => e.Source.Id == vertex.Id))
-                //{
-                //    if (edgeOut.Target.IsVisible)
-                //        edgeOut.IsVisible = true;
-                //    else
-                //        edgeOut.IsVisible = false;
-                //}
             }
         }
 
@@ -1889,7 +1820,7 @@
         public void Commit()
         {
             SelectedVertices.Clear();
-            OperationObserver.Clear();
+            _operationObserver.Clear();
             
             UndoCommand.RaiseCanExecuteChanged();
             RedoCommand.RaiseCanExecuteChanged();
@@ -1935,7 +1866,7 @@
                 return;
             }
 
-            OperationObserver.Do(new CreateEdgeOperation(area, source, target, e =>
+            _operationObserver.Do(new CreateEdgeOperation(area, source, target, e =>
             {
                 //on vertex created
                 //SelectedVertices.Add(v.Id);
@@ -1984,7 +1915,7 @@
 
             foreach (DataVertex vertex in vertexes)
             {
-                _observers.Add(vertex.Subscribe(OperationObserver));
+                _observers.Add(vertex.Subscribe(_operationObserver));
                 vertex.OnPositionChanged -= vertex_OnPositionChanged;
                 vertex.OnPositionChanged += vertex_OnPositionChanged;
             }
@@ -2008,7 +1939,7 @@
             {
                 VertexControl vc = View.Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
-                OperationObserver.OnNext(new VertexPositionChangeOperation(View.Area, vc, e.OffsetX, e.OffsetY, vertex));
+                _operationObserver.OnNext(new VertexPositionChangeOperation(View.Area, vc, e.OffsetX, e.OffsetY, vertex));
             }
         }
         #endregion

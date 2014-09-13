@@ -4,6 +4,7 @@
     using System.Linq;
 
     using GraphX;
+    using GraphX.GraphSharp;
     using Models;
 
     using Orc.GraphExplorer.ObjectModel;

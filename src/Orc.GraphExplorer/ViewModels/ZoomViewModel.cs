@@ -7,17 +7,23 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System;
     using System.Windows;
-
+    using Catel.IoC;
     using Catel.MVVM;
-
+    using ObjectModel;
+    using Operations;
     using Orc.GraphExplorer.Behaviors;
+    using Services.Interfaces;
+    using Views;
 
     public class ZoomViewModel : ViewModelBase, IDropable
     {
-        public ZoomViewModel()
+        private readonly IOperationObserver _operationObserver;
+
+        public ZoomViewModel(IOperationObserver operationObserver)
         {
-            
+            _operationObserver = operationObserver;
         }
 
         public DragDropEffects GetDropEffects(IDataObject dataObject)
@@ -27,7 +33,10 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void Drop(IDataObject dataObject, Point position)
         {
-            throw new System.NotImplementedException();
+            if (dataObject.GetDataPresent(typeof (object)))
+            {
+                _operationObserver.Do(CreateVertexOperation.NewOperation(this, position));
+            }
         }
     }
 }

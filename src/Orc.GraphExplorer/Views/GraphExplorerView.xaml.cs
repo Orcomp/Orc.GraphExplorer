@@ -190,13 +190,6 @@ namespace Orc.GraphExplorer.Views
             HighlightBehaviour.SetHighlighted(area.VertexList[dataVertex], value);
         }
 
-        public void SetHighlighted(GraphExplorerTab tab, int vertexId, bool value)
-        {
-            var area = GetAreaByTab(tab);
-            VertexControl vertex = area.VertexList.Where(pair => pair.Key.Id == vertexId).Select(pair => pair.Value).Cast<VertexControl>().FirstOrDefault();
-            HighlightBehaviour.SetHighlighted(vertex, value);
-        }
-
         public void SetIsHighlightEnabled(GraphExplorerTab tab, DataVertex vertex, bool value)
         {
             var area = GetAreaByTab(tab);

@@ -33,6 +33,5 @@ namespace Orc.GraphExplorer.Views.Interfaces
         void ClearEdVertex();
         void ClearLayout(GraphExplorerTab tab);
         void SetHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value);
-        void SetHighlighted(GraphExplorerTab tab, int vertexId, bool value);
     }
 }

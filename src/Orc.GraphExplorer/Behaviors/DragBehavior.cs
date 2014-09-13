@@ -15,18 +15,11 @@ namespace Orc.GraphExplorer.Behaviors
 
     public class DragBehavior : Behavior<FrameworkElement>
     {
-        private bool isMouseClicked = false;
-
         protected override void OnAttached()
         {
             base.OnAttached();
-          //  AssociatedObject.DragEnter +=AssociatedObject_DragEnter;
             AssociatedObject.PreviewMouseLeftButtonDown += AssociatedObject_PreviewMouseLeftButtonDown;
-         //   AssociatedObject.PreviewMouseMove += AssociatedObject_PreviewMouseMove;
-           // this.AssociatedObject.MouseLeftButtonDown += new MouseButtonEventHandler(AssociatedObject_MouseLeftButtonDown);
-  /*          this.AssociatedObject.MouseLeftButtonUp += new MouseButtonEventHandler(AssociatedObject_MouseLeftButtonUp);
-            this.AssociatedObject.MouseLeave += new MouseEventHandler(AssociatedObject_MouseLeave);
-  */      }
+        }
 
         void AssociatedObject_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -44,7 +37,6 @@ namespace Orc.GraphExplorer.Behaviors
             var data = new DataObject();
             data.SetData(dragObject.DataType, userControl.ViewModel);
             DragDrop.DoDragDrop(this.AssociatedObject, data, dragObject.GetDragEffects());
-//            isMouseClicked = true;
         }
     }
 }

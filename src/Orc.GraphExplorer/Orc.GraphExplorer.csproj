@@ -170,7 +170,8 @@
     <Compile Include="Services\FilePickerService.cs" />
     <Compile Include="Services\Interfaces\IFilePickerService.cs" />
     <Compile Include="Services\Interfaces\IOperationObserver.cs" />
-    <Compile Include="Models\OperationObserver.cs" />
+    <Compile Include="Models\EditorModel.cs" />
+    <Compile Include="Services\OperationObserver.cs" />
     <Compile Include="ViewModels\AreaViewModel.cs" />
     <Compile Include="ViewModels\DragableButtonViewModel.cs" />
     <Compile Include="ViewModels\EdgeViewModel.cs" />
