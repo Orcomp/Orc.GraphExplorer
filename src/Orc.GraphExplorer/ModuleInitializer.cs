@@ -1,6 +1,7 @@
 ﻿using Catel.IoC;
 using Orc.GraphExplorer.Services.Interfaces;
 using Orc.GraphExplorer.Services;
+using GraphX.Controls.Models;
 
 /// <summary>
 /// Used by the ModuleInit. All code inside the Initialize method is ran as soon as the assembly is loaded.
@@ -16,5 +17,6 @@ public static class ModuleInitializer
         serviceLocator.RegisterType<IFilePickerService, FilePickerService>();        
         serviceLocator.RegisterType<IEditorService, EditorService>(RegistrationType.Transient);
         serviceLocator.RegisterType<IOperationObserver, OperationObserver>();
+        serviceLocator.RegisterType<IGraphControlFactory, CustomGraphControlFactory>(RegistrationType.Transient);
     }
 }

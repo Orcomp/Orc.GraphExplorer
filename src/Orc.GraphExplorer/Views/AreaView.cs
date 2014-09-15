@@ -11,10 +11,12 @@ namespace Orc.GraphExplorer.Views
     using System.ComponentModel;
     using System.Windows;
     using Catel;
+    using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
+    using GraphX.Controls.Models;
     using ObjectModel;
     using ViewModels;
 
@@ -28,7 +30,7 @@ namespace Orc.GraphExplorer.Views
         private event PropertyChangedEventHandler _propertyChanged;
 
         public AreaView()
-        {
+        {            
             _logic = new UserControlLogic(this, typeof(AreaViewModel));
             _logic.ViewModelChanged += (sender, args) => InvokeEvent(ViewModelChanged);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);

@@ -3,33 +3,39 @@
     using System;
     using System.Collections.Generic;
     using System.Windows;
-
+    using Catel.IoC;
+    using Events;
     using GraphX;
-
-    public class EdgeControlCreatedAventArgs : EventArgs
-    {
-        public EdgeControl EdgeControl { get; set; }
-
-        public EdgeControlCreatedAventArgs(EdgeControl edgeControl)
-        {
-            EdgeControl = edgeControl;
-        }
-    }
+    using GraphX.Controls.Models;
 
     public class GraphArea : GraphArea<DataVertex, DataEdge, Graph>
     {
+        public GraphArea()
+        {
+            var serviceLocator = ServiceLocator.Default;
+            ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
+            ControlFactory.FactoryRootArea = this;
+        }
+
+        public override VertexControl[] GetAllVertexControls()
+        {
+            return base.GetAllVertexControls();
+        }
+
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.Property == LogicCoreProperty)
+            if (e.Property != LogicCoreProperty)
             {
-                var oldLogic = e.OldValue as GraphLogic;
-                if (oldLogic != null)
-                {
-                    UnSubscribeOnGraphEvents(oldLogic);
-                }
-                SubscribeOnGraphEvents();
+                return;
             }
+
+            var oldLogic = e.OldValue as GraphLogic;
+            if (oldLogic != null)
+            {
+                UnSubscribeOnGraphEvents(oldLogic);
+            }
+            SubscribeOnGraphEvents();
         }
 
         public void CreateGraphArea(IEnumerable<DataVertex> vertexes, IEnumerable<DataEdge> edges, double offsetY)
@@ -56,6 +62,10 @@
 
         private void SubscribeOnGraphEvents()
         {
+            if (LogicCore == null)
+            {
+                return;
+            }
             LogicCore.Graph.VertexAdded += GraphVertexAdded;
             LogicCore.Graph.VertexRemoved += GraphVertexRemoved;
             LogicCore.Graph.EdgeAdded += GraphEdgeAdded;
@@ -66,8 +76,14 @@
         {
             if (logic == null)
             {
-                logic = (GraphLogic)LogicCore;
+                logic = LogicCore as GraphLogic;
             }
+
+            if (logic == null)
+            {
+                return;
+            }
+
             logic.Graph.VertexAdded -= GraphVertexAdded;
             logic.Graph.VertexRemoved -= GraphVertexRemoved;
             logic.Graph.EdgeAdded -= GraphEdgeAdded;
@@ -79,7 +95,7 @@
             RemoveEdge(e);
         }
 
-        void GraphEdgeAdded(DataEdge e)
+        private void GraphEdgeAdded(DataEdge e)
         {
             if (EdgesList.ContainsKey(e))
             {
@@ -87,10 +103,13 @@
             }
             var source = VertexList[e.Source];
             var target = e.Target.Id == -1 ? null : VertexList[e.Target];
-            var edgeControl = new EdgeControl(source, target, e) { ShowArrows = true, ShowLabel = true, ManualDrawing = target == null };
+            var edgeControl = ControlFactory.CreateEdgeControl(source, target, e);
+            edgeControl.ShowArrows = true;
+            edgeControl.ShowLabel = true;
+            edgeControl.ManualDrawing = target == null;
             AddEdge(e, edgeControl);
             if (target == null && TemporaryEdgeCreated != null)
-            {                
+            {
                 TemporaryEdgeCreated(this, new EdgeControlCreatedAventArgs(edgeControl));
             }
         }
@@ -106,7 +125,7 @@
             {
                 return;
             }
-            var vertexControl = new VertexControl(vertex);
+            var vertexControl = ControlFactory.CreateVertexControl(vertex);
             AddVertex(vertex, vertexControl);
         }
 

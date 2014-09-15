@@ -47,7 +47,7 @@
     {
         
         #region Fields
-        private DataVertex _currentNavItem;
+        public DataVertex _currentNavItem;
 
         public DataVertex EdFakeDV;
 
@@ -71,6 +71,10 @@
 
        
         #endregion
+
+        public IOperationObserver OperationObserver {
+            get { return _operationObserver; }
+        }
 
         #region Constructors
         public GraphExplorerViewModel()
@@ -97,173 +101,11 @@
             SaveNavToImage = new Command(OnSaveNavToImageExecute);
             OpenSettingsCommand = new Command(OnOpenSettingsCommandExecute);
             SettingAppliedCommand = new Command<SettingAppliedRoutedEventArgs>(OnSettingAppliedCommandExecute);
-            FurtherNavigateCommand = new Command<VertexSelectedEventArgs>(OnFurtherNavigateCommandExecute);
-            RelayoutAreaNavFinishedCommand = new Command(OnRelayoutAreaNavFinishedCommandExecute);
-            NavigateCommand = new Command<VertexSelectedEventArgs>(OnNavigateCommandExecute);
-            EdgeSelectedCommand = new Command<EdgeSelectedEventArgs>(OnEdgeSelectedCommandExecute);
-            VertexSelectedCommand = new Command<VertexSelectedEventArgs>(OnVertexSelectedCommandExecute);
-            RelayoutAreaFinishedCommand = new Command(OnRelayoutAreaFinishedCommandExecute);
         }
         #endregion
 
         #region Commands
-        /// <summary>
-        /// Gets the RelayoutAreaFinishedCommand command.
-        /// </summary>
-        public Command RelayoutAreaFinishedCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the RelayoutAreaFinishedCommand command is executed.
-        /// </summary>
-        private void OnRelayoutAreaFinishedCommandExecute()
-        {
-            OnRelayoutFinished(GraphExplorerTab.Main);
-        }
-
-        /// <summary>
-        /// Gets the RelayoutAreaNavFinishedCommand command.
-        /// </summary>
-        public Command RelayoutAreaNavFinishedCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the RelayoutAreaNavFinishedCommand command is executed.
-        /// </summary>
-        private void OnRelayoutAreaNavFinishedCommandExecute()
-        {
-            OnRelayoutFinished(GraphExplorerTab.Navigation);
-        }
-
-        /// <summary>
-        /// Gets the VertexSelectedCommand command.
-        /// </summary>
-        public Command<VertexSelectedEventArgs> VertexSelectedCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the VertexSelectedCommand command is executed.
-        /// </summary>
-        private void OnVertexSelectedCommandExecute(VertexSelectedEventArgs eventArgs)
-        {
-            if (eventArgs.MouseArgs.LeftButton == MouseButtonState.Pressed)
-            {
-                //if (DragBehaviour.GetIsDragging(args.VertexControl)) return;
-                SelectVertex(eventArgs.VertexControl);
-
-                if (IsInEditing && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectSource))
-                {
-                    if (!View.IsEdVertex(eventArgs.VertexControl as VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
-                    {
-                        CreateEdge(View.GetEdVertex().Id, (eventArgs.VertexControl.Vertex as DataVertex).Id);
-
-                        ClearEdgeDrawing();
-
-                        Status = GraphExplorerStatus.Ready;
-
-                        IsAddingNewEdge = false;
-                    }
-                }
-            }
-            else if (eventArgs.MouseArgs.RightButton == MouseButtonState.Pressed && IsInEditing)
-            {
-                eventArgs.VertexControl.ContextMenu = new ContextMenu();
-                var miDeleteVertex = new MenuItem { Header = "Delete", Tag = eventArgs.VertexControl };
-                miDeleteVertex.Click += miDeleteVertex_Click;
-                eventArgs.VertexControl.ContextMenu.Items.Add(miDeleteVertex);
-            }
-        }
-
-
-        /// <summary>
-        /// Gets the EdgeSelectedCommand command.
-        /// </summary>
-        public Command<EdgeSelectedEventArgs> EdgeSelectedCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the EdgeSelectedCommand command is executed.
-        /// </summary>
-        private void OnEdgeSelectedCommandExecute(EdgeSelectedEventArgs eventArgs)
-        {
-            if (IsInEditing)
-            {
-                eventArgs.EdgeControl.ContextMenu = new ContextMenu();
-                var miDeleteLink = new MenuItem { Header = "Delete Link", Tag = eventArgs.EdgeControl };
-                miDeleteLink.Click += miDeleteLink_Click;
-                eventArgs.EdgeControl.ContextMenu.Items.Add(miDeleteLink);
-            }
-        }
-
-        /// <summary>
-        /// Gets the NavigateCommand command.
-        /// </summary>
-        public Command<VertexSelectedEventArgs> NavigateCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the NavigateCommand command is executed.
-        /// </summary>
-        private void OnNavigateCommandExecute(VertexSelectedEventArgs eventArgs)
-        {
-            if (IsInEditing)
-            {
-                return;
-            }
-
-            var vertex = eventArgs.VertexControl.DataContext as DataVertex;
-
-            if (vertex == null)
-            {
-                return;
-            }
-
-            _currentNavItem = vertex;
-
-            int degree = Logic.Graph.Degree(vertex);
-
-            if (degree < 1)
-            {
-                return;
-            }
-
-            NavigateTo(vertex, Logic.Graph);
-
-            if (!IsNavTabVisible)
-            {
-                IsNavTabVisible = true;
-            }
-
-            IsNavTabSelected = true;
-        }
-
-
-
-        /// <summary>
-        /// Gets the FurtherNavigateCommand command.
-        /// </summary>
-        public Command<VertexSelectedEventArgs> FurtherNavigateCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the FurtherNavigateCommand command is executed.
-        /// </summary>
-        private void OnFurtherNavigateCommandExecute(VertexSelectedEventArgs eventArgs)
-        {
-            //throw new NotImplementedException();
-            var vertex = eventArgs.VertexControl.DataContext as DataVertex;
-
-            if (vertex == null || vertex == _currentNavItem)
-            {
-                return;
-            }
-
-            _currentNavItem = vertex;
-
-            int degree = Logic.Graph.Degree(vertex);
-
-            if (degree < 1)
-            {
-                return;
-            }
-
-            NavigateTo(vertex, Logic.Graph);
-        }
-
+        
         /// <summary>
         /// Gets the SettingAppliedCommand command.
         /// </summary>
@@ -1453,36 +1295,24 @@
         }
 
 
-        private void miDeleteLink_Click(object sender, RoutedEventArgs e)
+        public bool NavigateTo(DataVertex dataVertex)
         {
-            var eCtrl = (sender as MenuItem).Tag as EdgeControl;
-            if (eCtrl != null)
+            var degree = Logic.Graph.Degree(dataVertex);
+
+            if (degree < 1)
             {
-                var edge = eCtrl.Edge as DataEdge;
-
-                var op = new DeleteEdgeOperation(Editor, View.Area, edge.Source, edge.Target, edge, ec =>
-                {
-                    //do nothing
-                }, ec =>
-                {
-                    //do nothing
-                });
-
-                _operationObserver.Do(op);
+                return false;
             }
-            //throw new NotImplementedException();
-        }
 
-        private void NavigateTo(DataVertex dataVertex, Graph overrallGraph)
-        {
             //overrallGraph.get
-            NavigateHistoryItem historyItem = GetHistoryItem(dataVertex, overrallGraph);
+            NavigateHistoryItem historyItem = GetHistoryItem(dataVertex, Logic.Graph);
 
             View.AreaNav.CreateGraphArea(historyItem.Vertexes, historyItem.Edges, 0);
 
             //var dispatcher = AreaNav.Dispatcher;
 
             //FitToBounds(dispatcher, zoomctrlNav);
+            return true;
         }
 
         private NavigateHistoryItem GetHistoryItem(DataVertex v, Graph overrallGraph)
@@ -1563,16 +1393,7 @@
 
 
 
-        private void miDeleteVertex_Click(object sender, RoutedEventArgs e)
-        {
-            var vCtrl = (sender as MenuItem).Tag as VertexControl;
-            if (vCtrl != null)
-            {
-                var op = new DeleteVertexOperation(Editor, View.Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { View.Area.RelayoutGraph(true); });
-
-                _operationObserver.Do(op);
-            }
-        }
+        
 
 
 
@@ -1946,18 +1767,6 @@
 
             IsFilterApplied = false;
         }
-        #endregion
-
-        #region Methods
-        private void OnRelayoutFinished(GraphExplorerTab tab)
-        {
-            
-            View.ShowAllEdgesLabels(tab, true);
-
-            View.FitToBounds(tab);
-
-            View.SetVertexPropertiesBinding(tab);
-        }
-        #endregion // Methods
+        #endregion        
     }
 }

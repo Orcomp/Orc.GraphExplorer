@@ -5,15 +5,22 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Behaviors
+
+namespace Orc.GraphExplorer.Behaviors.Interfaces
 {
     using System;
     using System.Windows;
 
     public interface IDragable
     {
-        DragDropEffects GetDragEffects();
-      //  object GetData(object dataContext);
+        //  object GetData(object dataContext);
+
+        #region Properties
         Type DataType { get; }
+        #endregion
+
+        #region Methods
+        DragDropEffects GetDragEffects();
+        #endregion
     }
 }

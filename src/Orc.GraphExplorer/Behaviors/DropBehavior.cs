@@ -5,26 +5,17 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Interactivity;
-
-    using Catel.MVVM.Views;
-
-    using GraphX;
-    using GraphX.Controls;
-
-    using Orc.GraphExplorer.ObjectModel;
-    using Orc.GraphExplorer.Operations;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views;
-    using Orc.GraphExplorer.Views.Enums;
+    using Interfaces;
+    using Views;
 
     public class DropBehavior : Behavior<FrameworkElement>
     {
+        #region Methods
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -32,11 +23,23 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.DragEnter += AssociatedObject_DragEnter;
         }
 
-        void AssociatedObject_DragEnter(object sender, DragEventArgs e)
+        private void AssociatedObject_DragEnter(object sender, DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(typeof(object)))
+            if (!e.Data.GetDataPresent(typeof (object)))
             {
-                e.Effects = DragDropEffects.None;
+                var zoomCtrl = AssociatedObject as ZoomView;
+                if (zoomCtrl == null)
+                {
+                    return;
+                }
+
+                var dropable = zoomCtrl.ViewModel as IDropable;
+                if (dropable == null)
+                {
+                    return;
+                }
+
+                e.Effects = dropable.GetDropEffects(e.Data);
             }
         }
 
@@ -63,5 +66,6 @@ namespace Orc.GraphExplorer.Behaviors
             Point pos = zoomCtrl.TranslatePoint(e.GetPosition(zoomCtrl), area);
             dropable.Drop(e.Data, pos);
         }
+        #endregion
     }
 }

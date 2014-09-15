@@ -5,12 +5,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Behaviors
+
+namespace Orc.GraphExplorer.Behaviors.Interfaces
 {
     using System.Windows;
 
     public interface IDropable
     {
+        #region Methods
         /// <summary>
         /// Gets the effects.
         /// </summary>
@@ -23,6 +25,7 @@ namespace Orc.GraphExplorer.Behaviors
         /// </summary>
         /// <param name="dataObject">The data object.</param>
         /// <param name="position"></param>
-        void Drop(IDataObject dataObject, Point position); 
+        void Drop(IDataObject dataObject, Point position);
+        #endregion
     }
 }

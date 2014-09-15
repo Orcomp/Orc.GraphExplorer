@@ -1,31 +1,26 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="AreaViewDragEdgeBehavior.cs" company="Orcomp development team">
+// <copyright file="AreaViewDrawEdgeBehavior.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System.Data;
     using System.Windows;
     using System.Windows.Input;
-    using System.Windows.Interactivity;
     using System.Windows.Media;
-
-    using Catel.IoC;
-    using Catel.MVVM;
-
+    using Enums;
+    using Events;
     using GraphX;
     using GraphX.Models;
+    using ObjectModel;
+    using Views;
 
-    using Orc.GraphExplorer.Enums;
-    using Orc.GraphExplorer.ObjectModel;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views;
-
-    public class AreaViewDragEdgeBehavior : DrawEdgeBehavior<AreaView>
+    public class AreaViewDrawEdgeBehavior : GraphExplorerViewModelContextBehavior<AreaView>
     {
+        #region Methods
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -33,7 +28,7 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.TemporaryEdgeCreated += AssociatedObject_TemporaryEdgeCreated;
         }
 
-        void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeControlCreatedAventArgs e)
+        private void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeControlCreatedAventArgs e)
         {
             GraphExplorerViewModel.Editor.Service.SetEdEdge(e.EdgeControl);
         }
@@ -48,7 +43,7 @@ namespace Orc.GraphExplorer.Behaviors
                     if (!GraphExplorerViewModel.View.IsVertexEditing) //select starting vertex
                     {
                         GraphExplorerViewModel.View.SetEdVertex(args.VertexControl as VertexControl);
-                        GraphExplorerViewModel.EdFakeDV = new DataVertex { ID = -666 };
+                        GraphExplorerViewModel.EdFakeDV = new DataVertex {ID = -666};
                         GraphExplorerViewModel.EdGeometry = GraphExplorerViewModel.View.CreatePathGeometry();
                         Point pos = GraphExplorerViewModel.View.zoomctrl.TranslatePoint(args.VertexControl.GetPosition(), GraphExplorerViewModel.View.Area);
                         var lastseg = GraphExplorerViewModel.EdGeometry.Figures[0].Segments[GraphExplorerViewModel.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
@@ -58,12 +53,21 @@ namespace Orc.GraphExplorer.Behaviors
                         var dedge = new DataEdge(GraphExplorerViewModel.View.GetEdVertex(), GraphExplorerViewModel.EdFakeDV);
                         GraphExplorerViewModel.Logic.Graph.AddVertex(GraphExplorerViewModel.EdFakeDV);
                         GraphExplorerViewModel.Logic.Graph.AddEdge(dedge);
-                        
-                        
-                        
+
                         GraphExplorerViewModel.Editor.Service.SetEdgePathManually(GraphExplorerViewModel.EdGeometry);
                         GraphExplorerViewModel.Status = GraphExplorerStatus.CreateLinkSelectTarget;
                         GraphExplorerViewModel.PostStatusMessage("Select Target Node");
+                    }
+
+                    else if (!GraphExplorerViewModel.View.IsEdVertex(args.VertexControl as VertexControl) && GraphExplorerViewModel.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
+                    {
+                        GraphExplorerViewModel.CreateEdge(GraphExplorerViewModel.View.GetEdVertex().Id, (args.VertexControl.Vertex as DataVertex).Id);
+
+                        GraphExplorerViewModel.ClearEdgeDrawing();
+
+                        GraphExplorerViewModel.Status = GraphExplorerStatus.Ready;
+
+                        GraphExplorerViewModel.IsAddingNewEdge = false;
                     }
                 }
             }
@@ -89,6 +93,7 @@ namespace Orc.GraphExplorer.Behaviors
                 HighlightBehaviour.SetHighlighted(vc, true);
                 //DragBehaviour.SetIsTagged(vc, true);
             }
-        }        
+        }
+        #endregion
     }
 }

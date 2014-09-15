@@ -5,37 +5,29 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System.Data;
     using System.Windows;
     using System.Windows.Input;
-    using System.Windows.Interactivity;
     using System.Windows.Media;
-
-    using Catel.IoC;
-    using Catel.MVVM;
     using Catel.MVVM.Views;
+    using Enums;
+    using ViewModels;
+    using Views;
 
-    using GraphX;
-    using GraphX.Models;
-
-    using Orc.GraphExplorer.Enums;
-    using Orc.GraphExplorer.ObjectModel;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views;
-
-    public class ZoomViewDrawEdgeBehavior : DrawEdgeBehavior<ZoomView>
+    public class ZoomViewDrawEdgeBehavior : GraphExplorerViewModelContextBehavior<ZoomView>
     {
+        #region Methods
         protected override void OnAttached()
         {
             base.OnAttached();
-            AssociatedObject.PreviewMouseMove +=AssociatedObject_PreviewMouseMove;
+            AssociatedObject.PreviewMouseMove += AssociatedObject_PreviewMouseMove;
         }
 
         private void AssociatedObject_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            var userControl = this.AssociatedObject as IUserControl;
+            var userControl = AssociatedObject as IUserControl;
             if (userControl == null)
             {
                 return;
@@ -47,19 +39,16 @@ namespace Orc.GraphExplorer.Behaviors
                 return;
             }
 
-            var dataContext = AssociatedObject.DataContext as GraphExplorerViewModel;
-            if (dataContext == null)
+            if (!GraphExplorerViewModel.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) || GraphExplorerViewModel.EdGeometry == null || !GraphExplorerViewModel.Editor.Service.IsEdgeEditing || !GraphExplorerViewModel.View.IsVertexEditing)
             {
                 return;
             }
 
-            if (dataContext.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && dataContext.EdGeometry != null && GraphExplorerViewModel.Editor.Service.IsEdgeEditing && dataContext.View.IsVertexEditing)
-            {
-                Point pos = dataContext.View.zoomctrl.TranslatePoint(e.GetPosition(dataContext.View.zoomctrl), dataContext.View.Area);
-                var lastseg = dataContext.EdGeometry.Figures[0].Segments[dataContext.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                lastseg.Points[lastseg.Points.Count - 1] = pos;
-                GraphExplorerViewModel.Editor.Service.SetEdgePathManually(dataContext.EdGeometry);
-            }
+            var pos = GraphExplorerViewModel.View.zoomctrl.TranslatePoint(e.GetPosition(GraphExplorerViewModel.View.zoomctrl), GraphExplorerViewModel.View.Area);
+            var lastseg = GraphExplorerViewModel.EdGeometry.Figures[0].Segments[GraphExplorerViewModel.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
+            lastseg.Points[lastseg.Points.Count - 1] = pos;
+            GraphExplorerViewModel.Editor.Service.SetEdgePathManually(GraphExplorerViewModel.EdGeometry);
         }
+        #endregion
     }
 }

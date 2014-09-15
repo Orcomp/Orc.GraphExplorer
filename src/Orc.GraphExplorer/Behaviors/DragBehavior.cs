@@ -5,38 +5,41 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interactivity;
-
     using Catel.MVVM.Views;
+    using Interfaces;
 
     public class DragBehavior : Behavior<FrameworkElement>
     {
+        #region Methods
         protected override void OnAttached()
         {
             base.OnAttached();
             AssociatedObject.PreviewMouseLeftButtonDown += AssociatedObject_PreviewMouseLeftButtonDown;
         }
 
-        void AssociatedObject_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void AssociatedObject_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var userControl = this.AssociatedObject as IUserControl;
+            var userControl = AssociatedObject as IUserControl;
             if (userControl == null)
             {
                 return;
             }
 
-            IDragable dragObject = userControl.ViewModel as IDragable;
+            var dragObject = userControl.ViewModel as IDragable;
             if (dragObject == null)
             {
                 return;
             }
             var data = new DataObject();
             data.SetData(dragObject.DataType, userControl.ViewModel);
-            DragDrop.DoDragDrop(this.AssociatedObject, data, dragObject.GetDragEffects());
+            DragDrop.DoDragDrop(AssociatedObject, data, dragObject.GetDragEffects());
         }
+        #endregion
     }
 }

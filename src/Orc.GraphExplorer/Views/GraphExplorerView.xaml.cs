@@ -74,31 +74,9 @@ namespace Orc.GraphExplorer.Views
         }
         #endregion
 
-        public void ShowAllEdgesLabels(GraphExplorerTab tab, bool show)
-        {
-            var area = GetAreaByTab(tab);
-            area.ShowAllEdgesLabels(show);
-            area.InvalidateVisual();
-        }
+       
 
-        public void FitToBounds(GraphExplorerTab tab)
-        {
-            ZoomControl zoom;
-            switch (tab)
-            {
-                case GraphExplorerTab.Main:
-                    zoom = zoomctrl;
-                    break;
-                case GraphExplorerTab.Navigation:
-                    zoom = zoomctrlNav;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            zoom.ZoomToFill();
-            zoom.Mode = ZoomControlModes.Custom;
-        }        
+        
 
         public void RemoveEdge(DataEdge edge)
         {
@@ -189,32 +167,6 @@ namespace Orc.GraphExplorer.Views
             DragBehaviour.SetIsDragEnabled(area.VertexList[vertex], value);
         }
 
-        //Summary
-        //    binding in style will be overrided in graph control, so need create binding after data loaded
-        public void SetVertexPropertiesBinding(GraphExplorerTab tab)
-        {
-            GraphArea area = GetAreaByTab(tab);;
-            IValueConverter conv = new BooleanToHidingVisibilityConverter();
-
-            foreach (var vertex in area.VertexList)
-            {
-                var bindingIsVisible = new Binding("IsVisible") { Source = vertex.Key, Mode = BindingMode.TwoWay, Converter = conv };
-
-                var bindingIsEnabled = new Binding("IsEnabled") { Source = vertex.Key, Mode = BindingMode.TwoWay };
-
-                vertex.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
-                vertex.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
-            }
-
-            foreach (var edge in area.EdgesList)
-            {
-                var bindingIsVisible = new Binding("IsVisible") { Source = edge.Key, Mode = BindingMode.TwoWay, Converter = conv };
-
-                var bindingIsEnabled = new Binding("IsEnabled") { Source = edge.Key, Mode = BindingMode.TwoWay };
-
-                edge.Value.SetBinding(UIElement.VisibilityProperty, bindingIsVisible);
-                edge.Value.SetBinding(UIElement.IsEnabledProperty, bindingIsEnabled);
-            }
-        }
+        
     }
 }

@@ -123,27 +123,16 @@
                                           Zoom="{Binding Zoom, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           Mode="{Binding ZoomMode, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <i:Interaction.Behaviors>
-                            <b:ZoomViewDrawEdgeBehavior/>
+                            <b:ZoomViewDrawEdgeBehavior/>                            
                             <b:DropBehavior/>
                         </i:Interaction.Behaviors>
-                            <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">
-                            <i:Interaction.Behaviors>
-                                <b:AreaViewDragEdgeBehavior/>
-                            </i:Interaction.Behaviors>
-                            <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="VertexDoubleClick">
-                                        <catel:EventToCommand Command="{Binding NavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="EdgeSelected">
-                                        <catel:EventToCommand Command="{Binding EdgeSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="VertexSelected">
-                                        <catel:EventToCommand Command="{Binding VertexSelectedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="GenerateGraphFinished">
-                                        <catel:EventToCommand Command="{Binding RelayoutAreaFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                            <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">                                
+                                <i:Interaction.Behaviors>
+                                    <b:AreaViewDrawEdgeBehavior/>
+                                    <b:GraphNavigationBehavior/>
+                                    <b:RelayoutBehavior/>
+                                    <b:AreaViewContextMenuBehavior/>
+                                </i:Interaction.Behaviors>
                             </views:AreaView>
                     </views:ZoomView>
                 </Grid>
@@ -194,14 +183,10 @@
                                           Mode="{Binding ZoomModeNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
                         <views:ZoomView.Content>
                             <views:AreaView x:Name="AreaNav" LogicCore="{Binding Path=DataContext.NavLogic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="VertexDoubleClick">
-                                        <catel:EventToCommand Command="{Binding FurtherNavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="GenerateGraphFinished">
-                                        <catel:EventToCommand Command="{Binding RelayoutAreaNavFinishedCommand}" DisableAssociatedObjectOnCannotExecute="False" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                <i:Interaction.Behaviors>
+                                    <b:GraphNavigationBehavior/>
+                                    <b:RelayoutBehavior/>
+                                </i:Interaction.Behaviors>
                             </views:AreaView>
                         </views:ZoomView.Content>
                         

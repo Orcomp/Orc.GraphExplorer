@@ -143,13 +143,17 @@
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Behaviors\AreaViewDragEdgeBehavior.cs" />
+    <Compile Include="Behaviors\AreaViewContextMenuBehavior.cs" />
+    <Compile Include="Behaviors\AreaViewDrawEdgeBehavior.cs" />
     <Compile Include="Behaviors\DragBehavior.cs" />
-    <Compile Include="Behaviors\DrawEdgeBehavior.cs" />
+    <Compile Include="Behaviors\GraphExplorerViewModelContextBehavior.cs" />
+    <Compile Include="Behaviors\GraphNavigationBehavior.cs" />
+    <Compile Include="Behaviors\RelayoutBehavior.cs" />
     <Compile Include="Behaviors\ZoomViewDrawEdgeBehavior.cs" />
     <Compile Include="Behaviors\DropBehavior.cs" />
-    <Compile Include="Behaviors\IDragable.cs" />
-    <Compile Include="Behaviors\IDropable.cs" />
+    <Compile Include="Behaviors\Interfaces\IDragable.cs" />
+    <Compile Include="Behaviors\Interfaces\IDropable.cs" />
+    <Compile Include="Events\EdgeControlCreatedAventArgs.cs" />
     <Compile Include="ObjectModel\FilterEntity.cs" />
     <Compile Include="ObjectModel\GraphLogic.cs" />
     <Compile Include="Models\FilePicker.cs" />
@@ -169,6 +173,7 @@
     <Compile Include="Services\CsvGraphDataService.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Events\DataLoadedEventArgs.cs" />
+    <Compile Include="Services\CustomGraphControlFactory.cs" />
     <Compile Include="Services\EditorService.cs" />
     <Compile Include="Services\FilePickerService.cs" />
     <Compile Include="Services\Interfaces\IEditorService.cs" />

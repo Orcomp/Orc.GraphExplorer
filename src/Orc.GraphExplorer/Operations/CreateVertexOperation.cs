@@ -89,7 +89,7 @@
         public CreateVertexOperation(EditorData editor, GraphArea area, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
             : base(editor, area, data, callback, undoCallback)
         {
-            _vCtrl = new VertexControl(_vertex);
+            _vCtrl = area.ControlFactory.CreateVertexControl(_vertex);
 
             if (x != double.MinValue)
                 _x = x;

@@ -17,9 +17,6 @@ namespace Orc.GraphExplorer.Views.Interfaces
 
     public interface IGraphExplorerView : IView
     {
-        void ShowAllEdgesLabels(GraphExplorerTab tab,bool show);
-
-        void FitToBounds(GraphExplorerTab tab);
         bool IsVertexEditing { get; }
         void RemoveEdge(DataEdge edge);
         DataVertex GetEdVertex();

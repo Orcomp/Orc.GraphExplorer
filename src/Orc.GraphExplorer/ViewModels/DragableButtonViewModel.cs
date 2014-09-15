@@ -9,7 +9,7 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System;
     using System.Windows;
-
+    using Behaviors.Interfaces;
     using Catel.MVVM;
 
     using Orc.GraphExplorer.Behaviors;
