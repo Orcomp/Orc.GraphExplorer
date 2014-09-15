@@ -5,22 +5,30 @@ namespace Orc.GraphExplorer.Models
     using System.Linq;
     using Catel.Data;
     using Catel.IoC;
+
+    using GraphX;
+
     using Operations.Interfaces;
     using Services;
     using Services.Interfaces;
 
-    public class EditorModel : ModelBase
+    public class EditorData : ModelBase
     {
+        private readonly IEditorService _editorService;
+
         #region Constructors
-        public EditorModel()
+        public EditorData(IEditorService editorService)
         {
-            var operationObserver = new OperationObserver(this);
-            var serviceLocator = ServiceLocator.Default;
-            serviceLocator.RegisterInstance(typeof(IOperationObserver), operationObserver);
+            _editorService = editorService;
         }
         #endregion // Constructors              
 
-       // public IOperationObserver OperationObserver { get; private set; }
+        public IEditorService Service {
+            get
+            {
+                return _editorService;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -76,6 +84,6 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Register the HasRedoable property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData HasRedoableProperty = RegisterProperty("HasRedoable", typeof(bool), () => false);              
+        public static readonly PropertyData HasRedoableProperty = RegisterProperty("HasRedoable", typeof(bool), () => false);        
     }
 }

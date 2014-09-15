@@ -15,20 +15,28 @@ namespace Orc.GraphExplorer.Services
     using Models;
     using Operations.Interfaces;
 
+    public class OperationStacks
+    {
+        public OperationStacks()
+        {
+            ForRedo = new Stack<IOperation>();
+            ForUndo = new Stack<IOperation>();
+        }
+        public Stack<IOperation> ForUndo { get; private set; }
+
+        public Stack<IOperation> ForRedo { get; private set; }
+    }
+
     public class OperationObserver : IOperationObserver
     {
         #region Fields
-        private readonly List<IOperation> _operations;
-        private readonly List<IOperation> _operationsRedo;
-        private readonly EditorModel _editor;
+        private readonly IDictionary<EditorData, OperationStacks> _operations;
         #endregion
 
         #region Constructors
-        public OperationObserver(EditorModel editor)
+        public OperationObserver()
         {
-            _editor = editor;
-            _operationsRedo = new List<IOperation>();
-            _operations = new List<IOperation>();
+            _operations = new Dictionary<EditorData, OperationStacks>();
         }
         #endregion
 
@@ -55,87 +63,93 @@ namespace Orc.GraphExplorer.Services
         public void Do(IOperation operation)
         {
             operation.Do();
-            _editor.HasChange = true;
-            _operations.Insert(0, operation);
-
-            foreach (IOperation v in _operationsRedo)
+            operation.Editor.HasChange = true;
+            if (!_operations.ContainsKey(operation.Editor))
             {
-                v.Dispose();
+                _operations.Add(operation.Editor, new OperationStacks());
+            }
+            var stackPair = _operations[operation.Editor];
+            stackPair.ForUndo.Push(operation);
+
+            while (stackPair.ForRedo.Any())
+            {
+                stackPair.ForRedo.Pop().Dispose();
             }
 
-            _operationsRedo.Clear();
-
-            UpdateHasUndoable();
-            UpdateHasRedoable();
+            UpdateEditor(operation.Editor, stackPair);
 
             if (!String.IsNullOrEmpty(operation.Sammary))
             {
-                _editor.OperationStatus = operation.Sammary;
+                operation.Editor.OperationStatus = operation.Sammary;
             }
         }
         #endregion
 
         #region Methods
-        private void UpdateHasUndoable()
+        public void Undo(EditorData editorData)
         {
-            _editor.HasUndoable = _operations.Any(o => o.IsUnDoable);
-        }
+            var stackPair = _operations[editorData];
 
-        private void UpdateHasRedoable()
-        {
-            _editor.HasRedoable = _operationsRedo.Any(o => o.IsUnDoable);
-        }
-
-        public void Undo()
-        {
-            IOperation op = _operations.FirstOrDefault();
-
-            if (op == null || !op.IsUnDoable)
+            if (!stackPair.ForUndo.Any())
             {
                 return;
             }
 
-            op.UnDo();
+            var operation = stackPair.ForUndo.Pop();
 
-            _operations.Remove(op);
-            _operationsRedo.Insert(0, op);
-
-            UpdateHasUndoable();
-            UpdateHasRedoable();
-
-            if (!String.IsNullOrEmpty(op.Sammary))
-            {
-                _editor.OperationStatus = "Undo " + op.Sammary;
-            }
-        }
-
-        public void Redo()
-        {
-            IOperation op = _operationsRedo.FirstOrDefault();
-
-            if (op == null || !op.IsUnDoable)
+            if (!operation.IsUnDoable)
             {
                 return;
             }
 
-            op.Do();
+            operation.UnDo();
 
-            _operationsRedo.Remove(op);
-            _operations.Insert(0, op);
+            stackPair.ForRedo.Push(operation);
 
-            UpdateHasUndoable();
-            UpdateHasRedoable();
+            UpdateEditor(editorData, stackPair);
 
-            if (!String.IsNullOrEmpty(op.Sammary))
+            if (!String.IsNullOrEmpty(operation.Sammary))
             {
-                _editor.OperationStatus = "Redo " + op.Sammary;
+                editorData.OperationStatus = "Undo " + operation.Sammary;
             }
         }
 
-        public void Clear()
+        private static void UpdateEditor(EditorData editorData, OperationStacks stackPair)
         {
-            _operations.Clear();
-            _operationsRedo.Clear();
+            editorData.HasRedoable = stackPair.ForRedo.Any(o => o.IsUnDoable);
+            editorData.HasUndoable = stackPair.ForUndo.Any(o => o.IsUnDoable);
+        }
+
+        public void Redo(EditorData editorData)
+        {
+            var stackPair = _operations[editorData];
+            if (!stackPair.ForRedo.Any())
+            {
+                return;
+            }
+
+            var operation = stackPair.ForRedo.Pop();
+
+            if (!operation.IsUnDoable)
+            {
+                return;
+            }
+
+            operation.Do();
+
+            stackPair.ForUndo.Push(operation);
+
+            UpdateEditor(editorData, stackPair);
+
+            if (!String.IsNullOrEmpty(operation.Sammary))
+            {
+                editorData.OperationStatus = "Redo " + operation.Sammary;
+            }
+        }
+
+        public void Clear(EditorData editorData)
+        {
+            _operations.Remove(editorData);
         }
         #endregion
     }

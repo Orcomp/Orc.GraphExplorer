@@ -31,8 +31,8 @@
 
         public override void Do()
         {
-            _vCtrl = new VertexControl(_vertex);
-            AddVertex(_vertex, _vCtrl);
+           // _vCtrl = new VertexControl(_vertex); 
+            _vCtrl = AddVertex(_vertex);
             //ArrangeVertexPosition();
 
             if (_x != double.MinValue && _y != double.MinValue)
@@ -86,8 +86,8 @@
             }
         }
 
-        public CreateVertexOperation(GraphArea area, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(area, data, callback, undoCallback)
+        public CreateVertexOperation(EditorData editor, GraphArea area, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+            : base(editor, area, data, callback, undoCallback)
         {
             _vCtrl = new VertexControl(_vertex);
 
@@ -114,7 +114,7 @@
                 throw new NoNullAllowedException(string.Format("Uable to find viewmodel {0}", typeof(GraphExplorerViewModel)));
             }
 
-            return  new CreateVertexOperation(area, DataVertex.Create(), position.X, position.Y, (v, vc) =>
+            return new CreateVertexOperation(graphExplorerViewModel.Editor, area, DataVertex.Create(), position.X, position.Y, (v, vc) =>
             {
                 graphExplorerViewModel.SelectedVertices.Add(v.Id);
 
@@ -166,7 +166,7 @@
             {
                 VertexControl vc = area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
-                operationObserver.Do(new VertexPositionChangeOperation(area, vc, e.OffsetX, e.OffsetY, vertex));
+                operationObserver.Do(new VertexPositionChangeOperation(graphExplorerViewModel.Editor, area, vc, e.OffsetX, e.OffsetY, vertex));
             }
         }
     }

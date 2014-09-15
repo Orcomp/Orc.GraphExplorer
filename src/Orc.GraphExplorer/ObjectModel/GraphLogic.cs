@@ -12,8 +12,8 @@ namespace Orc.GraphExplorer.ObjectModel
 
     using QuickGraph;
 
-    public class GraphLogic : GXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>>
+    public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>
     {
-         
+        
     }
 }

@@ -41,27 +41,14 @@
 
         public override void UnDo()
         {
-            _vCtrl = new VertexControl(_vertex);
-            AddVertex(_vertex, _vCtrl);
+            _vCtrl = AddVertex(_vertex);
+           // AddVertex(_vertex, _vCtrl);
 
             HighlightBehaviour.SetIsHighlightEnabled(_vCtrl, false);
 
             foreach (var edge in _relatedEdges)
             {
-
-                var source = VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item2.Id);
-                var target = VertexList.FirstOrDefault(v=>v.Key.Id == edge.Item3.Id);
-
-                if(source.Value==null||target.Value==null)
-                    throw new Exception("source or target vertex not found");
-
-                var edgeCtrl = new EdgeControl(source.Value, target.Value, edge.Item1)
-                {
-                    ShowArrows = true,
-                    ShowLabel = true
-                };
-
-                AddEdge(edge.Item1, edgeCtrl);
+                var edgeCtrl = AddEdge(edge.Item1);
 
                 HighlightBehaviour.SetIsHighlightEnabled(edgeCtrl, false);
             }
@@ -72,8 +59,8 @@
             }
         }
 
-        public DeleteVertexOperation(GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(area, data, callback, undoCallback)
+        public DeleteVertexOperation(EditorData editor, GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+            : base(editor, area, data, callback, undoCallback)
         {
             if (area.VertexList.ContainsKey(_vertex))
                 _vCtrl = area.VertexList[_vertex] as VertexControl;

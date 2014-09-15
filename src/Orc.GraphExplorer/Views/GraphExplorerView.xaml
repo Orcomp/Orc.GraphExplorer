@@ -123,11 +123,14 @@
                                           Zoom="{Binding Zoom, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           Mode="{Binding ZoomMode, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <i:Interaction.Behaviors>
-                            <b:DrawEdgeBehavior/>
+                            <b:ZoomViewDrawEdgeBehavior/>
                             <b:DropBehavior/>
                         </i:Interaction.Behaviors>
                             <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">
-                                <i:Interaction.Triggers>
+                            <i:Interaction.Behaviors>
+                                <b:AreaViewDragEdgeBehavior/>
+                            </i:Interaction.Behaviors>
+                            <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="VertexDoubleClick">
                                         <catel:EventToCommand Command="{Binding NavigateCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
                                     </i:EventTrigger>

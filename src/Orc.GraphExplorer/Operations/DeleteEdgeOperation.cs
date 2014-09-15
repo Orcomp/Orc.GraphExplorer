@@ -10,8 +10,8 @@
 
     public class DeleteEdgeOperation : EdgeOperation
     {
-        public DeleteEdgeOperation(GraphArea area, DataVertex source, DataVertex target,DataEdge edge, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
-            : base(area,  source, target, callback, undoCallback)
+        public DeleteEdgeOperation(EditorData editor, GraphArea area, DataVertex source, DataVertex target,DataEdge edge, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+            : base(editor, area,  source, target, callback, undoCallback)
         {
             _Edge = edge;
             base.Sammary = "Delete Edge";
@@ -31,19 +31,7 @@
         {
             _Edge = new DataEdge(_source, _target);
 
-            _sourceVC = VertexList.Where(pair => pair.Key == _source).Select(pair => pair.Value).FirstOrDefault();
-            _targetVC = VertexList.Where(pair => pair.Key == _target).Select(pair => pair.Value).FirstOrDefault();
-
-            if (_sourceVC == null || _targetVC == null)
-                throw new ArgumentNullException("VertexControl");
-
-            _eCtrl = new EdgeControl(_sourceVC, _targetVC, _Edge)
-            {
-                ShowArrows = true,
-                ShowLabel = true
-            };
-            
-            AddEdge(_Edge, _eCtrl);
+            _eCtrl = AddEdge(_Edge);
 
             HighlightBehaviour.SetIsHighlightEnabled(_eCtrl, false);
 

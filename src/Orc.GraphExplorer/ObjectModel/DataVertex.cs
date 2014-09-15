@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Linq;
     using System.Windows.Media;
 
@@ -380,9 +381,10 @@
         {
             //AddProperty(NewProperty());
 
-            var apo = new AddPropertyOperation(this);
+            throw new NotImplementedException();
+          /*  var apo = new AddPropertyOperation(null, this);
 
-            Observe(apo);
+            Observe(apo);*/
         }
 
         private PropertyViewModel NewProperty()
@@ -462,9 +464,10 @@
 
         void ExecDelete()
         {
-            var dpo = new DeletePropertyOperation(this);
+            throw new NotImplementedException();
+            /*var dpo = new DeletePropertyOperation(this);
 
-            Observe(dpo);
+            Observe(dpo);*/
             //RemoveSelectedProperties();
         }
 

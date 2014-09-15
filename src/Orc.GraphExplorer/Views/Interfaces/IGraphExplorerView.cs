@@ -21,15 +21,11 @@ namespace Orc.GraphExplorer.Views.Interfaces
 
         void FitToBounds(GraphExplorerTab tab);
         bool IsVertexEditing { get; }
-        DataEdge GetEdEdge();
         void RemoveEdge(DataEdge edge);
-        void SetEdgePathManually(PathGeometry edGeo);
         DataVertex GetEdVertex();
         PathGeometry CreatePathGeometry();
         void SetEdVertex(VertexControl vertexControl);
-        void AddEdge(DataEdge dedge);
         bool IsEdVertex(VertexControl vertexControl);
-        void ClearEdEdge();
         void ClearEdVertex();
         void ClearLayout(GraphExplorerTab tab);
         void SetHighlighted(GraphExplorerTab tab, DataVertex dataVertex, bool value);

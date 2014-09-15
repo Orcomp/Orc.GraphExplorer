@@ -3,8 +3,12 @@
     using System;
     using Enums;
 
+    using Orc.GraphExplorer.Models;
+
     public interface IOperation : IDisposable
     {
+        EditorData Editor { get;  }
+
         string Sammary { get; }
 
         void Do();

@@ -143,8 +143,10 @@
     <Compile Include="..\SolutionAssemblyInfo.cs">
       <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Behaviors\AreaViewDragEdgeBehavior.cs" />
     <Compile Include="Behaviors\DragBehavior.cs" />
     <Compile Include="Behaviors\DrawEdgeBehavior.cs" />
+    <Compile Include="Behaviors\ZoomViewDrawEdgeBehavior.cs" />
     <Compile Include="Behaviors\DropBehavior.cs" />
     <Compile Include="Behaviors\IDragable.cs" />
     <Compile Include="Behaviors\IDropable.cs" />
@@ -167,10 +169,12 @@
     <Compile Include="Services\CsvGraphDataService.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Events\DataLoadedEventArgs.cs" />
+    <Compile Include="Services\EditorService.cs" />
     <Compile Include="Services\FilePickerService.cs" />
+    <Compile Include="Services\Interfaces\IEditorService.cs" />
     <Compile Include="Services\Interfaces\IFilePickerService.cs" />
     <Compile Include="Services\Interfaces\IOperationObserver.cs" />
-    <Compile Include="Models\EditorModel.cs" />
+    <Compile Include="Models\EditorData.cs" />
     <Compile Include="Services\OperationObserver.cs" />
     <Compile Include="ViewModels\AreaViewModel.cs" />
     <Compile Include="ViewModels\DragableButtonViewModel.cs" />

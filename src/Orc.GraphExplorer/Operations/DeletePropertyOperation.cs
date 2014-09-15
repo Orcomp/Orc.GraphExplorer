@@ -12,8 +12,8 @@
     {
         IEnumerable<PropertyViewModel> _list;
 
-        public DeletePropertyOperation(DataVertex vertex)
-            : base(vertex, null)
+        public DeletePropertyOperation(EditorData editor, DataVertex vertex)
+            : base(editor, vertex, null)
         {
             base.Sammary = "Delete Property";
         }

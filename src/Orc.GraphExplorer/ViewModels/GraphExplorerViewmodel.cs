@@ -47,9 +47,9 @@
     {
         
         #region Fields
-        private DataVertex _currentNavItem;       
+        private DataVertex _currentNavItem;
 
-        private DataVertex _edFakeDV;
+        public DataVertex EdFakeDV;
 
         private readonly List<IDisposable> _observers = new List<IDisposable>();        
 
@@ -76,11 +76,11 @@
         public GraphExplorerViewModel()
         {
             SelectedVertices = new List<int>();
-            Editor = new EditorModel();
+            
             IsHideVertexes = false;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
-            Editor = new EditorModel();
-            var serviceLocator = ServiceLocator.Default;
+            var serviceLocator = ServiceLocator.Default;            
+            Editor = new EditorData(serviceLocator.ResolveType<IEditorService>());
             _operationObserver = serviceLocator.ResolveType<IOperationObserver>();
 
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -150,24 +150,7 @@
 
                 if (IsInEditing && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectSource))
                 {
-                    if (!View.IsVertexEditing) //select starting vertex
-                    {
-                        View.SetEdVertex(eventArgs.VertexControl as VertexControl);
-                        _edFakeDV = new DataVertex { ID = -666 };
-                        EdGeometry = View.CreatePathGeometry();
-                        Point pos = View.zoomctrl.TranslatePoint(eventArgs.VertexControl.GetPosition(), View.Area);
-                        var lastseg = EdGeometry.Figures[0].Segments[EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                        lastseg.Points[lastseg.Points.Count - 1] = pos;
-
-                        var dedge = new DataEdge(View.GetEdVertex(), _edFakeDV);
-                        View.AddEdge(dedge);
-                        Logic.Graph.AddVertex(_edFakeDV);
-                        Logic.Graph.AddEdge(dedge);
-                        View.SetEdgePathManually(EdGeometry);
-                        Status = GraphExplorerStatus.CreateLinkSelectTarget;
-                        PostStatusMessage("Select Target Node");
-                    }
-                    else if (!View.IsEdVertex(eventArgs.VertexControl as VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
+                    if (!View.IsEdVertex(eventArgs.VertexControl as VertexControl) && Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
                     {
                         CreateEdge(View.GetEdVertex().Id, (eventArgs.VertexControl.Vertex as DataVertex).Id);
 
@@ -408,7 +391,7 @@
         {
             Vertexes = new List<DataVertex>(vertexes);
 
-            CreateGraphArea(View.Area, Vertexes, Edges, 600);
+            View.Area.CreateGraphArea(Vertexes, Edges, 600);
 
             HookVertexEvent();
 
@@ -443,28 +426,14 @@
                     foreach (IGraphControl edge in View.Area.GetRelatedControls(vc, GraphControlType.Edge, EdgesType.All))
                     {
                         var ec = (EdgeControl)edge;
-                        var op = new DeleteEdgeOperation(View.Area, ec.Source.Vertex as DataVertex, ec.Target.Vertex as DataVertex, ec.Edge as DataEdge);
+                        var op = new DeleteEdgeOperation(Editor, View.Area, ec.Source.Vertex as DataVertex, ec.Target.Vertex as DataVertex, ec.Edge as DataEdge);
                         op.Do();
                         op.UnDo();
                     }
                 }, priority: DispatcherPriority.Loaded);
             }
         }
-
-        public void CreateGraphArea(GraphArea area, IEnumerable<DataVertex> vertexes, IEnumerable<DataEdge> edges, double offsetY)
-        {
-            area.ClearLayout();
-
-            var graph = new Graph();
-
-            graph.AddVertexRange(vertexes);
-
-            graph.AddEdgeRange(edges);
-
-            ((GraphLogic)area.LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>>(graph, 1.5, offsetY: offsetY);
-
-            area.GenerateGraph(graph, true, true);
-        }
+        
 
         public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Loaded)
         {
@@ -569,19 +538,22 @@
 
         public void ClearEdgeDrawing()
         {
-            if (_edFakeDV != null)
+            if (EdFakeDV != null)
             {
-                Logic.Graph.RemoveVertex(_edFakeDV);
+                Logic.Graph.RemoveVertex(EdFakeDV);
             }
-            if (View.IsEdgeEditing)
+            if (Editor.Service.IsEdgeEditing)
             {
-                var edge = View.GetEdEdge();
-                Logic.Graph.RemoveEdge(edge);
-                View.RemoveEdge(edge);
+                var edge = Editor.Service.GetEdEdge();
+                // TODO: refactor this
+                if (edge != null)
+                {
+                    Logic.Graph.RemoveEdge(edge);
+                }
             }
             EdGeometry = null;
-            _edFakeDV = null;
-            View.ClearEdEdge();
+            EdFakeDV = null;
+            Editor.Service.ClearEdEdge();
             View.ClearEdVertex();
         }
 
@@ -778,7 +750,7 @@
         /// </summary>
         private void OnUndoCommandExecute()
         {
-            _operationObserver.Undo();
+            _operationObserver.Undo(Editor);
         }
 
         /// <summary>
@@ -800,7 +772,7 @@
         /// </summary>
         private void OnRedoCommandExecute()
         {
-            _operationObserver.Redo();
+            _operationObserver.Redo(Editor);
         }
 
         #endregion // Commands
@@ -1385,40 +1357,20 @@
             }
         }
 
-        /*public IGraphDataService GraphDataService
-        {
-            get { return GetValue<IGraphDataService>(GraphDataServiceProperty); }
-            set { SetValue(GraphDataServiceProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for GraphDataService.  This enables animation, styling, binding, etc...
-        public static readonly PropertyData GraphDataServiceProperty =
-            DependencyProperty.Register("GraphDataService", typeof(IGraphDataService), typeof(GraphExplorerView), new PropertyMetadata(null, GraphDataServiceChanged));
-
-        static void GraphDataServiceChanged(PropertyData d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.NewValue != null)
-            {
-              //  ((GraphExplorerView)d).GetEdges();
-                throw new NotImplementedException();
-            }
-        }*/
-
-
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public EditorModel Editor
+        public EditorData Editor
         {
-            get { return GetValue<EditorModel>(OperationObserverProperty); }
+            get { return GetValue<EditorData>(OperationObserverProperty); }
             set { SetValue(OperationObserverProperty, value); }
         }
 
         /// <summary>
         /// Register the Editor property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData OperationObserverProperty = RegisterProperty("Editor", typeof(EditorModel), null);
+        public static readonly PropertyData OperationObserverProperty = RegisterProperty("Editor", typeof(EditorData), null);
 
 
         /// <summary>
@@ -1508,7 +1460,7 @@
             {
                 var edge = eCtrl.Edge as DataEdge;
 
-                var op = new DeleteEdgeOperation(View.Area, edge.Source, edge.Target, edge, ec =>
+                var op = new DeleteEdgeOperation(Editor, View.Area, edge.Source, edge.Target, edge, ec =>
                 {
                     //do nothing
                 }, ec =>
@@ -1521,19 +1473,19 @@
             //throw new NotImplementedException();
         }
 
-        private void NavigateTo(DataVertex dataVertex, BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
+        private void NavigateTo(DataVertex dataVertex, Graph overrallGraph)
         {
             //overrallGraph.get
             NavigateHistoryItem historyItem = GetHistoryItem(dataVertex, overrallGraph);
 
-            CreateGraphArea(View.AreaNav, historyItem.Vertexes, historyItem.Edges, 0);
+            View.AreaNav.CreateGraphArea(historyItem.Vertexes, historyItem.Edges, 0);
 
             //var dispatcher = AreaNav.Dispatcher;
 
             //FitToBounds(dispatcher, zoomctrlNav);
         }
 
-        private NavigateHistoryItem GetHistoryItem(DataVertex v, BidirectionalGraph<DataVertex, DataEdge> overrallGraph)
+        private NavigateHistoryItem GetHistoryItem(DataVertex v, Graph overrallGraph)
         {
             var hisItem = new NavigateHistoryItem();
 
@@ -1616,7 +1568,7 @@
             var vCtrl = (sender as MenuItem).Tag as VertexControl;
             if (vCtrl != null)
             {
-                var op = new DeleteVertexOperation(View.Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { View.Area.RelayoutGraph(true); });
+                var op = new DeleteVertexOperation(Editor, View.Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { View.Area.RelayoutGraph(true); });
 
                 _operationObserver.Do(op);
             }
@@ -1820,7 +1772,7 @@
         public void Commit()
         {
             SelectedVertices.Clear();
-            _operationObserver.Clear();
+            _operationObserver.Clear(Editor);
             
             UndoCommand.RaiseCanExecuteChanged();
             RedoCommand.RaiseCanExecuteChanged();
@@ -1831,7 +1783,7 @@
             PostStatusMessage("Ready");
         }
 
-        public PathGeometry EdGeometry { get; private set; }
+        public PathGeometry EdGeometry { get; set; }
         #endregion
 
         #region Commands
@@ -1866,7 +1818,7 @@
                 return;
             }
 
-            _operationObserver.Do(new CreateEdgeOperation(area, source, target, e =>
+            _operationObserver.Do(new CreateEdgeOperation(Editor, area, source, target, e =>
             {
                 //on vertex created
                 //SelectedVertices.Add(v.Id);
@@ -1939,7 +1891,7 @@
             {
                 VertexControl vc = View.Area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
                 //throw new NotImplementedException();
-                _operationObserver.OnNext(new VertexPositionChangeOperation(View.Area, vc, e.OffsetX, e.OffsetY, vertex));
+                _operationObserver.OnNext(new VertexPositionChangeOperation(Editor, View.Area, vc, e.OffsetX, e.OffsetY, vertex));
             }
         }
         #endregion
@@ -1999,6 +1951,7 @@
         #region Methods
         private void OnRelayoutFinished(GraphExplorerTab tab)
         {
+            
             View.ShowAllEdgesLabels(tab, true);
 
             View.FitToBounds(tab);

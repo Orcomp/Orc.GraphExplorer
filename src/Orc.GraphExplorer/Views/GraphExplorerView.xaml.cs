@@ -34,9 +34,7 @@ namespace Orc.GraphExplorer.Views
     public partial class GraphExplorerView : IGraphExplorerView
     {
         #region Fields
-        private VertexControl _edVertex;
-
-        private EdgeControl _edEdge;
+        private VertexControl _edVertex;        
 
         #endregion // Fields
         #region Constructors
@@ -66,14 +64,7 @@ namespace Orc.GraphExplorer.Views
             grid.Children.Remove(areaView);
             zoomView.Content = areaView;
 
-        }
-
-        public bool IsEdgeEditing {
-            get
-            {
-                return _edEdge != null;
-            }
-        }
+        }        
 
         public bool IsVertexEditing {
             get
@@ -107,22 +98,11 @@ namespace Orc.GraphExplorer.Views
 
             zoom.ZoomToFill();
             zoom.Mode = ZoomControlModes.Custom;
-        }
-
-
-        public DataEdge GetEdEdge()
-        {
-            return _edEdge.Edge as DataEdge;
-        }
+        }        
 
         public void RemoveEdge(DataEdge edge)
         {
             Area.RemoveEdge(edge);
-        }
-
-        public void SetEdgePathManually(PathGeometry edGeo)
-        {
-            _edEdge.SetEdgePathManually(edGeo);
         }
 
         public DataVertex GetEdVertex()
@@ -140,21 +120,16 @@ namespace Orc.GraphExplorer.Views
             _edVertex = vertexControl;
         }
 
-        public void AddEdge(DataEdge dedge)
+        /*public void AddEdge(DataEdge dedge)
         {
             _edEdge = new EdgeControl(_edVertex, null, dedge) { ManualDrawing = true };
             Area.AddEdge(dedge, _edEdge);
-        }
+        }*/
 
         public bool IsEdVertex(VertexControl vertexControl)
         {
             return _edVertex == vertexControl;
-        }
-
-        public void ClearEdEdge()
-        {
-            _edEdge = null;
-        }
+        }        
 
         public void ClearEdVertex()
         {

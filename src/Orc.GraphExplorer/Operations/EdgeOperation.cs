@@ -18,6 +18,9 @@
     public abstract class EdgeOperation : IOperation
     {
         string Edge = "Operate Edge";
+
+        public EditorData Editor { get; private set; }
+
         public virtual string Sammary
         {
             get { return Edge; }
@@ -56,10 +59,11 @@
 
         private readonly GraphArea _area;
 
-        private readonly IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> _logic;
+        private readonly IGXLogicCore<DataVertex, DataEdge, Graph> _logic;
 
-        public EdgeOperation(GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+        public EdgeOperation(EditorData editor, GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
         {
+            Editor = editor;
             _area = area;
             _logic = _area.LogicCore;
             _callback = callback;
@@ -71,13 +75,12 @@
         protected void RemoveEdge(DataEdge dataEdge)
         {
             _logic.Graph.RemoveEdge(dataEdge);
-            _area.RemoveEdge(dataEdge);
         }
 
-        protected void AddEdge(DataEdge dataEdge, EdgeControl edgeControl)
+        protected EdgeControl AddEdge(DataEdge dataEdge)
         {
             _logic.Graph.AddEdge(dataEdge);
-            _area.AddEdge(dataEdge, edgeControl);
+            return _area.EdgesList[dataEdge];
         }
 
         protected IDictionary<DataVertex, VertexControl> VertexList 

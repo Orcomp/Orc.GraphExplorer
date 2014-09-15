@@ -8,8 +8,8 @@
 
     public class AddPropertyOperation : PropertyOperation
     {
-        public AddPropertyOperation(DataVertex vertex, PropertyViewModel property = null)
-            : base(vertex, property)
+        public AddPropertyOperation(EditorData editor, DataVertex vertex, PropertyViewModel property = null)
+            : base(editor, vertex, property)
         {
             base.Sammary = "Add Property";
         }

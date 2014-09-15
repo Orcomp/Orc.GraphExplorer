@@ -13,6 +13,8 @@ public static class ModuleInitializer
     public static void Initialize()
     {
         var serviceLocator = ServiceLocator.Default;
-        serviceLocator.RegisterType<IFilePickerService, FilePickerService>();
+        serviceLocator.RegisterType<IFilePickerService, FilePickerService>();        
+        serviceLocator.RegisterType<IEditorService, EditorService>(RegistrationType.Transient);
+        serviceLocator.RegisterType<IOperationObserver, OperationObserver>();
     }
 }

@@ -165,7 +165,6 @@ namespace Orc.GraphExplorer.Views
         {
             get { return (object)GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
-        }       
-
+        }
     }
 }

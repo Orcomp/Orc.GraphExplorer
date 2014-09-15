@@ -4,6 +4,9 @@
 
     public class Graph : BidirectionalGraph<DataVertex, DataEdge>
     {
-
+        public Graph()
+        {
+            
+        }
     }
 }

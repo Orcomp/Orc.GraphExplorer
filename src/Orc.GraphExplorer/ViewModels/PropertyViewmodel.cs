@@ -63,7 +63,8 @@
             get { return _key; }
             set
             {
-                Observe(new EditKeyPropertyOperation(this, value));
+                throw new NotImplementedException();
+                /*Observe(new EditKeyPropertyOperation(this, value));*/
             }
         }
 
@@ -74,7 +75,8 @@
             get { return _value; }
             set
             {
-                Observe(new EditValuePropertyOperation(this,value));
+                throw new NotImplementedException();
+                /*Observe(new EditValuePropertyOperation(this,value));*/
 
                 RaisePropertyChanged("IsDirty");
             }

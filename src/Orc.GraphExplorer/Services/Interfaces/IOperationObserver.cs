@@ -10,11 +10,13 @@ namespace Orc.GraphExplorer.Services.Interfaces
     using System;
     using Operations.Interfaces;
 
+    using Orc.GraphExplorer.Models;
+
     public interface IOperationObserver : IObserver<IOperation>
     {
         void Do(IOperation operation);
-        void Undo();
-        void Redo();
-        void Clear();
+        void Undo(EditorData editorData);
+        void Redo(EditorData editorData);
+        void Clear(EditorData editorData);
     }
 }

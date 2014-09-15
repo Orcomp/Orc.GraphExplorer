@@ -7,51 +7,39 @@
 #endregion
 namespace Orc.GraphExplorer.Behaviors
 {
+    using System.Data;
     using System.Windows;
-    using System.Windows.Input;
     using System.Windows.Interactivity;
     using System.Windows.Media;
 
-    using Catel.MVVM.Views;
+    using Catel.IoC;
+    using Catel.MVVM;
 
-    using Orc.GraphExplorer.Enums;
+    using GraphX;
+
+    using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.ViewModels;
 
-    public class DrawEdgeBehavior : Behavior<FrameworkElement>
+    public abstract class DrawEdgeBehavior<T> : Behavior<T>
+        where T : FrameworkElement
     {
-        protected override void OnAttached()
+        private GraphExplorerViewModel _graphExplorerViewModel;
+        protected GraphExplorerViewModel GraphExplorerViewModel
         {
-            base.OnAttached();
-            AssociatedObject.PreviewMouseMove +=AssociatedObject_PreviewMouseMove;
-        }
-
-        private void AssociatedObject_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            var userControl = this.AssociatedObject as IUserControl;
-            if (userControl == null)
+            get
             {
-                return;
-            }
+                if (_graphExplorerViewModel == null)
+                {
+                    var viewModelManager = ServiceLocator.Default.ResolveType<IViewModelManager>();
 
-            var viewModel = userControl.ViewModel as ZoomViewModel;
-            if (viewModel == null)
-            {
-                return;
+                    _graphExplorerViewModel = viewModelManager.GetFirstOrDefaultInstance<GraphExplorerViewModel>();
+                    if (_graphExplorerViewModel == null)
+                    {
+                        throw new NoNullAllowedException(string.Format("Uable to find viewmodel {0}", typeof(GraphExplorerViewModel)));
+                    }
+                }
+                return _graphExplorerViewModel;
             }
-
-            var dataContext = AssociatedObject.DataContext as GraphExplorerViewModel;
-            if (dataContext == null)
-            {
-                return;
-            }
-
-            if (dataContext.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget) && dataContext.EdGeometry != null && dataContext.View.IsEdgeEditing && dataContext.View.IsVertexEditing)
-            {
-                Point pos = dataContext.View.zoomctrl.TranslatePoint(e.GetPosition(dataContext.View.zoomctrl), dataContext.View.Area);
-                var lastseg = dataContext.EdGeometry.Figures[0].Segments[dataContext.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                lastseg.Points[lastseg.Points.Count - 1] = pos;
-                dataContext.View.SetEdgePathManually(dataContext.EdGeometry);
-            }
-        }
+        }        
     }
 }

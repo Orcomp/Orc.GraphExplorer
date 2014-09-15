@@ -8,8 +8,8 @@
     {
         string _key;
         Tuple<string, string> _tuple;
-        public EditKeyPropertyOperation(PropertyViewModel property = null,string key = "")
-            : base(null, property)
+        public EditKeyPropertyOperation(EditorData editor, PropertyViewModel property = null,string key = "")
+            : base(editor, null, property)
         {
             base.Sammary = "Edit Property Key";
             _key = key;

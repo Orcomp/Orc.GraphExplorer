@@ -20,6 +20,8 @@
     /// </summary>
     public abstract class VertexOperation : IOperation
     {
+        public EditorData Editor { get; private set; }
+
         public virtual string Sammary
         {
             get;
@@ -54,10 +56,11 @@
 
         private readonly GraphArea _area;
 
-        private readonly IGXLogicCore<DataVertex, DataEdge, BidirectionalGraph<DataVertex, DataEdge>> _logic;
+        private readonly IGXLogicCore<DataVertex, DataEdge, Graph> _logic;
 
-        public VertexOperation(GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+        public VertexOperation(EditorData editor, GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
         {
+            Editor = editor;
             _area = area;
             _logic = _area.LogicCore;
             _callback = callback;
@@ -71,7 +74,7 @@
             OperationStatus = OperationStatus.Init;
         }
 
-        protected BidirectionalGraph<DataVertex, DataEdge> Graph
+        protected Graph Graph
         {
             get
             {
@@ -79,28 +82,26 @@
             }
         }
 
-        protected void AddEdge(DataEdge dataEdge, EdgeControl edgeControl)
+        protected EdgeControl AddEdge(DataEdge dataEdge)
         {
             _logic.Graph.AddEdge(dataEdge);
-            _area.AddEdge(dataEdge, edgeControl);
+            return _area.EdgesList[dataEdge];
         }
 
         protected void RemoveEdge(DataEdge dataEdge)
         {
-            _logic.Graph.RemoveEdge(dataEdge);
-            _area.RemoveEdge(dataEdge);
+            _logic.Graph.RemoveEdge(dataEdge);            
         }
 
-        protected void AddVertex(DataVertex dataVertex, VertexControl vertexControl)
+        protected VertexControl AddVertex(DataVertex dataVertex/*, VertexControl vertexControl*/)
         {
             _logic.Graph.AddVertex(dataVertex);
-            _area.AddVertex(dataVertex, vertexControl);
+            return _area.VertexList[dataVertex];
         }
 
         protected void RemoveVertex(DataVertex dataVertex)
         {
             _logic.Graph.RemoveVertex(dataVertex);
-            _area.RemoveVertex(dataVertex);
         }
 
         protected List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType controlType, EdgesType edgesType)
