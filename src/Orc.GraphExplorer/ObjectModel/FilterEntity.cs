@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Orc.GraphExplorer.Models;
+
     public class FilterEntity
     {
         public int ID { get; set; }
@@ -38,8 +40,8 @@
 
             //foreach (var v in vertexes)
             //{
-            //    if (!list.Any(i => i.ID == v.ID))
-            //        list.Add(new FilterEntity() { ID = v.Id,Title = v.Title,Vertex = v });
+            //    if (!list.Any(i => i.Id == v.Id))
+            //        list.Add(new FilterEntity() { Id = v.Id,Title = v.Title,Vertex = v });
             //}
             return enumerable;
         }

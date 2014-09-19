@@ -89,9 +89,9 @@
 								Style="{StaticResource RefershButtonStyle}" Command="{Binding RefreshCommand}"/>
                             <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                             <Slider DockPanel.Dock="Left" Style="{StaticResource SliderStyle}" Width="100"
-								Minimum="{Binding MinZoom, Converter={StaticResource log10Converter}}"
-								Maximum="{Binding MaxZoom, Converter={StaticResource log10Converter}}"
-								Value="{Binding Zoom, Converter={StaticResource log10Converter}, Mode=TwoWay}"
+								Minimum="{Binding MinZoom, Converter={StaticResource log10Converter}, ElementName=ZoomCtrl}"
+								Maximum="{Binding MaxZoom, Converter={StaticResource log10Converter}, ElementName=ZoomCtrl}"
+								Value="{Binding Zoom, Converter={StaticResource log10Converter}, Mode=TwoWay, ElementName=ZoomCtrl}"
 								VerticalAlignment="Center"
 								Ticks="0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2"
 								AutoToolTipPlacement="BottomRight"
@@ -101,9 +101,9 @@
 								LargeChange="0.2"
 								SmallChange="0.1"
 								Orientation="Horizontal" />
-                            <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Zoom, StringFormat=\{0:P0\}}" FontSize="10" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
-                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding ZoomMode, ConverterParameter={x:Static controls:ZoomControlModes.Fill}, Converter={StaticResource equalityConverter}}" />
-                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding ZoomMode, ConverterParameter={x:Static controls:ZoomControlModes.Original}, Converter={StaticResource equalityConverter}}" />
+                            <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Zoom, StringFormat=\{0:P0\}, ElementName=ZoomCtrl}" FontSize="10" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Fill}, ElementName=ZoomCtrl, Converter={StaticResource equalityConverter}}" />
+                            <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Original}, ElementName=ZoomCtrl, Converter={StaticResource equalityConverter}}" />
                             <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                             <toolkit:DropDownButton Visibility="Visible" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
                                 <StackPanel Height="200" Width="320">
@@ -119,14 +119,12 @@
                         </DockPanel>
                     </Border>
 
-                    <views:ZoomView x:Name="zoomctrl" AllowDrop="True" MinZoom="{Binding MinZoom}" MaxZoom="{Binding MaxZoom}" ZoomDeltaMultiplier="20" Grid.Row="1"
-                                          Zoom="{Binding Zoom, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          Mode="{Binding ZoomMode, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <views:ZoomView x:Name="ZoomCtrl" AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1" >
                         <i:Interaction.Behaviors>
                             <b:ZoomViewDrawEdgeBehavior/>                            
-                            <b:DropBehavior/>
+                            <b:ZoomDropBehavior/>
                         </i:Interaction.Behaviors>
-                            <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">                                
+                            <views:AreaView x:Name="Area" LogicCore="{Binding Path=DataContext.Editor.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}">                                
                                 <i:Interaction.Behaviors>
                                     <b:AreaViewDrawEdgeBehavior/>
                                     <b:GraphNavigationBehavior/>
@@ -161,9 +159,9 @@
                                     Style="{StaticResource ExportButtonStyle}" Command="{Binding SaveNavToImage}"/>
                             <Rectangle Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                             <Slider Style="{StaticResource SliderStyle}" Width="100"
-								Minimum="{Binding MinZoomNav, Converter={StaticResource log10Converter}}"
-								Maximum="{Binding MaxZoomNav, Converter={StaticResource log10Converter}}"
-								Value="{Binding ZoomNav, Converter={StaticResource log10Converter}, Mode=TwoWay}"
+								Minimum="{Binding MinZoom, Converter={StaticResource log10Converter}, ElementName=ZoomCtrlNav}"
+								Maximum="{Binding MaxZoom, Converter={StaticResource log10Converter}, ElementName=ZoomCtrlNav}"
+								Value="{Binding Zoom, Converter={StaticResource log10Converter}, Mode=TwoWay, ElementName=ZoomCtrlNav}"
 								VerticalAlignment="Center"
 								Ticks="0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2"
 								AutoToolTipPlacement="BottomRight"
@@ -173,23 +171,20 @@
 								LargeChange="0.2"
 								SmallChange="0.1"
 								Orientation="Horizontal" />
-                            <TextBlock FontSize="10" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Zoom, ElementName=zoomctrlNav, StringFormat=\{0:P0\}}" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
-                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="Fill" IsChecked="{Binding ZoomModeNav, ConverterParameter={x:Static controls:ZoomControlModes.Fill}, Converter={StaticResource equalityConverter}}" />
-                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding ZoomModeNav, ConverterParameter={x:Static controls:ZoomControlModes.Original}, Converter={StaticResource equalityConverter}}" />
+                            <TextBlock FontSize="10" Foreground="{StaticResource AccentBrush}" Width="30" Text="{Binding Zoom, ElementName=ZoomCtrlNav, StringFormat=\{0:P0\}}" FontWeight="Normal" VerticalAlignment="Center" Margin="2"/>
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="Fill" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Fill}, ElementName=ZoomCtrlNav, Converter={StaticResource equalityConverter}}" />
+                            <ToggleButton Margin="1" Width="28" Style="{StaticResource ToggleButtonStyle}" Content="1:1" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Original}, ElementName=ZoomCtrlNav, Converter={StaticResource equalityConverter}}" />
                         </StackPanel>
                     </Border>
-                    <views:ZoomView Grid.Row="1"  MinZoom="{Binding MinZoomNav}" MaxZoom="{Binding MaxZoomNav}" ZoomDeltaMultiplier="20" x:Name="zoomctrlNav"
-                                          Zoom="{Binding ZoomNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                          Mode="{Binding ZoomModeNav, BindsDirectlyToSource=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                    <views:ZoomView Grid.Row="1"  MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20" x:Name="ZoomCtrlNav" >
                         <views:ZoomView.Content>
-                            <views:AreaView x:Name="AreaNav" LogicCore="{Binding Path=DataContext.NavLogic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
+                            <views:AreaView x:Name="AreaNav" LogicCore="{Binding Path=DataContext.Navigator.Logic, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Grid}}" >
                                 <i:Interaction.Behaviors>
                                     <b:GraphNavigationBehavior/>
                                     <b:RelayoutBehavior/>
                                 </i:Interaction.Behaviors>
                             </views:AreaView>
-                        </views:ZoomView.Content>
-                        
+                        </views:ZoomView.Content>                        
                     </views:ZoomView>
                 </Grid>
             </TabItem>

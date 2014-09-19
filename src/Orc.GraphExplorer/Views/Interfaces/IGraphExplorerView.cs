@@ -11,7 +11,7 @@ namespace Orc.GraphExplorer.Views.Interfaces
     using Catel.MVVM.Views;
 
     using GraphX;
-
+    using Models;
     using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Views.Enums;
 

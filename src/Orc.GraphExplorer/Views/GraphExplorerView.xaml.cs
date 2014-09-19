@@ -20,7 +20,7 @@ namespace Orc.GraphExplorer.Views
     using Catel.MVVM.Converters;
     using GraphX;
     using GraphX.Controls;
-
+    using Models;
     using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Views.Enums;
     using Orc.GraphExplorer.Views.Interfaces;
@@ -44,8 +44,8 @@ namespace Orc.GraphExplorer.Views
 
             ServiceLocator.Default.RegisterInstance(GetType(), this);
 
-            RplaceAreaGridParent(Area, zoomctrl);
-            RplaceAreaGridParent(AreaNav, zoomctrlNav);
+            RplaceAreaGridParent(Area, ZoomCtrl);
+            RplaceAreaGridParent(AreaNav, ZoomCtrlNav);
         }
 
         // TODO: this method is like hack. It should be removed in future
@@ -145,14 +145,12 @@ namespace Orc.GraphExplorer.Views
 
         public void SetIsHighlightEnabled(GraphExplorerTab tab, DataVertex vertex, bool value)
         {
-            var area = GetAreaByTab(tab);
-            HighlightBehaviour.SetIsHighlightEnabled(area.VertexList[vertex], value);
+            vertex.IsHighlightEnabled = value;
         }
 
         public void SetIsHighlightEnabled(GraphExplorerTab tab, DataEdge edge, bool value)
         {
-            var area = GetAreaByTab(tab);
-            HighlightBehaviour.SetIsHighlightEnabled(area.EdgesList[edge], value);
+            edge.IsHighlightEnabled = value;
         }
 
         public void SetHighlighted(GraphExplorerTab tab, DataEdge edge, bool value)
@@ -163,10 +161,7 @@ namespace Orc.GraphExplorer.Views
 
         public void SetIsDragEnabled(GraphExplorerTab tab, DataVertex vertex, bool value)
         {
-            var area = GetAreaByTab(tab);
-            DragBehaviour.SetIsDragEnabled(area.VertexList[vertex], value);
+            vertex.IsDragEnabled = value;
         }
-
-        
     }
 }

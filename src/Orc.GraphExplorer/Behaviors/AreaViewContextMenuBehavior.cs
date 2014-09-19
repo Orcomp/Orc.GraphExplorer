@@ -11,8 +11,10 @@ namespace Orc.GraphExplorer.Behaviors
     using System.Windows.Controls;
     using System.Windows.Interactivity;
     using GraphX;
+    using Models;
     using ObjectModel;
     using Operations;
+    using ViewModels;
     using Views;
 
     public class AreaViewContextMenuBehavior : GraphExplorerViewModelContextBehavior<AreaView>
@@ -23,6 +25,11 @@ namespace Orc.GraphExplorer.Behaviors
 
             AssociatedObject.EdgeSelected += AssociatedObject_EdgeSelected;
             AssociatedObject.VertexSelected += AssociatedObject_VertexSelected;
+        }
+
+        private AreaViewModel ViewModel
+        {
+            get { return (AreaViewModel) AssociatedObject.ViewModel; }
         }
 
         void AssociatedObject_VertexSelected(object sender, GraphX.Models.VertexSelectedEventArgs args)
@@ -41,9 +48,8 @@ namespace Orc.GraphExplorer.Behaviors
             var vCtrl = (sender as MenuItem).Tag as VertexControl;
             if (vCtrl != null)
             {
-                var op = new DeleteVertexOperation(GraphExplorerViewModel.Editor, GraphExplorerViewModel.View.Area, vCtrl.Vertex as DataVertex, (dv, vc) => { }, dv => { GraphExplorerViewModel.View.Area.RelayoutGraph(true); });
-
-                GraphExplorerViewModel.OperationObserver.Do(op);
+                var op = new DeleteVertexOperation(GraphExplorerViewModel.Editor, GraphExplorerViewModel.View.Area, (GraphLogic)GraphExplorerViewModel.View.Area.LogicCore, vCtrl.Vertex as DataVertex, (dv) => { }, dv => { GraphExplorerViewModel.View.Area.RelayoutGraph(true); });
+                GraphExplorerViewModel.Explorer.OperationObserver.Do(op);
             }
         }
 
@@ -73,7 +79,7 @@ namespace Orc.GraphExplorer.Behaviors
                     //do nothing
                 });
 
-                GraphExplorerViewModel.OperationObserver.Do(op);
+                GraphExplorerViewModel.Explorer.OperationObserver.Do(op);
             }
             //throw new NotImplementedException();
         }

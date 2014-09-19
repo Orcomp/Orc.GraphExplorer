@@ -3,7 +3,7 @@ namespace Orc.GraphExplorer.Services
     using System.Windows.Media;
 
     using GraphX;
-
+    using Models;
     using Orc.GraphExplorer.ObjectModel;
 
     public interface IEditorService

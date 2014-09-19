@@ -7,6 +7,7 @@
     using Operations;
     using Operations.Interfaces;
 
+    using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.ObjectModel;
 
     public class PropertyViewModel : ObservableObject, IObservable<IOperation>,IDisposable

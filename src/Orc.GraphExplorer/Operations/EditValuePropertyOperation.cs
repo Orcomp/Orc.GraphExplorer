@@ -8,7 +8,7 @@
     {
         string _value;
         Tuple<string, string> _tuple;
-        public EditValuePropertyOperation(EditorData editor, PropertyViewModel property = null, string value = "")
+        public EditValuePropertyOperation(Editor editor, PropertyViewModel property = null, string value = "")
             : base(editor, null, property)
         {
             base.Sammary = "Edit Property Value";

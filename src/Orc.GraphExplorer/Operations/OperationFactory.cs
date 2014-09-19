@@ -1,22 +1,19 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="IOperationObserver.cs" company="Orcomp development team">
+// <copyright file="OperationFactory.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Services.Interfaces
+namespace Orc.GraphExplorer.Operations
 {
     using System;
-    using Operations.Interfaces;
 
-    using Orc.GraphExplorer.Models;
-
-    public interface IOperationObserver : IObserver<IOperation>
+    public class OperationFactory
     {
-        void Do(IOperation operation);
-        void Undo(Editor editor);
-        void Redo(Editor editor);
-        void Clear(Editor editor);
+        public DeleteVertexOperation CreateDeleteVertexOperation()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -14,8 +14,8 @@
         double _offsetX;
         double _offsetY;
         VertexControl _vc;
-        public VertexPositionChangeOperation(EditorData editor, GraphArea area, VertexControl vc, double offsetX, double offsetY, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(editor, area, data, callback, undoCallback)
+        public VertexPositionChangeOperation(Editor editor, GraphArea area, GraphLogic logic, VertexControl vc, double offsetX, double offsetY, DataVertex data = null, Action<DataVertex> callback = null, Action<DataVertex> undoCallback = null)
+            : base(editor, area, logic, data, callback, undoCallback)
         {
             _vc = vc;
             _offsetX = offsetX;
@@ -34,7 +34,7 @@
 
             if (_callback != null)
             {
-                _callback.Invoke(_vertex, _vCtrl);
+                _callback.Invoke(_vertex);
             }
         }
 

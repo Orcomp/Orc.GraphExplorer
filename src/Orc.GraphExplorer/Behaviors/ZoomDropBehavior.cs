@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="DropBehavior.cs" company="Orcomp development team">
+// <copyright file="ZoomDropBehavior.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ namespace Orc.GraphExplorer.Behaviors
     using Interfaces;
     using Views;
 
-    public class DropBehavior : Behavior<FrameworkElement>
+    public class ZoomDropBehavior : Behavior<ZoomView>
     {
         #region Methods
         protected override void OnAttached()
@@ -27,13 +27,7 @@ namespace Orc.GraphExplorer.Behaviors
         {
             if (!e.Data.GetDataPresent(typeof (object)))
             {
-                var zoomCtrl = AssociatedObject as ZoomView;
-                if (zoomCtrl == null)
-                {
-                    return;
-                }
-
-                var dropable = zoomCtrl.ViewModel as IDropable;
+                var dropable = AssociatedObject.ViewModel as IDropable;
                 if (dropable == null)
                 {
                     return;
@@ -45,25 +39,19 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void AssociatedObject_PreviewDrop(object sender, DragEventArgs e)
         {
-            var zoomCtrl = AssociatedObject as ZoomView;
-            if (zoomCtrl == null)
-            {
-                return;
-            }
-
-            var area = zoomCtrl.Content as AreaView;
+            var area = AssociatedObject.Content as AreaView;
             if (area == null)
             {
                 return;
             }
 
-            var dropable = zoomCtrl.ViewModel as IDropable;
+            var dropable = AssociatedObject.ViewModel as IDropable;
             if (dropable == null)
             {
                 return;
             }
 
-            Point pos = zoomCtrl.TranslatePoint(e.GetPosition(zoomCtrl), area);
+            Point pos = AssociatedObject.TranslatePoint(e.GetPosition(AssociatedObject), area);
             dropable.Drop(e.Data, pos);
         }
         #endregion

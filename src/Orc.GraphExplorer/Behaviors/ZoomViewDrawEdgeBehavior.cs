@@ -44,7 +44,7 @@ namespace Orc.GraphExplorer.Behaviors
                 return;
             }
 
-            var pos = GraphExplorerViewModel.View.zoomctrl.TranslatePoint(e.GetPosition(GraphExplorerViewModel.View.zoomctrl), GraphExplorerViewModel.View.Area);
+            var pos = GraphExplorerViewModel.View.ZoomCtrl.TranslatePoint(e.GetPosition(GraphExplorerViewModel.View.ZoomCtrl), GraphExplorerViewModel.View.Area);
             var lastseg = GraphExplorerViewModel.EdGeometry.Figures[0].Segments[GraphExplorerViewModel.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
             lastseg.Points[lastseg.Points.Count - 1] = pos;
             GraphExplorerViewModel.Editor.Service.SetEdgePathManually(GraphExplorerViewModel.EdGeometry);

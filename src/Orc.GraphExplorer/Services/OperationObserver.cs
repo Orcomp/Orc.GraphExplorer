@@ -15,28 +15,19 @@ namespace Orc.GraphExplorer.Services
     using Models;
     using Operations.Interfaces;
 
-    public class OperationStacks
-    {
-        public OperationStacks()
-        {
-            ForRedo = new Stack<IOperation>();
-            ForUndo = new Stack<IOperation>();
-        }
-        public Stack<IOperation> ForUndo { get; private set; }
+    using Orc.GraphExplorer.ObjectModel;
 
-        public Stack<IOperation> ForRedo { get; private set; }
-    }
-
+    // TODO: this class should be well tested with real operations
     public class OperationObserver : IOperationObserver
     {
         #region Fields
-        private readonly IDictionary<EditorData, OperationStacks> _operations;
+        private readonly IDictionary<Editor, OperationStacks> _operations;
         #endregion
 
         #region Constructors
         public OperationObserver()
         {
-            _operations = new Dictionary<EditorData, OperationStacks>();
+            _operations = new Dictionary<Editor, OperationStacks>();
         }
         #endregion
 
@@ -86,9 +77,9 @@ namespace Orc.GraphExplorer.Services
         #endregion
 
         #region Methods
-        public void Undo(EditorData editorData)
+        public void Undo(Editor editor)
         {
-            var stackPair = _operations[editorData];
+            var stackPair = _operations[editor];
 
             if (!stackPair.ForUndo.Any())
             {
@@ -106,23 +97,23 @@ namespace Orc.GraphExplorer.Services
 
             stackPair.ForRedo.Push(operation);
 
-            UpdateEditor(editorData, stackPair);
+            UpdateEditor(editor, stackPair);
 
             if (!String.IsNullOrEmpty(operation.Sammary))
             {
-                editorData.OperationStatus = "Undo " + operation.Sammary;
+                editor.OperationStatus = "Undo " + operation.Sammary;
             }
         }
 
-        private static void UpdateEditor(EditorData editorData, OperationStacks stackPair)
+        private static void UpdateEditor(Editor editor, OperationStacks stackPair)
         {
-            editorData.HasRedoable = stackPair.ForRedo.Any(o => o.IsUnDoable);
-            editorData.HasUndoable = stackPair.ForUndo.Any(o => o.IsUnDoable);
+            editor.HasRedoable = stackPair.ForRedo.Any(o => o.IsUnDoable);
+            editor.HasUndoable = stackPair.ForUndo.Any(o => o.IsUnDoable);
         }
 
-        public void Redo(EditorData editorData)
+        public void Redo(Editor editor)
         {
-            var stackPair = _operations[editorData];
+            var stackPair = _operations[editor];
             if (!stackPair.ForRedo.Any())
             {
                 return;
@@ -139,17 +130,17 @@ namespace Orc.GraphExplorer.Services
 
             stackPair.ForUndo.Push(operation);
 
-            UpdateEditor(editorData, stackPair);
+            UpdateEditor(editor, stackPair);
 
             if (!String.IsNullOrEmpty(operation.Sammary))
             {
-                editorData.OperationStatus = "Redo " + operation.Sammary;
+                editor.OperationStatus = "Redo " + operation.Sammary;
             }
         }
 
-        public void Clear(EditorData editorData)
+        public void Clear(Editor editor)
         {
-            _operations.Remove(editorData);
+            _operations.Remove(editor);
         }
         #endregion
     }

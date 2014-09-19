@@ -9,6 +9,9 @@ namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows.Interactivity;
     using ObjectModel;
+
+    using Orc.GraphExplorer.Models;
+
     using Views;
 
     public class GraphNavigationBehavior : GraphExplorerViewModelContextBehavior<AreaView>

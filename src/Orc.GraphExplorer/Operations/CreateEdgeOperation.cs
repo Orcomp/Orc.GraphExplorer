@@ -39,7 +39,7 @@
             }
         }
 
-        public CreateEdgeOperation(EditorData editor, GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+        public CreateEdgeOperation(Editor editor, GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
             :base(editor, area, source,target,callback,undoCallback)
         {
 

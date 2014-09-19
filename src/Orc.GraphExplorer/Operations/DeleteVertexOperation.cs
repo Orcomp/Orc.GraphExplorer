@@ -35,7 +35,7 @@
 
             if (_callback != null)
             {
-                _callback.Invoke(_vertex,_vCtrl);
+                _callback.Invoke(_vertex);
             }
         }
 
@@ -44,13 +44,13 @@
             _vCtrl = AddVertex(_vertex);
            // AddVertex(_vertex, _vCtrl);
 
-            HighlightBehaviour.SetIsHighlightEnabled(_vCtrl, false);
+            _vertex.IsHighlightEnabled = false;
+            //HighlightBehaviour.SetIsHighlightEnabled(_vCtrl, false);
 
             foreach (var edge in _relatedEdges)
             {
-                var edgeCtrl = AddEdge(edge.Item1);
-
-                HighlightBehaviour.SetIsHighlightEnabled(edgeCtrl, false);
+                AddEdge(edge.Item1);
+                edge.Item1.IsHighlightEnabled = false;
             }
 
             if (_undoCallback != null)
@@ -59,8 +59,8 @@
             }
         }
 
-        public DeleteVertexOperation(EditorData editor, GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(editor, area, data, callback, undoCallback)
+        public DeleteVertexOperation(Editor editor, GraphArea area, GraphLogic logic, DataVertex data = null, Action<DataVertex> callback = null, Action<DataVertex> undoCallback = null)
+            : base(editor, area, logic, data, callback, undoCallback)
         {
             if (area.VertexList.ContainsKey(_vertex))
                 _vCtrl = area.VertexList[_vertex] as VertexControl;

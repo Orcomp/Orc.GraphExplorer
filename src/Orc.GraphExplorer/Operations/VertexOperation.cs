@@ -7,6 +7,8 @@
 
     using Enums;
     using GraphX;
+    using GraphX.GraphSharp;
+
     using Models;
     using Operations.Interfaces;
 
@@ -14,13 +16,14 @@
     using Orc.GraphExplorer.Views;
 
     using QuickGraph;
+    using ViewModels;
 
     /// <summary>
     /// base class for encapsulating vertex management
     /// </summary>
     public abstract class VertexOperation : IOperation
     {
-        public EditorData Editor { get; private set; }
+        public Editor Editor { get; private set; }
 
         public virtual string Sammary
         {
@@ -51,18 +54,18 @@
 
         protected DataVertex _vertex;
         protected VertexControl _vCtrl;
-        protected Action<DataVertex, VertexControl> _callback;
+        protected Action<DataVertex> _callback;
         protected Action<DataVertex> _undoCallback;
 
         private readonly GraphArea _area;
 
         private readonly IGXLogicCore<DataVertex, DataEdge, Graph> _logic;
 
-        public VertexOperation(EditorData editor, GraphArea area, DataVertex data = null, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
+        public VertexOperation(Editor editor, GraphArea area, GraphLogic logic, DataVertex data = null, Action<DataVertex> callback = null, Action<DataVertex> undoCallback = null)
         {
             Editor = editor;
             _area = area;
-            _logic = _area.LogicCore;
+            _logic = logic;
             _callback = callback;
             _undoCallback = undoCallback;
 
@@ -82,18 +85,19 @@
             }
         }
 
-        protected EdgeControl AddEdge(DataEdge dataEdge)
+       
+        protected void AddEdge(DataEdge dataEdge)
         {
             _logic.Graph.AddEdge(dataEdge);
-            return _area.EdgesList[dataEdge];
         }
+              
 
         protected void RemoveEdge(DataEdge dataEdge)
         {
             _logic.Graph.RemoveEdge(dataEdge);            
         }
 
-        protected VertexControl AddVertex(DataVertex dataVertex/*, VertexControl vertexControl*/)
+        protected VertexControl AddVertex(DataVertex dataVertex)
         {
             _logic.Graph.AddVertex(dataVertex);
             return _area.VertexList[dataVertex];
@@ -106,15 +110,8 @@
 
         protected List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType controlType, EdgesType edgesType)
         {
+            // TODO: it is better to use _logic.Graph.GetNeighbours()
             return _area.GetRelatedControls(ctrl, controlType, edgesType);
-        }
-
-        protected IDictionary<DataVertex, VertexControl> VertexList
-        {
-            get
-            {
-                return _area.VertexList;
-            }
         }
 
         public OperationStatus OperationStatus

@@ -9,17 +9,21 @@ namespace Orc.GraphExplorer.Models
     using GraphX;
 
     using Operations.Interfaces;
+
+    using Orc.GraphExplorer.ObjectModel;
+
     using Services;
     using Services.Interfaces;
 
-    public class EditorData : ModelBase
+    public class Editor : ModelBase
     {
         private readonly IEditorService _editorService;
 
         #region Constructors
-        public EditorData(IEditorService editorService)
+        public Editor(IEditorService editorService)
         {
             _editorService = editorService;
+            Logic = new GraphLogic();
         }
         #endregion // Constructors              
 
@@ -84,6 +88,20 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Register the HasRedoable property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData HasRedoableProperty = RegisterProperty("HasRedoable", typeof(bool), () => false);        
+        public static readonly PropertyData HasRedoableProperty = RegisterProperty("HasRedoable", typeof(bool), () => false);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public GraphLogic Logic
+        {
+            get { return GetValue<GraphLogic>(LogicProperty); }
+            set { SetValue(LogicProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the name property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic), () => new GraphLogic());
     }
 }

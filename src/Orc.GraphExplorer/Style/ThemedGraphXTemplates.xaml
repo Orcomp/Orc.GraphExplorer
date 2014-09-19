@@ -1388,7 +1388,7 @@
     <SolidColorBrush x:Key="MouseOverBorderBrush" Color="{StaticResource AccentColor}"/>
 
     <!-- VERTEX CONTROL -->
-    <Style TargetType="{x:Type gxlctrl:VertexControl}">
+    <Style TargetType="{x:Type views:VertexView}">
         <!-- Set background color through attached property -->
         <Setter Property="Background" Value="{StaticResource NormalBrush}"/>
         <Setter Property="Padding" Value="2"/>
@@ -1401,7 +1401,7 @@
         <Setter Property="MinWidth" Value="180"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type gxlctrl:VertexControl}">
+                <ControlTemplate TargetType="{x:Type views:VertexView}">
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="Highlight">
                             <!--<DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" />
@@ -1572,10 +1572,10 @@
 
     <!--        Content="{Binding Edge.Tag, RelativeSource={RelativeSource TemplatedParent}}"                    StrokeDashArray="{Binding Path=Edge, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource dconv}}" -->
     <!-- EDGE CONTROL -->
-    <Style TargetType="{x:Type gxlctrl:EdgeControl}">
+    <Style TargetType="{x:Type views:EdgeView}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type gxlctrl:EdgeControl}">
+                <ControlTemplate TargetType="{x:Type views:EdgeView}">
                     <Grid>
                         <Path Stroke="{TemplateBinding Foreground}"
                           StrokeThickness="2" MinWidth="1" MinHeight="1"

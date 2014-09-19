@@ -8,9 +8,25 @@
 namespace Orc.GraphExplorer.Models
 {
     using Catel.Data;
+    using Catel.IoC;
+
+    using Orc.GraphExplorer.Services.Interfaces;
 
     public class GraphExplorer : ModelBase
     {
-         
+        private readonly IOperationObserver _operationObserver;
+
+        public GraphExplorer()
+        {
+            var serviceLocator = ServiceLocator.Default; 
+            _operationObserver = serviceLocator.ResolveType<IOperationObserver>();
+   
+        }
+
+
+        public IOperationObserver OperationObserver
+        {
+            get { return _operationObserver; }
+        }
     }
 }

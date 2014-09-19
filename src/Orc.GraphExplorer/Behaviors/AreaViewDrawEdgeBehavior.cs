@@ -15,6 +15,7 @@ namespace Orc.GraphExplorer.Behaviors
     using Events;
     using GraphX;
     using GraphX.Models;
+    using Models;
     using ObjectModel;
     using Views;
 
@@ -45,14 +46,14 @@ namespace Orc.GraphExplorer.Behaviors
                         GraphExplorerViewModel.View.SetEdVertex(args.VertexControl as VertexControl);
                         GraphExplorerViewModel.EdFakeDV = new DataVertex {ID = -666};
                         GraphExplorerViewModel.EdGeometry = GraphExplorerViewModel.View.CreatePathGeometry();
-                        Point pos = GraphExplorerViewModel.View.zoomctrl.TranslatePoint(args.VertexControl.GetPosition(), GraphExplorerViewModel.View.Area);
+                        Point pos = GraphExplorerViewModel.View.ZoomCtrl.TranslatePoint(args.VertexControl.GetPosition(), GraphExplorerViewModel.View.Area);
                         var lastseg = GraphExplorerViewModel.EdGeometry.Figures[0].Segments[GraphExplorerViewModel.EdGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
                         lastseg.Points[lastseg.Points.Count - 1] = pos;
 
                         // TODO: refactor this
                         var dedge = new DataEdge(GraphExplorerViewModel.View.GetEdVertex(), GraphExplorerViewModel.EdFakeDV);
-                        GraphExplorerViewModel.Logic.Graph.AddVertex(GraphExplorerViewModel.EdFakeDV);
-                        GraphExplorerViewModel.Logic.Graph.AddEdge(dedge);
+                        GraphExplorerViewModel.Editor.Logic.Graph.AddVertex(GraphExplorerViewModel.EdFakeDV);
+                        GraphExplorerViewModel.Editor.Logic.Graph.AddEdge(dedge);
 
                         GraphExplorerViewModel.Editor.Service.SetEdgePathManually(GraphExplorerViewModel.EdGeometry);
                         GraphExplorerViewModel.Status = GraphExplorerStatus.CreateLinkSelectTarget;
@@ -61,7 +62,7 @@ namespace Orc.GraphExplorer.Behaviors
 
                     else if (!GraphExplorerViewModel.View.IsEdVertex(args.VertexControl as VertexControl) && GraphExplorerViewModel.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
                     {
-                        GraphExplorerViewModel.CreateEdge(GraphExplorerViewModel.View.GetEdVertex().Id, (args.VertexControl.Vertex as DataVertex).Id);
+                        GraphExplorerViewModel.CreateEdge(GraphExplorerViewModel.View.GetEdVertex().ID, (args.VertexControl.Vertex as DataVertex).ID);
 
                         GraphExplorerViewModel.ClearEdgeDrawing();
 
@@ -81,15 +82,15 @@ namespace Orc.GraphExplorer.Behaviors
                 return;
             }
 
-            if (GraphExplorerViewModel.SelectedVertices.Contains(v.Id))
+            if (GraphExplorerViewModel.SelectedVertices.Contains(v.ID))
             {
-                GraphExplorerViewModel.SelectedVertices.Remove(v.Id);
+                GraphExplorerViewModel.SelectedVertices.Remove(v.ID);
                 HighlightBehaviour.SetHighlighted(vc, false);
                 //DragBehaviour.SetIsTagged(vc, false);
             }
             else
             {
-                GraphExplorerViewModel.SelectedVertices.Add(v.Id);
+                GraphExplorerViewModel.SelectedVertices.Add(v.ID);
                 HighlightBehaviour.SetHighlighted(vc, true);
                 //DragBehaviour.SetIsTagged(vc, true);
             }

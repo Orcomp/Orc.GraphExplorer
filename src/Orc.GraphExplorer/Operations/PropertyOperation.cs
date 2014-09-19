@@ -19,14 +19,14 @@
         }
 
         protected DataVertex _vertex;
-        public PropertyOperation(EditorData editor, DataVertex vertex,PropertyViewModel property)
+        public PropertyOperation(Editor editor, DataVertex vertex,PropertyViewModel property)
         {
             Editor = editor;
             _property = property;
             _vertex = vertex;
         }
 
-        public EditorData Editor { get; private set; }
+        public Editor Editor { get; private set; }
 
         public virtual string Sammary
         {

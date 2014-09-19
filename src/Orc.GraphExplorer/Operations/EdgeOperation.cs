@@ -19,7 +19,7 @@
     {
         string Edge = "Operate Edge";
 
-        public EditorData Editor { get; private set; }
+        public Editor Editor { get; private set; }
 
         public virtual string Sammary
         {
@@ -61,7 +61,7 @@
 
         private readonly IGXLogicCore<DataVertex, DataEdge, Graph> _logic;
 
-        public EdgeOperation(EditorData editor, GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
+        public EdgeOperation(Editor editor, GraphArea area, DataVertex source, DataVertex target, Action<EdgeControl> callback = null, Action<EdgeControl> undoCallback = null)
         {
             Editor = editor;
             _area = area;
@@ -94,7 +94,6 @@
         //dispose operation, release reference
         public virtual void Dispose()
         {
-            _Edge.Dispose();
             _Edge = null;
             _eCtrl = null;
             _callback = null;

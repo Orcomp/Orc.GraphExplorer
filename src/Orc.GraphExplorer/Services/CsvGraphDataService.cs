@@ -111,13 +111,13 @@
         {
             foreach (var item in vlist)
             {
-                if (cache.ContainsKey(item.Id))
+                if (cache.ContainsKey(item.ID))
                 {
-                    cache[item.Id] = item;
+                    cache[item.ID] = item;
                 }
                 else
                 {
-                    cache.Add(item.Id, item);
+                    cache.Add(item.ID, item);
                 }
             }
 
@@ -244,14 +244,14 @@
                 using (var fs = new FileStream(path, FileMode.Truncate))
                 using (var writer = new CsvWriter(new StreamWriter(fs)))
                 {
-                    writer.WriteField("ID");
+                    writer.WriteField("Id");
                     writer.WriteField("Property");
                     writer.WriteField("Value");
                     writer.NextRecord();
 
                     foreach (var v in vertexes)
                     {
-                        var id = v.Id;
+                        var id = v.ID;
 
                         if (v.Properties != null && v.Properties.Count>0)
                         {
@@ -316,8 +316,8 @@
 
                     foreach (var v in edges)
                     {
-                        writer.WriteField(v.Source.Id);
-                        writer.WriteField(v.Target.Id);
+                        writer.WriteField(v.Source.ID);
+                        writer.WriteField(v.Target.ID);
                         writer.NextRecord();
                     }
                 }
@@ -343,13 +343,13 @@
 
             try
             {
-                if (vCache.ContainsKey(vertex.Id))
+                if (vCache.ContainsKey(vertex.ID))
                 {
-                    vCache[vertex.Id] = vertex;
+                    vCache[vertex.ID] = vertex;
                 }
                 else
                 {
-                    vCache.Add(vertex.Id, vertex);
+                    vCache.Add(vertex.ID, vertex);
                 }
 
                 var list = vCache.Values.ToList();

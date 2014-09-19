@@ -12,6 +12,7 @@
     using GraphX;
     using Models;
 
+    using Orc.GraphExplorer.Events;
     using Orc.GraphExplorer.ObjectModel;
     using Orc.GraphExplorer.Views;
     using Services.Interfaces;
@@ -42,7 +43,7 @@
 
             if (_callback != null)
             {
-                _callback.Invoke(_vertex, _vCtrl);
+                _callback.Invoke(_vertex);
             }
 
         }
@@ -86,8 +87,8 @@
             }
         }
 
-        public CreateVertexOperation(EditorData editor, GraphArea area, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex, VertexControl> callback = null, Action<DataVertex> undoCallback = null)
-            : base(editor, area, data, callback, undoCallback)
+        public CreateVertexOperation(Editor editor, GraphArea area, GraphLogic logic, DataVertex data = null, double x = double.MinValue, double y = double.MinValue, Action<DataVertex> callback = null, Action<DataVertex> undoCallback = null)
+            : base(editor, area, logic, data, callback, undoCallback)
         {
             _vCtrl = area.ControlFactory.CreateVertexControl(_vertex);
 
@@ -114,25 +115,25 @@
                 throw new NoNullAllowedException(string.Format("Uable to find viewmodel {0}", typeof(GraphExplorerViewModel)));
             }
 
-            return new CreateVertexOperation(graphExplorerViewModel.Editor, area, DataVertex.Create(), position.X, position.Y, (v, vc) =>
+            return new CreateVertexOperation(graphExplorerViewModel.Editor, area, (GraphLogic)area.LogicCore, DataVertex.Create(), position.X, position.Y, (v) =>
             {
-                graphExplorerViewModel.SelectedVertices.Add(v.Id);
+                graphExplorerViewModel.SelectedVertices.Add(v.ID);
 
                 graphExplorerViewModel.UpdateHighlightBehaviour(false);
 
                 foreach (int selectedV in graphExplorerViewModel.SelectedVertices)
                 {
-                    VertexControl localvc = area.VertexList.Where(pair => pair.Key.Id == selectedV).Select(pair => pair.Value).FirstOrDefault();
+                    VertexControl localvc = area.VertexList.Where(pair => pair.Key.ID == selectedV).Select(pair => pair.Value).FirstOrDefault();
                     HighlightBehaviour.SetHighlighted(localvc, true);
                 }
 
                 if (graphExplorerViewModel.CanDrag)
                 {
-                    DragBehaviour.SetIsDragEnabled(vc, true);
+                    v.IsDragEnabled = true;
                 }
                 else
                 {
-                    DragBehaviour.SetIsDragEnabled(vc, false);
+                    v.IsDragEnabled = false;
                 }
 
                 v.IsEditing = true;
@@ -140,12 +141,12 @@
                 v.OnPositionChanged += v_OnPositionChanged;
             }, v =>
             {
-                graphExplorerViewModel.SelectedVertices.Remove(v.Id);
+                graphExplorerViewModel.SelectedVertices.Remove(v.ID);
                 //on vertex recreated
             });
         }
         // TODO: to be refactored
-        private static void v_OnPositionChanged(object sender, DataVertex.VertexPositionChangedEventArgs e)
+        private static void v_OnPositionChanged(object sender, VertexPositionChangedEventArgs e)
         {
             var viewModelManager = ServiceLocator.Default.ResolveType<IViewModelManager>();
             var graphExplorerViewModel = viewModelManager.GetFirstOrDefaultInstance<GraphExplorerViewModel>();
@@ -162,11 +163,11 @@
             var operationObserver = ServiceLocator.Default.ResolveType<IOperationObserver>();
 
             var vertex = (DataVertex)sender;
-            if (area.VertexList.Keys.Any(v => v.Id == vertex.Id))
+            if (area.VertexList.Keys.Any(v => v.ID == vertex.ID))
             {
-                VertexControl vc = area.VertexList.First(v => v.Key.Id == vertex.Id).Value;
+                VertexControl vc = area.VertexList.First(v => v.Key.ID == vertex.ID).Value;
                 //throw new NotImplementedException();
-                operationObserver.Do(new VertexPositionChangeOperation(graphExplorerViewModel.Editor, area, vc, e.OffsetX, e.OffsetY, vertex));
+                operationObserver.Do(new VertexPositionChangeOperation(graphExplorerViewModel.Editor, area, (GraphLogic)area.LogicCore, vc, e.OffsetX, e.OffsetY, vertex));
             }
         }
     }

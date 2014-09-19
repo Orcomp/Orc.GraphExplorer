@@ -7,7 +7,7 @@
 
     public interface IOperation : IDisposable
     {
-        EditorData Editor { get;  }
+        Editor Editor { get;  }
 
         string Sammary { get; }
 

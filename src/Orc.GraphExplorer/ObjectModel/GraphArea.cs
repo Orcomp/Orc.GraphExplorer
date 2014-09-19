@@ -2,11 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Windows;
     using Catel.IoC;
     using Events;
     using GraphX;
     using GraphX.Controls.Models;
+    using Models;
+    using Views;
 
     public class GraphArea : GraphArea<DataVertex, DataEdge, Graph>
     {
@@ -49,9 +52,15 @@
 
             var graph = new Graph();
 
+            SubscribeOnGraphEvents();
+
             graph.AddVertexRange(vertexes);
 
-            graph.AddEdgeRange(edges);
+            foreach (var edge in edges)
+            {
+                graph.AddEdge(edge);
+            }
+            //graph.AddEdgeRange(edges);
 
             ((GraphLogic)LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
@@ -102,12 +111,14 @@
                 return;
             }
             var source = VertexList[e.Source];
-            var target = e.Target.Id == -1 ? null : VertexList[e.Target];
-            var edgeControl = ControlFactory.CreateEdgeControl(source, target, e);
+            var target = e.Target.ID == -1 ? null : VertexList[e.Target];
+            var edgeControl = (EdgeView)ControlFactory.CreateEdgeControl(source, target, e);                        
+            AddEdge(e, edgeControl);
+           // edgeControl.ViewModel.Data = e;            
             edgeControl.ShowArrows = true;
             edgeControl.ShowLabel = true;
             edgeControl.ManualDrawing = target == null;
-            AddEdge(e, edgeControl);
+
             if (target == null && TemporaryEdgeCreated != null)
             {
                 TemporaryEdgeCreated(this, new EdgeControlCreatedAventArgs(edgeControl));

@@ -9,7 +9,7 @@
 namespace Orc.GraphExplorer.ObjectModel
 {
     using GraphX.Logic;
-
+    using Models;
     using QuickGraph;
 
     public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>
