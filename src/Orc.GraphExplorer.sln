@@ -1,7 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer", "Orc.GraphExplorer\Orc.GraphExplorer.csproj", "{D32429C3-438E-4A21-9384-153B609E1B97}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Demo", "Orc.GraphExplorer.Demo\Orc.GraphExplorer.Demo.csproj", "{2C50CF42-66C8-4955-82F8-B76197DF5287}"
@@ -19,26 +17,35 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{DA563D74-3
 		SolutionAssemblyInfo.cs = SolutionAssemblyInfo.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer_old", "Orc.GraphExplorer_old\Orc.GraphExplorer_old.csproj", "{D32429C3-438E-4A21-9384-153B609E1B97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocr.GraphExplorer", "Ocr.GraphExplorer\Ocr.GraphExplorer.csproj", "{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D32429C3-438E-4A21-9384-153B609E1B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D32429C3-438E-4A21-9384-153B609E1B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C50CF42-66C8-4955-82F8-B76197DF5287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32429C3-438E-4A21-9384-153B609E1B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32429C3-438E-4A21-9384-153B609E1B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32429C3-438E-4A21-9384-153B609E1B97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D32429C3-438E-4A21-9384-153B609E1B97} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 		{2C50CF42-66C8-4955-82F8-B76197DF5287} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
+		{D32429C3-438E-4A21-9384-153B609E1B97} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
+		{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2} = {512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}
 	EndGlobalSection
 EndGlobal
