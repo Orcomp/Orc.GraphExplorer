@@ -1,29 +1,25 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="ZoomZoomView.cs" company="Orcomp development team">
+// <copyright file="EdgeViewBase.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Views
+namespace Orc.GraphExplorer.Views.Base
 {
     using System;
     using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Controls;
-
     using Catel;
     using Catel.MVVM;
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
-    using GraphX.Controls;
-
-    using Orc.GraphExplorer.Helpers;
-
+    using GraphX;
+    using Helpers;
     using ViewModels;
 
-    public class ZoomView : ZoomControl, IUserControl
+    public abstract class EdgeViewBase : EdgeControl, IUserControl
     {
         private readonly UserControlLogic _logic;
 
@@ -32,26 +28,36 @@ namespace Orc.GraphExplorer.Views
         private event EventHandler<EventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public ZoomView()
+        public EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
+            : base(source, target, edge, showLabels, showArrows) 
         {
-            _logic = new UserControlLogic(this, typeof(ZoomViewModel));
+            _logic = new UserControlLogic(this, typeof(EdgeViewModel));            
+        }
 
+        public override void BeginInit()
+        {
             _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
             _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
-        }       
+            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));         
 
-        public IViewModel ViewModel
-        {
-            get
-            {
-                return _logic.ViewModel;
-            }
+            base.BeginInit();
         }
+
+        IViewModel IViewModelContainer.ViewModel
+        {
+            get { return _logic.ViewModel; }
+        }
+
+        public EdgeViewModel ViewModel
+        {
+            get { return _logic.ViewModel as EdgeViewModel; }
+        }
+
+
 
         public event EventHandler<EventArgs> ViewModelChanged;
 
@@ -79,11 +85,16 @@ namespace Orc.GraphExplorer.Views
             }
         }
 
-
         event EventHandler<EventArgs> IView.DataContextChanged
         {
-            add { _viewDataContextChanged += value; }
-            remove { _viewDataContextChanged -= value; }
+            add
+            {
+                _viewDataContextChanged += value;
+            }
+            remove
+            {
+                _viewDataContextChanged -= value;
+            }
         }
 
         public bool CloseViewModelOnUnloaded
@@ -145,5 +156,22 @@ namespace Orc.GraphExplorer.Views
                 _propertyChanged -= value;
             }
         }
+
+        /// <summary>
+        /// Content Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty ContentProperty =
+            DependencyProperty.Register("Content", typeof(object), typeof(EdgeViewBase),
+                new FrameworkPropertyMetadata((object)null));
+        
+
+        /// <summary>
+        /// Gets or sets the CustomContent property.
+        /// </summary>
+        public object Content
+        {
+            get { return (object)GetValue(ContentProperty); }
+            set { SetValue(ContentProperty, value); }
+        }    
     }
 }

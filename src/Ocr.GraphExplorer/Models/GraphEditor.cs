@@ -7,6 +7,8 @@
 #endregion
 namespace Orc.GraphExplorer.Models
 {
+    using System.ComponentModel;
+
     using Catel.Data;
     using Catel.IoC;
 
@@ -17,10 +19,15 @@ namespace Orc.GraphExplorer.Models
     {
         public GraphEditor()
         {
-            var tag = GraphExplorerSection.Current.DefaultGraphDataService.ToString();
-            var graphDataService = ServiceLocator.Default.ResolveType<IGraphDataService>(tag);
-            Logic = new GraphLogic(graphDataService);
+            
         }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            Logic = new GraphLogic();           
+        }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>

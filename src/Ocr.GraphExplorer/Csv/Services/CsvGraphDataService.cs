@@ -17,6 +17,7 @@ namespace Orc.GraphExplorer.Csv.Services
     using CsvHelper;
 
     using Orc.GraphExplorer.Config;
+    using Orc.GraphExplorer.Csv.Data;
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Services.Interfaces;
 
@@ -25,9 +26,15 @@ namespace Orc.GraphExplorer.Csv.Services
         #region Fields
         private readonly CsvGraphDataServiceConfig _config;
 
-        private ReplaySubject<DataVertex> _vertices;
+        private ReplaySubject<DataVertex> _verticesWithProperties;
+
+        private ReplaySubject<DataVertex> _verticesWithoutProperties;
 
         private ReplaySubject<DataEdge> _edges;
+
+        private int _vertecesWitoutPropertiesCount;
+
+        private ISubject<RelationDataRecord> _loadedRelations;
         #endregion
 
         #region Constructors
@@ -37,34 +44,65 @@ namespace Orc.GraphExplorer.Csv.Services
         }
         #endregion
 
+        #region Properties
+        private IObservable<DataVertex> VertecesWithProperties
+        {
+            get
+            {
+                if (_verticesWithProperties == null)
+                {
+                    _verticesWithProperties = new ReplaySubject<DataVertex>();
+                    InitializeVertexProperties().Subscribe(_verticesWithProperties);
+                }
+
+                return _verticesWithProperties;
+            }
+        }
+
+        private ISubject<DataVertex> VertecesWithoutProperties
+        {
+            get
+            {
+                if (_verticesWithoutProperties == null)
+                {
+                    _verticesWithoutProperties = new ReplaySubject<DataVertex>();
+                }
+
+                return _verticesWithoutProperties;
+            }
+        }
+
+        private IObservable<DataEdge> Edges
+        {
+            get
+            {
+                if (_edges == null)
+                {
+                    _edges = new ReplaySubject<DataEdge>();
+                    InitializeEdges().Subscribe(_edges);
+                }
+
+                return _edges;
+            }
+        }
+        #endregion
+
         #region IGraphDataService Members
         public IObservable<DataVertex> GetVerteces()
         {
-            if (_vertices == null)
-            {
-                _vertices = new ReplaySubject<DataVertex>();
-                InitializeVerteces().Subscribe(_vertices);
-            }
-
-            return _vertices;
+            return VertecesWithProperties.Concat(VertecesWithoutProperties);
         }
 
         public IObservable<DataEdge> GetEdges()
         {
-            if (_edges == null)
-            {
-                _edges = new ReplaySubject<DataEdge>();
-                InitializeEdges().Subscribe(_edges);
-            }
-
-            return _edges;
+            return Edges;
         }
         #endregion
 
         #region Methods
-        public IObservable<DataVertex> InitializeVerteces()
+        public IObservable<DataVertex> InitializeVertexProperties()
         {
-            return LoadVerteces().GroupBy(x => x.ID).Select(x =>
+            return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
                 // TODO: use properties later to set them in the vertex
                 var propertiers = x.Select(r => new { r.Property, r.Value }).ToList();
@@ -74,17 +112,42 @@ namespace Orc.GraphExplorer.Csv.Services
 
         public IObservable<DataEdge> InitializeEdges()
         {
-            return LoadEdges().Select(e =>
+            return Observable.Create<DataEdge>(observer => LoadRelations().Subscribe(e =>
             {
-                var from = GetVerteces().FirstOrDefault(x => x.ID == e.From);
-                var to = GetVerteces().FirstOrDefault(x => x.ID == e.To);
-                return new DataEdge(from, to);
-            });
+                var from = GetOrCreateVertex(e.From);
+                var to = GetOrCreateVertex(e.To);
+                var edge = new DataEdge(@from, to);
+                observer.OnNext(edge);
+            }, observer.OnError, () =>
+            {
+                observer.OnCompleted();
+                VertecesWithoutProperties.OnCompleted();
+            }));
         }
 
-        private IObservable<VertexDataRecord> LoadVerteces()
+        private DataVertex GetOrCreateVertex(int id)
         {
-            return Observable.Create<VertexDataRecord>(observer =>
+            var vertex = VertecesWithProperties.Concat(VertecesWithoutProperties.Take(_vertecesWitoutPropertiesCount)).FirstOrDefault(x => x.ID == id);
+            if (vertex == null)
+            {
+                try
+                {
+                    vertex = new DataVertex(id);
+                    _vertecesWitoutPropertiesCount++;
+                    VertecesWithoutProperties.OnNext(vertex);
+                }
+                catch (Exception ex)
+                {
+                    VertecesWithoutProperties.OnError(ex);
+                }
+            }
+
+            return vertex;
+        }
+
+        private IObservable<PropertyDataRecord> LoadProperties()
+        {
+            return Observable.Create<PropertyDataRecord>(observer =>
             {
                 bool disposed = false;
                 using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Open))
@@ -93,7 +156,7 @@ namespace Orc.GraphExplorer.Csv.Services
                     {
                         while (reader.Read() && !disposed)
                         {
-                            observer.OnNext(reader.GetRecord<VertexDataRecord>());
+                            observer.OnNext(reader.GetRecord<PropertyDataRecord>());
                         }
                     }
                 }
@@ -103,9 +166,9 @@ namespace Orc.GraphExplorer.Csv.Services
             });
         }
 
-        private IObservable<EdgeDataRecord> LoadEdges()
+        private IObservable<RelationDataRecord> LoadRelations()
         {
-            return Observable.Create<EdgeDataRecord>(observer =>
+            return Observable.Create<RelationDataRecord>(observer =>
             {
                 bool disposed = false;
                 using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Open))
@@ -114,7 +177,7 @@ namespace Orc.GraphExplorer.Csv.Services
                     {
                         while (reader.Read() && !disposed)
                         {
-                            observer.OnNext(reader.GetRecord<EdgeDataRecord>());
+                            observer.OnNext(reader.GetRecord<RelationDataRecord>());
                         }
                     }
                 }

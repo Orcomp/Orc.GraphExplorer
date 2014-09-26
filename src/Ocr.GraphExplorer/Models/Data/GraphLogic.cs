@@ -8,21 +8,18 @@
 
 namespace Orc.GraphExplorer.Models.Data
 {
+    using System;
+    using System.Reactive;
+    using System.Reactive.Linq;
+
     using GraphX.Logic;
 
     using Orc.GraphExplorer.Services.Interfaces;
 
     public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>
     {
-        private readonly IGraphDataService _graphDataService;
-
-        public GraphLogic(IGraphDataService graphDataService)
+        public GraphLogic()
         {
-            _graphDataService = graphDataService;
-        }
-
-        public void ReloadGraph()
-        {
-        }
+        }       
     }
 }

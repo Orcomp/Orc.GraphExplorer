@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphArea.cs" company="Orcomp development team">
+// <copyright file="GraphAreaBase.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -9,33 +9,31 @@
 namespace Orc.GraphExplorer.Views.Base
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Windows;
-
+    using System.Windows.Controls;
     using Catel;
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
-
+    using Events;
     using GraphX;
     using GraphX.Controls.Models;
+    using Helpers;
+    using Models;
+    using Models.Data;
+    using Services;
+    using Services.Interfaces;
 
-    using Orc.GraphExplorer.Events;
-    using Orc.GraphExplorer.Helpers;
-    using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Models.Data;
-    using Orc.GraphExplorer.Services;
-
-    public abstract class GraphArea : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
+    public abstract class GraphAreaBase : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
     {
         #region Constants
         /// <summary>
         /// Content Dependency Property
         /// </summary>
-        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register("Content", typeof(object), typeof(GraphArea), new FrameworkPropertyMetadata((object)null));
+        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register("Content", typeof (object), typeof (GraphAreaBase), new FrameworkPropertyMetadata((object) null));
         #endregion
 
         #region Fields
@@ -43,12 +41,23 @@ namespace Orc.GraphExplorer.Views.Base
         #endregion
 
         #region Constructors
-        public GraphArea()
+        public GraphAreaBase()
         {
             // TODO: try to inject IGraphControlFactory
-            var serviceLocator = ServiceLocator.Default;
+            IServiceLocator serviceLocator = ServiceLocator.Default;
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
+
+            _logic = CreateUserControlLogic();
+            _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
+            _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
+            _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
+
+            _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
+
+            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+
+            Loaded += GraphArea_Loaded;
         }
         #endregion
 
@@ -58,137 +67,96 @@ namespace Orc.GraphExplorer.Views.Base
         /// </summary>
         public object Content
         {
-            get
-            {
-                return (object)GetValue(ContentProperty);
-            }
-            set
-            {
-                SetValue(ContentProperty, value);
-            }
+            get { return GetValue(ContentProperty); }
+            set { SetValue(ContentProperty, value); }
         }
         #endregion
 
         #region IUserControl Members
         public IViewModel ViewModel
         {
-            get
-            {
-                return _logic.ViewModel;
-            }
+            get { return _logic.ViewModel; }
         }
 
         public event EventHandler<EventArgs> ViewModelChanged;
 
         event EventHandler<EventArgs> IView.Loaded
         {
-            add
-            {
-                _viewLoaded += value;
-            }
-            remove
-            {
-                _viewLoaded -= value;
-            }
+            add { _viewLoaded += value; }
+            remove { _viewLoaded -= value; }
         }
 
         event EventHandler<EventArgs> IView.Unloaded
         {
-            add
-            {
-                _viewUnloaded += value;
-            }
-            remove
-            {
-                _viewUnloaded -= value;
-            }
+            add { _viewUnloaded += value; }
+            remove { _viewUnloaded -= value; }
         }
 
         event EventHandler<EventArgs> IView.DataContextChanged
         {
-            add
-            {
-                _viewDataContextChanged += value;
-            }
-            remove
-            {
-                _viewDataContextChanged -= value;
-            }
+            add { _viewDataContextChanged += value; }
+            remove { _viewDataContextChanged -= value; }
         }
 
         public bool CloseViewModelOnUnloaded
         {
-            get
-            {
-                return _logic.CloseViewModelOnUnloaded;
-            }
-            set
-            {
-                _logic.CloseViewModelOnUnloaded = value;
-            }
+            get { return _logic.CloseViewModelOnUnloaded; }
+            set { _logic.CloseViewModelOnUnloaded = value; }
         }
 
         public bool SupportParentViewModelContainers
         {
-            get
-            {
-                return _logic.SupportParentViewModelContainers;
-            }
-            set
-            {
-                _logic.SupportParentViewModelContainers = value;
-            }
+            get { return _logic.SupportParentViewModelContainers; }
+            set { _logic.SupportParentViewModelContainers = value; }
         }
 
         public bool SkipSearchingForInfoBarMessageControl
         {
-            get
-            {
-                return _logic.SkipSearchingForInfoBarMessageControl;
-            }
-            set
-            {
-                _logic.SkipSearchingForInfoBarMessageControl = value;
-            }
+            get { return _logic.SkipSearchingForInfoBarMessageControl; }
+            set { _logic.SkipSearchingForInfoBarMessageControl = value; }
         }
 
         public bool DisableWhenNoViewModel
         {
-            get
-            {
-                return _logic.DisableWhenNoViewModel;
-            }
-            set
-            {
-                _logic.DisableWhenNoViewModel = value;
-            }
+            get { return _logic.DisableWhenNoViewModel; }
+            set { _logic.DisableWhenNoViewModel = value; }
         }
 
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
-            add
-            {
-                _propertyChanged += value;
-            }
-            remove
-            {
-                _propertyChanged -= value;
-            }
+            add { _propertyChanged += value; }
+            remove { _propertyChanged -= value; }
         }
         #endregion
 
         #region Methods
-        public override void BeginInit()
+        private void GraphArea_Loaded(object sender, RoutedEventArgs e)
         {
-            base.BeginInit();
-            _logic = CreateUserControlLogic();
-            _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
-            _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
-            _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
+            MoveIntoZoomContent();
+        }
 
-            _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
+        private void MoveIntoZoomContent()
+        {
+            var zoom = Parent as ZoomView;
+            if (zoom != null)
+            {
+                return;
+            }
 
-            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+            var parent = Parent as Panel;
+            if (parent != null)
+            {
+                zoom = parent.Parent as ZoomView;
+            }
+
+            if (parent == null || zoom == null)
+            {
+                // TODO: Handle this situation.
+                return;
+            }
+
+            zoom.Content = this;
+            parent.Children.Clear();
         }
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -204,10 +172,11 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 UnSubscribeOnGraphEvents(oldLogic);
             }
+
             SubscribeOnGraphEvents();
         }
 
-        public void CreateGraphArea(IEnumerable<DataVertex> vertexes, IEnumerable<DataEdge> edges, double offsetY)
+        public void CreateGraphArea(double offsetY)
         {
             if (LogicCore.Graph != null)
             {
@@ -216,23 +185,27 @@ namespace Orc.GraphExplorer.Views.Base
 
             ClearLayout();
 
-            var graph = new Graph();
+            var graph = new Graph(GetGraphDataService());
 
             SubscribeOnGraphEvents();
 
-            graph.AddVertexRange(vertexes);
+            graph.ReloadGraph();
 
-            foreach (var edge in edges)
-            {
-                graph.AddEdge(edge);
-            }
-
-            ((GraphLogic)LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
+            ((GraphLogic) LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
             GenerateGraph(graph, true);
 
             SubscribeOnGraphEvents();
+
+            var zoom = Parent as ZoomView;
+            if (zoom != null)
+            {
+                zoom.CenterContent();
+                zoom.ZoomToFill();
+            }
         }
+
+        protected abstract IGraphDataService GetGraphDataService();
 
         private void SubscribeOnGraphEvents()
         {
@@ -275,9 +248,9 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 return;
             }
-            var source = VertexList[e.Source];
-            var target = e.Target.ID == -666 ? null : VertexList[e.Target];
-            var edgeView = (EdgeView)ControlFactory.CreateEdgeControl(source, target, e);
+            VertexControl source = VertexList[e.Source];
+            VertexControl target = e.Target.ID == -666 ? null : VertexList[e.Target];
+            var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, e);
             AddEdge(e, edgeView);
             edgeView.ShowArrows = true;
             edgeView.ShowLabel = true;
@@ -301,7 +274,7 @@ namespace Orc.GraphExplorer.Views.Base
                 return;
             }
             var vertexControl = ControlFactory.CreateVertexControl(vertex);
-            AddVertex(vertex, vertexControl);
+            AddVertex(vertex, vertexControl);            
         }
 
         private UserControlLogic CreateUserControlLogic()

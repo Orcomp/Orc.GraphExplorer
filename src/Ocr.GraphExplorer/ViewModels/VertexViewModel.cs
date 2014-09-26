@@ -14,6 +14,10 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class VertexViewModel : ViewModelBase
     {
+        public VertexViewModel()
+        {
+            
+        }
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>

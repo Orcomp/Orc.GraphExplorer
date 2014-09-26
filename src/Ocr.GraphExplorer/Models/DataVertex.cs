@@ -8,6 +8,9 @@
 
 namespace Orc.GraphExplorer.Models
 {
+    using System;
+    using System.Globalization;
+
     using Catel.Data;
 
     using GraphX;
@@ -55,6 +58,11 @@ namespace Orc.GraphExplorer.Models
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
     }

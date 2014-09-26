@@ -1,29 +1,28 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="ZoomZoomView.cs" company="Orcomp development team">
+// <copyright file="VertexViewBase.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Views
+namespace Orc.GraphExplorer.Views.Base
 {
     using System;
     using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Controls;
 
     using Catel;
     using Catel.MVVM;
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
-    using GraphX.Controls;
+
+    using GraphX;
 
     using Orc.GraphExplorer.Helpers;
+    using Orc.GraphExplorer.ViewModels;
 
-    using ViewModels;
-
-    public class ZoomView : ZoomControl, IUserControl
+    public abstract class VertexViewBase : VertexControl, IUserControl
     {
         private readonly UserControlLogic _logic;
 
@@ -32,9 +31,10 @@ namespace Orc.GraphExplorer.Views
         private event EventHandler<EventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public ZoomView()
+        public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
+            : base(vertexData, tracePositionChange, bindToDataObject)
         {
-            _logic = new UserControlLogic(this, typeof(ZoomViewModel));
+            _logic = new UserControlLogic(this, typeof(VertexViewModel));
 
             _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
@@ -42,16 +42,19 @@ namespace Orc.GraphExplorer.Views
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
-        }       
-
-        public IViewModel ViewModel
-        {
-            get
-            {
-                return _logic.ViewModel;
-            }
+            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
         }
+
+        IViewModel IViewModelContainer.ViewModel
+        {
+            get { return _logic.ViewModel; }
+        }
+
+        public VertexViewModel ViewModel
+        {
+            get { return _logic.ViewModel as VertexViewModel; }
+        }
+
 
         public event EventHandler<EventArgs> ViewModelChanged;
 
@@ -79,11 +82,16 @@ namespace Orc.GraphExplorer.Views
             }
         }
 
-
         event EventHandler<EventArgs> IView.DataContextChanged
         {
-            add { _viewDataContextChanged += value; }
-            remove { _viewDataContextChanged -= value; }
+            add
+            {
+                _viewDataContextChanged += value;
+            }
+            remove
+            {
+                _viewDataContextChanged -= value;
+            }
         }
 
         public bool CloseViewModelOnUnloaded
@@ -145,5 +153,21 @@ namespace Orc.GraphExplorer.Views
                 _propertyChanged -= value;
             }
         }
+
+        /// <summary>
+        /// Content Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty ContentProperty =
+            DependencyProperty.Register("Content", typeof(object), typeof(VertexViewBase),
+                new FrameworkPropertyMetadata((object)null));
+
+        /// <summary>
+        /// Gets or sets the CustomContent property.
+        /// </summary>
+        public object Content
+        {
+            get { return (object)GetValue(ContentProperty); }
+            set { SetValue(ContentProperty, value); }
+        }       
     }
 }

@@ -5,11 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:catel="http://catel.codeplex.com"
              xmlns:views="clr-namespace:Orc.GraphExplorer.Views"
+             xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <catel:UserControl.Resources>
+<!--        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style/ThemedGraphXTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
+            <converters:DoubleToLog10Converter x:Key="log10Converter" />
+            <converters:EqualityToBooleanConverter x:Key="equalityConverter" />
+        </ResourceDictionary>-->
+    </catel:UserControl.Resources>
     <catel:StackGrid>
-        <views:ZoomView>
-            <views:EditableAreaView LogicCore="{Binding Path=ViewModel.Editor.Logic}">
+        <views:ZoomView AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20">
+            <views:EditableAreaView LogicCore="{Binding Path=ViewModel.Editor.Logic, Mode=OneWay, RelativeSource={RelativeSource Self}}">
                 
             </views:EditableAreaView>
         </views:ZoomView>

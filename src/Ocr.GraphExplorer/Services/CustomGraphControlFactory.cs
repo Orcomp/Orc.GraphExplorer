@@ -15,6 +15,8 @@ namespace Orc.GraphExplorer.Services
 
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Views;
+    using Orc.GraphExplorer.Views.Base;
+    using GraphAreaBase = GraphX.GraphAreaBase;
 
     public class CustomGraphControlFactory : IGraphControlFactory
     {
@@ -27,7 +29,7 @@ namespace Orc.GraphExplorer.Services
 
         public VertexControl CreateVertexControl(object vertexData)
         {
-            var vertexControl = new VertexView(vertexData);
+            var vertexControl = new VertexView((DataVertex)vertexData);
             vertexControl.Loaded += (sender, args) => vertexControl.ViewModel.Data = (DataVertex)vertexData;
             return vertexControl;
         }

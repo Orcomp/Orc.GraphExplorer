@@ -12,18 +12,19 @@ namespace Orc.GraphExplorer.Events
     using GraphX;
 
     using Orc.GraphExplorer.Views;
+    using Views.Base;
 
     public class EdgeViewCreatedAventArgs : EventArgs
     {
         #region Constructors
-        public EdgeViewCreatedAventArgs(EdgeView edgeView)
+        public EdgeViewCreatedAventArgs(EdgeViewBase edgeViewBase)
         {
-            EdgeView = edgeView;
+            EdgeViewBase = edgeViewBase;
         }
         #endregion
 
         #region Properties
-        public EdgeView EdgeView { get; private set; }
+        public EdgeViewBase EdgeViewBase { get; private set; }
         #endregion
     }
 }

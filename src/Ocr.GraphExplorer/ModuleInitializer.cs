@@ -18,6 +18,6 @@ public static class ModuleInitializer
     {
         var serviceLocator = ServiceLocator.Default;
         serviceLocator.RegisterType<IGraphControlFactory, CustomGraphControlFactory>();
-        serviceLocator.RegisterType(typeof(IGraphDataService), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv.ToString());
+        serviceLocator.RegisterType(typeof(IGraphDataService), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv);
     }
 }

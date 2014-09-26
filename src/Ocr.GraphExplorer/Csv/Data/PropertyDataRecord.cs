@@ -1,6 +1,6 @@
-namespace Orc.GraphExplorer.Csv
+namespace Orc.GraphExplorer.Csv.Data
 {
-    public class VertexDataRecord
+    public class PropertyDataRecord
     {
         public int ID { get; set; }
 

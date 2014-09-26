@@ -11,6 +11,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Catel.MVVM;
 
     using Orc.GraphExplorer.Models;
+    using Orc.GraphExplorer.Models.Data;
 
     public class EditableAreaViewModel : ViewModelBase
     {
@@ -32,6 +33,6 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the Editor property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData EditorProperty = RegisterProperty("Editor", typeof(GraphEditor));
+        public static readonly PropertyData EditorProperty = RegisterProperty("Editor", typeof(GraphEditor));       
     }
 }

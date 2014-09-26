@@ -1,6 +1,6 @@
-﻿namespace Orc.GraphExplorer.Csv
+﻿namespace Orc.GraphExplorer.Csv.Data
 {
-    public class EdgeDataRecord
+    public class RelationDataRecord
     {
         public int From { get; set; }
 
