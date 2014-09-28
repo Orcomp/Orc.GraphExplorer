@@ -104,9 +104,10 @@ namespace Orc.GraphExplorer.Csv.Services
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
-                // TODO: use properties later to set them in the vertex
-                var propertiers = x.Select(r => new { r.Property, r.Value }).ToList();
-                return new DataVertex(x.Key);
+                var vertex = new DataVertex(x.Key);
+                x.Subscribe(p => vertex.Properties.Add(new Property(){ Key = p.Property, Value = p.Value}));
+
+                return vertex;
             });
         }
 

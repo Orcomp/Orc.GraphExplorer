@@ -43,6 +43,14 @@ namespace Orc.GraphExplorer.Views
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
             this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
+
+            Loaded += ZoomView_Loaded;
+        }
+
+        void ZoomView_Loaded(object sender, RoutedEventArgs e)
+        {
+            //CenterContent();
+            ZoomToFill();
         }       
 
         public IViewModel ViewModel

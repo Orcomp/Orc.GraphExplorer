@@ -14,7 +14,7 @@ namespace Orc.GraphExplorer.Views
     using Orc.GraphExplorer.Views.Base;
     using Services.Interfaces;
 
-    public class EditableAreaView : GraphAreaBase
+    public class EditableAreaView : GraphAreaViewBase
     {
         public EditableAreaView()
         {

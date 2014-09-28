@@ -9,8 +9,9 @@
 namespace Orc.GraphExplorer.Models
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Globalization;
-
+    using System.Windows.Media;
     using Catel.Data;
 
     using GraphX;
@@ -30,6 +31,7 @@ namespace Orc.GraphExplorer.Models
         public DataVertex(int id)
         {
             ID = id;
+            Title = ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
 
@@ -65,5 +67,46 @@ namespace Orc.GraphExplorer.Models
             return ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
+
+        #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ImageSource Icon
+        {
+            get { return GetValue<ImageSource>(IconProperty); }
+            set { SetValue(IconProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Icon property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IconProperty = RegisterProperty("Icon", typeof(ImageSource), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public string Title
+        {
+            get { return GetValue<string>(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Title property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof(string), null);
+
+        public ObservableCollection<Property> Properties
+        {
+            get { return GetValue<ObservableCollection<Property>>(PropertiesProperty); }
+            set { SetValue(PropertiesProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Properties property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof(ObservableCollection<Property>), () => new ObservableCollection<Property>());
+        #endregion // Properties
     }
 }

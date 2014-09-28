@@ -9,28 +9,40 @@ namespace Orc.GraphExplorer.Services
 {
     using System.Windows;
     using System.Windows.Controls;
-
+    using Catel.IoC;
+    using Catel.MVVM;
+    using Catel.MVVM.Views;
     using GraphX;
     using GraphX.Controls.Models;
 
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Views;
     using Orc.GraphExplorer.Views.Base;
-    using GraphAreaBase = GraphX.GraphAreaBase;
+    using ViewModels;
 
     public class CustomGraphControlFactory : IGraphControlFactory
     {
         public EdgeControl CreateEdgeControl(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true, Visibility visibility = Visibility.Visible)
         {
-            var edgeControl = new EdgeView(source, target, edge, showLabels, showArrows) {Visibility = visibility};
-            edgeControl.Loaded += (sender, args) => edgeControl.ViewModel.Data = (DataEdge)edge;
+            var edgeControl = new EdgeView(source, target, edge, showLabels, showArrows) {Visibility = visibility, RootArea = FactoryRootArea};
+            edgeControl.Loaded += (sender, args) =>
+            {
+                edgeControl.ViewModel.Data = (DataEdge) edge;
+                edgeControl.DataContext = edgeControl.ViewModel;
+            };
             return edgeControl;
         }
 
         public VertexControl CreateVertexControl(object vertexData)
         {
-            var vertexControl = new VertexView((DataVertex)vertexData);
-            vertexControl.Loaded += (sender, args) => vertexControl.ViewModel.Data = (DataVertex)vertexData;
+            
+            var vertexControl = new VertexView(vertexData, true, false) {DataContext = null, RootArea = FactoryRootArea};
+            ServiceLocator.Default.ResolveType<IViewManager>().RegisterView(vertexControl);
+            vertexControl.Loaded += (sender, args) =>
+            {
+                vertexControl.ViewModel.Data = (DataVertex) vertexData;
+                vertexControl.DataContext = vertexControl.ViewModel;
+            };
             return vertexControl;
         }
 

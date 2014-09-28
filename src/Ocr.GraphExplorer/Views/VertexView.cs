@@ -8,12 +8,12 @@
 namespace Orc.GraphExplorer.Views
 {
     using Base;
-    using Catel.MVVM.Views;
     using GraphX;
 
     public class VertexView : VertexViewBase
     {
-        public VertexView(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true) : base(vertexData, tracePositionChange, bindToDataObject)
+        public VertexView(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
+            : base(vertexData, tracePositionChange, bindToDataObject)
         {
         }
 
@@ -36,6 +36,6 @@ namespace Orc.GraphExplorer.Views
         {
             get { return DragBehaviour.GetIsDragEnabled(this); }
             set { DragBehaviour.SetIsDragEnabled(this, value); }
-        }
+        } 
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphAreaBase.cs" company="Orcomp development team">
+// <copyright file="GraphAreaViewBase.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -27,13 +27,13 @@ namespace Orc.GraphExplorer.Views.Base
     using Services;
     using Services.Interfaces;
 
-    public abstract class GraphAreaBase : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
+    public abstract class GraphAreaViewBase : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
     {
         #region Constants
         /// <summary>
         /// Content Dependency Property
         /// </summary>
-        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register("Content", typeof (object), typeof (GraphAreaBase), new FrameworkPropertyMetadata((object) null));
+        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register("Content", typeof (object), typeof (GraphAreaViewBase), new FrameworkPropertyMetadata((object) null));
         #endregion
 
         #region Fields
@@ -41,7 +41,7 @@ namespace Orc.GraphExplorer.Views.Base
         #endregion
 
         #region Constructors
-        public GraphAreaBase()
+        public GraphAreaViewBase()
         {
             // TODO: try to inject IGraphControlFactory
             IServiceLocator serviceLocator = ServiceLocator.Default;
@@ -193,15 +193,15 @@ namespace Orc.GraphExplorer.Views.Base
 
             ((GraphLogic) LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
-            GenerateGraph(graph, true);
+            GenerateGraph(graph, true, dataContextToDataItem:false);
 
             SubscribeOnGraphEvents();
 
             var zoom = Parent as ZoomView;
             if (zoom != null)
             {
-                zoom.CenterContent();
-                zoom.ZoomToFill();
+              //  zoom.CenterContent();
+                //zoom.ZoomToFill();
             }
         }
 
