@@ -93,37 +93,12 @@
                                 <ItemsControl ItemsSource="{Binding Properties}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <views:PropertyView/>
-                                            <!--<Grid Margin="6,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <Grid Visibility="{Binding IsEditing,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter='R'}">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" MinWidth="100"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock HorizontalAlignment="Left" Text="{Binding Key,StringFormat=' {0}: '}"></TextBlock>
-                                                    <TextBlock Text="{Binding Value}" Grid.Column="1"></TextBlock>
-                                                </Grid>
-                                                <Grid Visibility="{Binding IsEditing,Converter={StaticResource BoolToVisibilityConverter}}">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="100" MinWidth="100"/>
-                                                        <ColumnDefinition Width="100"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <CheckBox Visibility="Collapsed" Height="28" Width="28" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsSelected,Mode=TwoWay}"/>
-                                                    <TextBlock Margin="0,0,1,0" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Key,Mode=TwoWay,UpdateSourceTrigger=Default}"></TextBlock>
-                                                    <TextBox HorizontalAlignment="Stretch" Text="{Binding Value,Mode=TwoWay,UpdateSourceTrigger=Default}" Grid.Column="2"></TextBox>
-                                                </Grid>
-                                            </Grid>-->
+                                            <views:PropertyView DataContext="{Binding}"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
                         </Expander>
-                        <!--<StackPanel Visibility="{Binding EnableEditProperty, Converter={StaticResource BoolToVisibilityConverter}}"-->
                         <StackPanel Visibility="Collapsed" Margin="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Style="{StaticResource AddButtonStyle}" ToolTip="Add Property" Margin="2" Command="{Binding AddCommand}" Height="28" Width="28"/>
                             <Button Style="{StaticResource DeleteButtonStyle}" ToolTip="Delete Selected Property" Margin="2" Command="{Binding DeleteCommand}" Height="28" Width="28"/>

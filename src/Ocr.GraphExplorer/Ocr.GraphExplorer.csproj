@@ -48,6 +48,9 @@
     <Reference Include="CsvHelper">
       <HintPath>..\..\lib\CsvHelper.2.7.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\..\lib\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
     <Reference Include="GraphX.Common">
       <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Common.dll</HintPath>
     </Reference>
@@ -124,17 +127,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\RelayoutBehavior.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Config\GraphExplorerConfiguration.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Events\EdgeViewCreatedAventArgs.cs" />
+    <Compile Include="Events\GraphEventArgs.cs" />
     <Compile Include="Models\DataEdge.cs" />
     <Compile Include="Models\DataVertex.cs" />
     <Compile Include="Models\Data\Graph.cs" />
-    <Compile Include="Models\GraphEditor.cs" />
+    <Compile Include="Models\GraphArea.cs" />
     <Compile Include="Models\Data\GraphLogic.cs" />
     <Compile Include="Models\Property.cs" />
     <Compile Include="ModuleInitializer.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Csv\Services\CsvGraphDataService.cs" />
     <Compile Include="Services\CustomGraphControlFactory.cs" />
@@ -143,7 +149,7 @@
     <Compile Include="Services\TopologicalLayoutAlgorithm.cs" />
     <Compile Include="Csv\Data\PropertyDataRecord.cs" />
     <Compile Include="ViewModels\EdgeViewModel.cs" />
-    <Compile Include="ViewModels\EditableAreaViewModel.cs" />
+    <Compile Include="ViewModels\GraphAreaViewModel.cs" />
     <Compile Include="ViewModels\GraphExplorerViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\VertexViewModel.cs" />
@@ -152,7 +158,7 @@
     <Compile Include="Views\Base\GraphAreaViewBase.cs" />
     <Compile Include="Views\Base\EdgeViewBase.cs" />
     <Compile Include="Views\EdgeView.cs" />
-    <Compile Include="Views\EditableAreaView.cs" />
+    <Compile Include="Views\GraphAreaView.cs" />
     <Compile Include="Views\GraphExplorerView.xaml.cs">
       <DependentUpon>GraphExplorerView.xaml</DependentUpon>
     </Compile>
@@ -160,7 +166,9 @@
     <Compile Include="Views\PropertyView.xaml.cs">
       <DependentUpon>PropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VertexView.cs" />
+    <Compile Include="Views\VertexView.xaml.cs">
+      <DependentUpon>VertexView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ZoomView.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +201,10 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Views\PropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VertexView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -44,7 +44,13 @@ namespace Orc.GraphExplorer.Views.Base
 
             this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
 
+            ViewModelChanged += EdgeViewBase_ViewModelChanged;
             base.BeginInit();
+        }
+
+        void EdgeViewBase_ViewModelChanged(object sender, EventArgs e)
+        {
+            DataContext = ViewModel;
         }
 
         IViewModel IViewModelContainer.ViewModel

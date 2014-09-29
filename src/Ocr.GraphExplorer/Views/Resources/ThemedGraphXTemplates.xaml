@@ -1407,8 +1407,8 @@
     <Style TargetType="{x:Type views:EdgeView}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type views:EdgeView}">
-                    <Grid>
+                <ControlTemplate TargetType="{x:Type views:EdgeView}" >
+                    <Grid DataContext="{Binding}">
                         <Path Stroke="{TemplateBinding Foreground}"
                           StrokeThickness="2" MinWidth="1" MinHeight="1"
                           ToolTip="{TemplateBinding ToolTip}"

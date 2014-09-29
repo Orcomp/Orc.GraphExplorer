@@ -22,12 +22,12 @@ namespace Orc.GraphExplorer.Views
         public PropertyView()
         {
             InitializeComponent();
-            Loaded += PropertyView_Loaded;
         }
 
-        void PropertyView_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnViewModelChanged()
         {
             DataContext = ViewModel;
+            base.OnViewModelChanged();
         }
     }
 }

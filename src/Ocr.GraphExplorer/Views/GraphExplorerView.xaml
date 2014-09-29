@@ -6,6 +6,8 @@
              xmlns:catel="http://catel.codeplex.com"
              xmlns:views="clr-namespace:Orc.GraphExplorer.Views"
              xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:Orc.GraphExplorer.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <catel:UserControl.Resources>
@@ -20,9 +22,11 @@
     </catel:UserControl.Resources>
     <catel:StackGrid>
         <views:ZoomView AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20">
-            <views:EditableAreaView LogicCore="{Binding Path=ViewModel.Editor.Logic, Mode=OneWay, RelativeSource={RelativeSource Self}}">
-                
-            </views:EditableAreaView>
+            <views:GraphAreaView LogicCore="{Binding Path=ViewModel.Logic, Mode=OneWay, RelativeSource={RelativeSource Self}}">
+                <i:Interaction.Behaviors>
+                    <behaviors:RelayoutBehavior/>
+                </i:Interaction.Behaviors>
+            </views:GraphAreaView>
         </views:ZoomView>
     </catel:StackGrid>
 </catel:UserControl>

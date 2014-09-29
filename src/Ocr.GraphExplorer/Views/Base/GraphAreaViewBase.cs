@@ -10,6 +10,7 @@ namespace Orc.GraphExplorer.Views.Base
 {
     using System;
     using System.ComponentModel;
+    using System.Threading;
     using System.Windows;
     using System.Windows.Controls;
     using Catel;
@@ -19,6 +20,7 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Views;
     using Catel.Windows;
     using Events;
+    using Fasterflect;
     using GraphX;
     using GraphX.Controls.Models;
     using Helpers;
@@ -57,7 +59,23 @@ namespace Orc.GraphExplorer.Views.Base
 
             this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
 
-            Loaded += GraphArea_Loaded;
+            ViewModelChanged += GraphAreaViewBase_ViewModelChanged;
+        }
+
+        void GraphAreaViewBase_GraphReloaded(object sender, GraphEventArgs e)
+        {            
+            GenerateGraph(e.Graph, true);
+            SubscribeOnGraphEvents();
+        }
+
+        void GraphAreaViewBase_BeforeReloadingGraph(object sender, EventArgs e)
+        {
+            if (LogicCore.Graph != null)
+            {
+                UnSubscribeOnGraphEvents();
+            }
+
+            ClearLayout();
         }
         #endregion
 
@@ -130,9 +148,18 @@ namespace Orc.GraphExplorer.Views.Base
         #endregion
 
         #region Methods
-        private void GraphArea_Loaded(object sender, RoutedEventArgs e)
+
+        void GraphAreaViewBase_ViewModelChanged(object sender, EventArgs e)
         {
+            if (ViewModel != null)
+            {
+                var logic = (GraphLogic) ViewModel.GetPropertyValue("Logic");
+                logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
+                logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
+            }
+
             MoveIntoZoomContent();
+            DataContext = ViewModel;
         }
 
         private void MoveIntoZoomContent()
@@ -174,38 +201,7 @@ namespace Orc.GraphExplorer.Views.Base
             }
 
             SubscribeOnGraphEvents();
-        }
-
-        public void CreateGraphArea(double offsetY)
-        {
-            if (LogicCore.Graph != null)
-            {
-                UnSubscribeOnGraphEvents();
-            }
-
-            ClearLayout();
-
-            var graph = new Graph(GetGraphDataService());
-
-            SubscribeOnGraphEvents();
-
-            graph.ReloadGraph();
-
-            ((GraphLogic) LogicCore).ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
-
-            GenerateGraph(graph, true, dataContextToDataItem:false);
-
-            SubscribeOnGraphEvents();
-
-            var zoom = Parent as ZoomView;
-            if (zoom != null)
-            {
-              //  zoom.CenterContent();
-                //zoom.ZoomToFill();
-            }
-        }
-
-        protected abstract IGraphDataService GetGraphDataService();
+        }        
 
         private void SubscribeOnGraphEvents()
         {

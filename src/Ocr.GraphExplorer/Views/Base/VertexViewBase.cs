@@ -12,6 +12,7 @@ namespace Orc.GraphExplorer.Views.Base
     using System.Windows;
 
     using Catel;
+    using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
@@ -43,7 +44,14 @@ namespace Orc.GraphExplorer.Views.Base
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
             this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+
+            ViewModelChanged += VertexViewBase_ViewModelChanged;
         }
+
+        void VertexViewBase_ViewModelChanged(object sender, EventArgs e)
+        {
+            DataContext = ViewModel;
+        }        
 
         IViewModel IViewModelContainer.ViewModel
         {

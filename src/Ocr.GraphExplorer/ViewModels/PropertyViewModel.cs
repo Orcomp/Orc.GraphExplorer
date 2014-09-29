@@ -14,6 +14,11 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class PropertyViewModel : ViewModelBase
     {
+        public PropertyViewModel(Property property)
+        {
+            Property = property;
+        }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -28,5 +33,63 @@ namespace Orc.GraphExplorer.ViewModels
         /// Register the Property property so it is known in the class.
         /// </summary>
         public static readonly PropertyData PropertyProperty = RegisterProperty("Property", typeof(Property));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Property")]
+        public string Key
+        {
+            get { return GetValue<string>(KeyProperty); }
+            set { SetValue(KeyProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Key property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData KeyProperty = RegisterProperty("Key", typeof(string));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Property")]
+        public string Value
+        {
+            get { return GetValue<string>(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Value property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData ValueProperty = RegisterProperty("Value", typeof(string));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsEditing
+        {
+            get { return GetValue<bool>(IsEditingProperty); }
+            set { SetValue(IsEditingProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsEditing property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsEditingProperty = RegisterProperty("IsEditing", typeof(bool), () => false);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsSelected
+        {
+            get { return GetValue<bool>(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsSelected property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsSelectedProperty = RegisterProperty("IsSelected", typeof(bool), () => false);
     }
 }

@@ -11,7 +11,8 @@ namespace Orc.GraphExplorer.Models.Data
     using System;
     using System.Reactive;
     using System.Reactive.Linq;
-
+    using Catel;
+    using Events;
     using GraphX.Logic;
 
     using Orc.GraphExplorer.Services.Interfaces;
@@ -20,6 +21,19 @@ namespace Orc.GraphExplorer.Models.Data
     {
         public GraphLogic()
         {
-        }       
+        }
+
+        public void PrepareGraphReloading()
+        {
+            BeforeReloadingGraph.SafeInvoke(this);
+        }
+
+        public void ResumeGraphReloading(Graph graph)
+        {
+            GraphReloaded.SafeInvoke(this, new GraphEventArgs(graph));
+        }
+
+        public event EventHandler BeforeReloadingGraph;
+        public event EventHandler<GraphEventArgs> GraphReloaded;
     }
 }

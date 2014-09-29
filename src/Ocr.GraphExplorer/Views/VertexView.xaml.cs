@@ -1,21 +1,29 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
-// <copyright file="EdgeView.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-#endregion
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
 namespace Orc.GraphExplorer.Views
 {
-    using System.Windows;
-    using Base;
-    using Catel.MVVM.Converters;
     using Catel.MVVM.Views;
     using GraphX;
 
-    public class EdgeView : EdgeViewBase
+    /// <summary>
+    /// Логика взаимодействия для VertexView.xaml
+    /// </summary>
+    public partial class VertexView
     {
-        public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true) : base(source, target, edge, showLabels, showArrows)
+        public VertexView(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
+            : base(vertexData, tracePositionChange, bindToDataObject)
         {
         }
 
@@ -31,15 +39,22 @@ namespace Orc.GraphExplorer.Views
         {
             get { return HighlightBehaviour.GetHighlighted(this); }
             set { HighlightBehaviour.SetHighlighted(this, value); }
-        }        
-        
+        }
+
+        [ViewToViewModel]
+        public bool IsDragEnabled
+        {
+            get { return DragBehaviour.GetIsDragEnabled(this); }
+            set { DragBehaviour.SetIsDragEnabled(this, value); }
+        }
+
         [ViewToViewModel]
         public new bool IsVisible
         {
             get { return base.IsVisible; }
             set { base.Visibility = value ? Visibility.Visible : Visibility.Hidden; }
-        }
-
+        } 
+        
         [ViewToViewModel]
         public new bool IsEnabled
         {

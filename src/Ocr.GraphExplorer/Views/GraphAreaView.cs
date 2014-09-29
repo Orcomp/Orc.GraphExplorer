@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="EditableAreaView.cs" company="Orcomp development team">
+// <copyright file="GraphAreaView.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -14,21 +14,11 @@ namespace Orc.GraphExplorer.Views
     using Orc.GraphExplorer.Views.Base;
     using Services.Interfaces;
 
-    public class EditableAreaView : GraphAreaViewBase
+    public class GraphAreaView : GraphAreaViewBase
     {
-        public EditableAreaView()
+        public GraphAreaView()
         {
-            Loaded += EditableAreaView_Loaded;
-        }
 
-        void EditableAreaView_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {            
-            CreateGraphArea(600);
-        }
-
-        protected override IGraphDataService GetGraphDataService()
-        {
-            return ServiceLocator.Default.ResolveType<IGraphDataService>(GraphExplorerSection.Current.DefaultGraphDataService);
         }
     }
 }

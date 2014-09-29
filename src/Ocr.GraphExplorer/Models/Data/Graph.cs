@@ -1,6 +1,9 @@
 ﻿namespace Orc.GraphExplorer.Models.Data
 {
     using System;
+    using System.Reactive;
+    using System.Reactive.Linq;
+    using System.Reactive.Subjects;
 
     using Orc.GraphExplorer.Services.Interfaces;
 
@@ -20,13 +23,22 @@
             _graphDataService = graphDataService;
         }
 
-        public void ReloadGraph()
+        private ReplaySubject<Unit> _observableLoading;
+
+        private ReplaySubject<DataEdge> _edgesBuffer; 
+
+        public IObservable<Unit> ReloadGraph()
         {
+            _observableLoading = new ReplaySubject<Unit>();
+            _edgesBuffer = new ReplaySubject<DataEdge>();
+
             RemoveEdgeIf(e => true);
             RemoveVertexIf(v => true);
 
             _graphDataService.GetVerteces().Subscribe(this);
-            _graphDataService.GetEdges().Subscribe(this);
+            _graphDataService.GetEdges().Subscribe(_edgesBuffer);
+
+            return _observableLoading;
         }
 
         public void OnNext(DataVertex value)
@@ -35,28 +47,29 @@
         }
 
         public void OnNext(DataEdge value)
-        {
+        {            
             AddEdge(value);
         }
 
         void IObserver<DataEdge>.OnError(Exception error)
         {
-            //throw new NotImplementedException();
+            _observableLoading.OnError(error);
         }
 
         void IObserver<DataEdge>.OnCompleted()
         {
-            //throw new NotImplementedException();
+            _observableLoading.OnNext(Unit.Default);
+            _observableLoading.OnCompleted();
         }
 
         void IObserver<DataVertex>.OnError(Exception error)
         {
-            //throw new NotImplementedException();
+            _observableLoading.OnError(error);
         }
 
         void IObserver<DataVertex>.OnCompleted()
         {
-            //throw new NotImplementedException();
+            _edgesBuffer.Subscribe(this);
         }
     }
 }
