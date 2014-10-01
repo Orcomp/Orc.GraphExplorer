@@ -11,11 +11,16 @@ namespace Orc.GraphExplorer.Models
     using System;
     using System.Collections.ObjectModel;
     using System.Globalization;
+    using System.Runtime.Serialization;
     using System.Windows.Media;
     using Catel.Data;
+    using Catel.Runtime.Serialization;
 
     using GraphX;
+    using GraphX.Models.XmlSerializer;
+    using YAXLib;
 
+    [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataVertex : ModelBase, IGraphXVertex
     {
         #region Constructors
@@ -72,6 +77,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
+        [YAXSerializableField]
         public ImageSource Icon
         {
             get { return GetValue<ImageSource>(IconProperty); }
@@ -86,6 +92,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
+        [YAXSerializableField]
         public string Title
         {
             get { return GetValue<string>(TitleProperty); }
@@ -97,6 +104,7 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof(string), null);
 
+        [YAXSerializableField]
         public ObservableCollection<Property> Properties
         {
             get { return GetValue<ObservableCollection<Property>>(PropertiesProperty); }

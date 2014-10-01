@@ -1,23 +1,16 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphAreaView.cs" company="Orcomp development team">
+// <copyright file="LoadFromXmlMessage.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Views
+namespace Orc.GraphExplorer.Messages
 {
-    using System;
-    using System.Windows;
-    using System.Windows.Controls;
-    using Catel.IoC;
-    using Orc.GraphExplorer.Views.Base;
-    using Services.Interfaces;
+    using Catel.Messaging;
 
-    public class GraphAreaView : GraphAreaViewBase
+    public class LoadFromXmlMessage : MessageBase<LoadFromXmlMessage, string>
     {
-        public GraphAreaView()
-        {
-        }
+         
     }
 }

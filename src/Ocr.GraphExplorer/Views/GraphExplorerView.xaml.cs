@@ -9,5 +9,11 @@
         {
             InitializeComponent();
         }
+
+        protected override void OnViewModelChanged()
+        {
+            DataContext = ViewModel;
+            base.OnViewModelChanged();
+        }
     }
 }

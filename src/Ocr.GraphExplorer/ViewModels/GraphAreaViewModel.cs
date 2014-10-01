@@ -15,9 +15,9 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class GraphAreaViewModel : ViewModelBase
     {
-        public GraphAreaViewModel()
+        public GraphAreaViewModel(GraphArea area)
         {
-            Area = new GraphArea();    
+            Area = area;
         }
 
         protected override void Initialize()

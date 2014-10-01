@@ -133,11 +133,16 @@
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Events\EdgeViewCreatedAventArgs.cs" />
     <Compile Include="Events\GraphEventArgs.cs" />
+    <Compile Include="Messages\LoadFromXmlMessage.cs" />
+    <Compile Include="Messages\SaveToImageMessage.cs" />
+    <Compile Include="Messages\SaveToXmlMessage.cs" />
     <Compile Include="Models\DataEdge.cs" />
     <Compile Include="Models\DataVertex.cs" />
     <Compile Include="Models\Data\Graph.cs" />
+    <Compile Include="Models\Explorer.cs" />
     <Compile Include="Models\GraphArea.cs" />
     <Compile Include="Models\Data\GraphLogic.cs" />
+    <Compile Include="Models\GraphToolset.cs" />
     <Compile Include="Models\Property.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -151,10 +156,10 @@
     <Compile Include="ViewModels\EdgeViewModel.cs" />
     <Compile Include="ViewModels\GraphAreaViewModel.cs" />
     <Compile Include="ViewModels\GraphExplorerViewModel.cs" />
+    <Compile Include="ViewModels\GraphToolsetViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\VertexViewModel.cs" />
     <Compile Include="Helpers\CustomUserControlExtension.cs" />
-    <Compile Include="ViewModels\ZoomViewModel.cs" />
     <Compile Include="Views\Base\GraphAreaViewBase.cs" />
     <Compile Include="Views\Base\EdgeViewBase.cs" />
     <Compile Include="Views\EdgeView.cs" />
@@ -163,43 +168,57 @@
       <DependentUpon>GraphExplorerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Base\VertexViewBase.cs" />
+    <Compile Include="Views\GraphToolsetView.xaml.cs">
+      <DependentUpon>GraphToolsetView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PropertyView.xaml.cs">
       <DependentUpon>PropertyView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VertexView.xaml.cs">
       <DependentUpon>VertexView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ZoomView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Views\Resources\appbar.redo.curve.disable.design" />
-    <None Include="Views\Resources\appbar.undo.curve.disable.design" />
+    <None Include="Resources\appbar.redo.curve.disable.design" />
+    <None Include="Resources\appbar.undo.curve.disable.design" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
-    <Resource Include="Views\Resources\appbar.add.png" />
-    <Resource Include="Views\Resources\appbar.close.png" />
-    <Resource Include="Views\Resources\appbar.cursor.hand.png" />
-    <Resource Include="Views\Resources\appbar.edit.png" />
-    <Resource Include="Views\Resources\appbar.folder.open.png" />
-    <Resource Include="Views\Resources\appbar.image.export.png" />
-    <Resource Include="Views\Resources\appbar.page.png.png" />
-    <Resource Include="Views\Resources\appbar.people.png" />
-    <Resource Include="Views\Resources\appbar.redo.curve.disable.png" />
-    <Resource Include="Views\Resources\appbar.redo.curve.png" />
-    <Resource Include="Views\Resources\appbar.refresh.png" />
-    <Resource Include="Views\Resources\appbar.save.png" />
-    <Resource Include="Views\Resources\appbar.settings.png" />
-    <Resource Include="Views\Resources\appbar.undo.curve.disable.png" />
-    <Resource Include="Views\Resources\appbar.undo.curve.png" />
-    <Resource Include="Views\Resources\appbar.vector.line.curve.png" />
-    <Resource Include="Views\Resources\appbar.vector.line.png" />
-    <Resource Include="Views\Resources\appbar.vector.rectangle.png" />
+    <Resource Include="Resources\appbar.add.png" />
+    <Resource Include="Resources\appbar.close.png" />
+    <Resource Include="Resources\appbar.cursor.hand.png" />
+    <Resource Include="Resources\appbar.edit.png" />
+    <Resource Include="Resources\appbar.folder.open.png" />
+    <Resource Include="Resources\appbar.image.export.png" />
+    <Resource Include="Resources\appbar.page.png.png" />
+    <Resource Include="Resources\appbar.people.png" />
+    <Resource Include="Resources\appbar.redo.curve.disable.png" />
+    <Resource Include="Resources\appbar.redo.curve.png" />
+    <Resource Include="Resources\appbar.refresh.png" />
+    <Resource Include="Resources\appbar.save.png" />
+    <Resource Include="Resources\appbar.settings.png" />
+    <Resource Include="Resources\appbar.undo.curve.disable.png" />
+    <Resource Include="Resources\appbar.undo.curve.png" />
+    <Resource Include="Resources\appbar.vector.line.curve.png" />
+    <Resource Include="Resources\appbar.vector.line.png" />
+    <Resource Include="Resources\appbar.vector.rectangle.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Resource Include="Resources\TabControlTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\TabItemTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Views\GraphToolsetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -208,11 +227,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Views\Resources\VertexTemplate.xaml">
+    <Resource Include="Resources\VertexTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Views\Resources\ThemedGraphXTemplates.xaml">
+    <Resource Include="Resources\ThemedGraphXTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>

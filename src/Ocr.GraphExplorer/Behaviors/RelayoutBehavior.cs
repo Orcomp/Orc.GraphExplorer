@@ -38,7 +38,7 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void FitToBounds()
         {
-            ZoomControl zoom = (ZoomView) AssociatedObject.Parent;
+            var zoom = (ZoomControl) AssociatedObject.Parent;
             zoom.ZoomToFill();
             zoom.Mode = ZoomControlModes.Custom;
         }

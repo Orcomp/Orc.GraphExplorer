@@ -8,25 +8,37 @@
              xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Orc.GraphExplorer.Behaviors"
+             xmlns:controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <catel:UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/VertexTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/VertexTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/TabControlTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/TabItemTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
             <converters:DoubleToLog10Converter x:Key="log10Converter" />
             <converters:EqualityToBooleanConverter x:Key="equalityConverter" />
         </ResourceDictionary>
     </catel:UserControl.Resources>
-    <catel:StackGrid>
-        <views:ZoomView AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20">
-            <views:GraphAreaView LogicCore="{Binding Path=ViewModel.Logic, Mode=OneWay, RelativeSource={RelativeSource Self}}">
-                <i:Interaction.Behaviors>
-                    <behaviors:RelayoutBehavior/>
-                </i:Interaction.Behaviors>
-            </views:GraphAreaView>
-        </views:ZoomView>
-    </catel:StackGrid>
+    <Grid>
+        <TabControl HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="8,0,8,0"
+                                   FontWeight="Bold"
+                                   Text="Overrall"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text=" *"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.Toolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </catel:UserControl>

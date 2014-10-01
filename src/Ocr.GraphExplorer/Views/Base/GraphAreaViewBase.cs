@@ -22,6 +22,7 @@ namespace Orc.GraphExplorer.Views.Base
     using Events;
     using Fasterflect;
     using GraphX;
+    using GraphX.Controls;
     using GraphX.Controls.Models;
     using Helpers;
     using Models;
@@ -164,7 +165,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void MoveIntoZoomContent()
         {
-            var zoom = Parent as ZoomView;
+            var zoom = Parent as ZoomControl;
             if (zoom != null)
             {
                 return;
@@ -173,7 +174,7 @@ namespace Orc.GraphExplorer.Views.Base
             var parent = Parent as Panel;
             if (parent != null)
             {
-                zoom = parent.Parent as ZoomView;
+                zoom = parent.Parent as ZoomControl;
             }
 
             if (parent == null || zoom == null)
