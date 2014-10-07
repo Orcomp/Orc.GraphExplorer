@@ -8,21 +8,24 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using Catel.Data;
+    using Catel.Memento;
     using Catel.MVVM;
 
     using Orc.GraphExplorer.Models;
 
     public class GraphExplorerViewModel : ViewModelBase
     {
-        public GraphExplorerViewModel()
+        private readonly IMementoService _mementoService;
+
+        public GraphExplorerViewModel(IMementoService mementoService)
         {
-            
+            _mementoService = mementoService;
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            Explorer = new Explorer();
+            Explorer = new Explorer(_mementoService);
         }
 
         /// <summary>

@@ -14,7 +14,10 @@ using System.Windows.Shapes;
 
 namespace Orc.GraphExplorer.Views
 {
+    using System.ComponentModel;
+
     using Orc.GraphExplorer.Messages;
+    using Orc.GraphExplorer.ViewModels;
 
     /// <summary>
     /// Логика взаимодействия для GraphToolsetView.xaml
@@ -23,34 +26,20 @@ namespace Orc.GraphExplorer.Views
     {
         public GraphToolsetView()
         {
-            InitializeComponent();
-            SaveToXmlMessage.Register(this, OnSaveToXmlMesage);
-            LoadFromXmlMessage.Register(this, OnLoadFromXmlMessage);
-            SaveToImageMessage.Register(this, OnSaveToImageMessage);
-        }
-
-        private void OnSaveToImageMessage(SaveToImageMessage message)
-        {
-            AreaView.ExportAsImage(message.Data);
-        }
-
-        private void OnLoadFromXmlMessage(LoadFromXmlMessage message)
-        {
-            // TODO: test and fix it
-            AreaView.ClearLayout();
-            AreaView.LoadFromFile(message.Data);
-            AreaView.RelayoutGraph();
-        }
-
-        private void OnSaveToXmlMesage(SaveToXmlMessage message)
-        {
-            AreaView.SaveIntoFile(message.Data);
+            InitializeComponent();            
         }
 
         protected override void OnViewModelChanged()
         {
             DataContext = ViewModel;
             base.OnViewModelChanged();
+        }
+
+        public new GraphToolsetViewModel ViewModel {
+            get
+            {
+                return base.ViewModel as GraphToolsetViewModel;
+            }
         }
     }
 }

@@ -16,7 +16,6 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Views;
     using Catel.Windows;
     using GraphX;
-    using Helpers;
     using ViewModels;
 
     public abstract class EdgeViewBase : EdgeControl, IUserControl
@@ -31,18 +30,18 @@ namespace Orc.GraphExplorer.Views.Base
         public EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
             : base(source, target, edge, showLabels, showArrows)
         {
-            _logic = new UserControlLogic(this, typeof (EdgeViewModel));
+            _logic = new UserControlLogic(this);
         }
 
         public override void BeginInit()
         {
-            _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
+            _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
             _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
 
             ViewModelChanged += EdgeViewBase_ViewModelChanged;
             base.BeginInit();

@@ -104,7 +104,7 @@ namespace Orc.GraphExplorer.Csv.Services
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
-                var vertex = new DataVertex(x.Key);
+                var vertex = DataVertex.Create(x.Key);
                 x.Subscribe(p => vertex.Properties.Add(new Property(){ Key = p.Property, Value = p.Value}));
 
                 return vertex;
@@ -133,7 +133,7 @@ namespace Orc.GraphExplorer.Csv.Services
             {
                 try
                 {
-                    vertex = new DataVertex(id);
+                    vertex = DataVertex.Create(id);
                     _vertecesWitoutPropertiesCount++;
                     VertecesWithoutProperties.OnNext(vertex);
                 }

@@ -45,18 +45,19 @@
                 <Button DockPanel.Dock="Left" Height="28" Width="28" ToolTip="Save As Image"
 								Style="{StaticResource ExportButtonStyle}" Command="{Binding SaveToImage}"/>
                 <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
-                <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding CanDrag, Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" />
+                <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding IsDragEnabled, Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" />
                 <ToggleButton DockPanel.Dock="Left" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" Command="{Binding CanEditCommand}"/>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"
 								Visibility="{Binding IsInEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ToggleButton Height="28" DockPanel.Dock="Left" ToolTip="Create Link"
 									IsChecked="{Binding IsAddingNewEdge}" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" Command="{Binding CreateLinkCommand}"/>
-<!--                    <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Create Node"
+                    <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Create Node"
+                                              DataContext="{Binding Path=DataContext.PrimitivesCreator, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
 									Width="28" Style="{StaticResource VertexButtonStyle}">
                         <i:Interaction.Behaviors>
-                            <b:DragBehavior/>
+                            <behaviors:DragBehavior/>
                         </i:Interaction.Behaviors>
-                    </views:DragableButtonView>-->
+                    </views:DragableButtonView>
                     <Button Height="28" DockPanel.Dock="Left" ToolTip="Undo"
 									Command="{Binding UndoCommand}" Width="28" Style="{StaticResource UndoButtonStyle}"/>
                     <Button Height="28" DockPanel.Dock="Left" ToolTip="Redo"
@@ -88,10 +89,14 @@
             </DockPanel>
         </Border>
         <controls:ZoomControl x:Name="ZoomControl" AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1" Grid.Column="0">
-            <views:GraphAreaView x:Name="AreaView" LogicCore="{Binding Logic}"
+            <i:Interaction.Behaviors>
+                <behaviors:ZoomDropBehavior />
+            </i:Interaction.Behaviors>
+            <views:GraphAreaView LogicCore="{Binding Logic}"
                                  DataContext="{Binding Path=DataContext.Area, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
                 <i:Interaction.Behaviors>
                     <behaviors:RelayoutBehavior />
+                    <behaviors:DrawEdgeBehavior/>
                 </i:Interaction.Behaviors>
             </views:GraphAreaView>
         </controls:ZoomControl>

@@ -24,6 +24,29 @@ namespace Orc.GraphExplorer.ViewModels
             DeleteCommand = new Command(OnDeleteCommandExecute, OnDeleteCommandCanExecute);
         }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+            SyncWithAreaProperties();
+        }
+
+        private void SyncWithAreaProperties()
+        {
+            if (GraphAreaViewModel == null)
+            {
+                return;
+            }
+            IsInEditing = GraphAreaViewModel.IsInEditing;
+            IsDragEnabled = GraphAreaViewModel.IsDragEnabled;
+        }
+
+        public new GraphAreaViewModel GraphAreaViewModel {
+            get
+            {
+                return base.ParentViewModel as GraphAreaViewModel;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -111,6 +134,36 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
+        [ViewModelToModel("DataVertex")]
+        public double X
+        {
+            get { return GetValue<double>(XProperty); }
+            set { SetValue(XProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the X property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData XProperty = RegisterProperty("X", typeof(double));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("DataVertex")]
+        public double Y
+        {
+            get { return GetValue<double>(YProperty); }
+            set { SetValue(YProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Y property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
         public bool IsExpanded
         {
             get
@@ -128,46 +181,6 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), () => false);
 
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public double X
-        {
-            get
-            {
-                return GetValue<double>(XProperty);
-            }
-            set
-            {
-                SetValue(XProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the X property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData XProperty = RegisterProperty("X", typeof(double), () => double.NaN);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public double Y
-        {
-            get
-            {
-                return GetValue<double>(YProperty);
-            }
-            set
-            {
-                SetValue(YProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the Y property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double), () => double.NaN);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -266,6 +279,20 @@ namespace Orc.GraphExplorer.ViewModels
         /// Register the IsDragEnabled property so it is known in the class.
         /// </summary>
         public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool), () => false);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsInEditing
+        {
+            get { return GetValue<bool>(IsInEditingProperty); }
+            set { SetValue(IsInEditingProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsInEditing property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
 
         /// <summary>
         /// Gets or sets the property value.

@@ -30,7 +30,7 @@ namespace Orc.GraphExplorer.Services
 
         public VertexControl CreateVertexControl(object vertexData)
         {            
-            var vertexControl = new VertexView(vertexData) {RootArea = FactoryRootArea};
+            var vertexControl = new VertexView(vertexData) {RootArea = FactoryRootArea, };
             return vertexControl;
         }
 

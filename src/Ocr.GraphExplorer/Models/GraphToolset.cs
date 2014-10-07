@@ -11,6 +11,8 @@ namespace Orc.GraphExplorer.Models
     using System.Windows;
 
     using Catel.Data;
+    using Catel.Memento;
+
     using GraphX;
     using Microsoft.Win32;
 
@@ -18,9 +20,16 @@ namespace Orc.GraphExplorer.Models
 
     public class GraphToolset : ModelBase
     {
-        public GraphToolset()
+        /// <summary>
+        /// Gets or sets the name of toolset
+        /// </summary>
+        public string ToolsetName { get; set; }
+
+        public GraphToolset(string toolsetName, IMementoService mementoService)
         {
-            Area = new GraphArea();
+            ToolsetName = toolsetName;
+            Area = new GraphArea(ToolsetName, mementoService);
+            PrimitivesCreator = new PrimitivesCreator();
         }
 
         /// <summary>
@@ -37,39 +46,41 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public static readonly PropertyData EditorAreaProperty = RegisterProperty("Area", typeof(GraphArea), null);
 
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public PrimitivesCreator PrimitivesCreator
+        {
+            get { return GetValue<PrimitivesCreator>(PrimitivesCreatorProperty); }
+            set { SetValue(PrimitivesCreatorProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the PrimitivesCreator property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData PrimitivesCreatorProperty = RegisterProperty("PrimitivesCreator", typeof(PrimitivesCreator), null);
+
         public void SaveToXml()
         {
             var dlg = new SaveFileDialog { Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml" };
             if (dlg.ShowDialog() == true)
             {
-                SaveToXmlMessage.SendWith(dlg.FileName);
+                SaveToXmlMessage.SendWith(dlg.FileName, ToolsetName);
             }
         }
 
         public void LoadFromXml()
         {
-            var dlg = new OpenFileDialog
-            {
-                Filter = "All files|*.xml",
-                Title = "Select layout file",
-                FileName = "overrall_layout.xml"
-            };
+            var dlg = new OpenFileDialog { Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml" };
             if (dlg.ShowDialog() == true)
             {
-                try
-                {
-                    LoadFromXmlMessage.SendWith(dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(String.Format("Failed to load layout file:\n {0}", ex));
-                }
+                LoadFromXmlMessage.SendWith(dlg.FileName, ToolsetName);
             }
         }
 
         public void SaveToImage()
         {
-            SaveToImageMessage.SendWith(ImageType.PNG);
+            SaveToImageMessage.SendWith(ImageType.PNG, ToolsetName);
         }
     }
 }

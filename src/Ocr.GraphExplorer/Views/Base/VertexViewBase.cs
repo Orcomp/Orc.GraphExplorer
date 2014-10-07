@@ -20,7 +20,6 @@ namespace Orc.GraphExplorer.Views.Base
 
     using GraphX;
 
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
 
     public abstract class VertexViewBase : VertexControl, IUserControl
@@ -35,17 +34,22 @@ namespace Orc.GraphExplorer.Views.Base
         public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
-            _logic = new UserControlLogic(this, typeof (VertexViewModel));
+            _logic = new UserControlLogic(this);            
+        }
 
-            _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
+        public override void BeginInit()
+        {
+            _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
             _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this));
 
             ViewModelChanged += VertexViewBase_ViewModelChanged;
+
+            base.BeginInit();
         }
 
         void VertexViewBase_ViewModelChanged(object sender, EventArgs e)
@@ -122,7 +126,7 @@ namespace Orc.GraphExplorer.Views.Base
                 new FrameworkPropertyMetadata((object) null));
 
         /// <summary>
-        /// Gets or sets the CustomContent property.
+        /// Gets or sets the Content property.
         /// </summary>
         public object Content
         {

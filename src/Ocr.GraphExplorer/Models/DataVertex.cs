@@ -28,17 +28,38 @@ namespace Orc.GraphExplorer.Models
         /// Default constructor for this class
         /// (required for serialization).
         /// </summary>
-        public DataVertex()
+        private DataVertex()
             : this(-666)
         {
         }
 
-        public DataVertex(int id)
+        private DataVertex(int id)
         {
             ID = id;
             Title = ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
+
+        private static int _maxId = 0;
+        public static DataVertex CreateFakeVertex()
+        {
+            return new DataVertex(-666);
+        }
+
+        public static DataVertex Create()
+        {
+            return new DataVertex(++_maxId);
+        }
+
+        public static DataVertex Create(int id)
+        {
+            if (id > _maxId)
+            {
+                _maxId = id + 1;
+            }
+
+            return new DataVertex(id);
+        }
 
         #region IGraphXVertex Members
         /// <summary>
@@ -74,6 +95,8 @@ namespace Orc.GraphExplorer.Models
         #endregion
 
         #region Properties
+        public object Tag { get; set; }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -115,6 +138,39 @@ namespace Orc.GraphExplorer.Models
         /// Register the Properties property so it is known in the class.
         /// </summary>
         public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof(ObservableCollection<Property>), () => new ObservableCollection<Property>());
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public double X
+        {
+            get { return GetValue<double>(XProperty); }
+            set { SetValue(XProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the X property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData XProperty = RegisterProperty("X", typeof(double), () => double.NaN);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public double Y
+        {
+            get { return GetValue<double>(YProperty); }
+            set { SetValue(YProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Y property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double), () => double.NaN);
         #endregion // Properties
+
+        public static bool IsFakeVertex(DataVertex vertex)
+        {
+            return vertex.ID == -666;
+        }
     }
 }

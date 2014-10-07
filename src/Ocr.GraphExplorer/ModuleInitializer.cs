@@ -5,6 +5,7 @@ using Orc.GraphExplorer.Services.Interfaces;
 using Orc.GraphExplorer.Services;
 using GraphX.Controls.Models;
 using Orc.GraphExplorer.Enums;
+using Catel.Memento;
 
 /// <summary>
 /// Used by the ModuleInit. All code inside the Initialize method is ran as soon as the assembly is loaded.
@@ -19,5 +20,6 @@ public static class ModuleInitializer
         var serviceLocator = ServiceLocator.Default;
         serviceLocator.RegisterType<IGraphControlFactory, CustomGraphControlFactory>();
         serviceLocator.RegisterType(typeof(IGraphDataService), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv);
+        serviceLocator.RegisterType<IMementoService, MementoService>();
     }
 }

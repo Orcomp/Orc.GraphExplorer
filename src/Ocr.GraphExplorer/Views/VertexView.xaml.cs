@@ -16,6 +16,7 @@ namespace Orc.GraphExplorer.Views
 {
     using Catel.MVVM.Views;
     using GraphX;
+    using ViewModels;
 
     /// <summary>
     /// Логика взаимодействия для VertexView.xaml
@@ -60,6 +61,11 @@ namespace Orc.GraphExplorer.Views
         {
             get { return base.IsEnabled; }
             set { base.IsEnabled = value; }
-        } 
+        }
+
+        public new VertexViewModel ViewModel {
+            get { return base.ViewModel as VertexViewModel; }
+        }
+
     }
 }

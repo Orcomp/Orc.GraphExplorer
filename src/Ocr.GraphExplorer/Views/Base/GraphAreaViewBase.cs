@@ -10,9 +10,12 @@ namespace Orc.GraphExplorer.Views.Base
 {
     using System;
     using System.ComponentModel;
+    using System.Data;
     using System.Threading;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Threading;
+
     using Catel;
     using Catel.IoC;
     using Catel.MVVM;
@@ -24,7 +27,6 @@ namespace Orc.GraphExplorer.Views.Base
     using GraphX;
     using GraphX.Controls;
     using GraphX.Controls.Models;
-    using Helpers;
     using Models;
     using Models.Data;
     using Services;
@@ -51,16 +53,22 @@ namespace Orc.GraphExplorer.Views.Base
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
 
-            _logic = CreateUserControlLogic();
-            _logic.ViewModelChanged += (sender, args) => this.InvokeEvent(ViewModelChanged, args);
+            _logic = new UserControlLogic(this);            
+        }
+
+        public override void BeginInit()
+        {
+            _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
             _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => this.InvokeEvent(_viewDataContextChanged, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
 
             ViewModelChanged += GraphAreaViewBase_ViewModelChanged;
+
+            base.BeginInit();
         }
 
         void GraphAreaViewBase_GraphReloaded(object sender, GraphEventArgs e)
@@ -159,32 +167,7 @@ namespace Orc.GraphExplorer.Views.Base
                 logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
             }
 
-            MoveIntoZoomContent();
-            DataContext = ViewModel;
-        }
-
-        private void MoveIntoZoomContent()
-        {
-            var zoom = Parent as ZoomControl;
-            if (zoom != null)
-            {
-                return;
-            }
-
-            var parent = Parent as Panel;
-            if (parent != null)
-            {
-                zoom = parent.Parent as ZoomControl;
-            }
-
-            if (parent == null || zoom == null)
-            {
-                // TODO: Handle this situation.
-                return;
-            }
-
-            zoom.Content = this;
-            parent.Children.Clear();
+       //     DataContext = ViewModel;
         }
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -246,7 +229,8 @@ namespace Orc.GraphExplorer.Views.Base
                 return;
             }
             VertexControl source = VertexList[e.Source];
-            VertexControl target = e.Target.ID == -666 ? null : VertexList[e.Target];
+            VertexControl target = DataVertex.IsFakeVertex(e.Target) ? null : VertexList[e.Target];
+
             var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, e);
             AddEdge(e, edgeView);
             edgeView.ShowArrows = true;
@@ -266,21 +250,63 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void GraphVertexAdded(DataVertex vertex)
         {
-            if (vertex.ID == -666)
+            if (DataVertex.IsFakeVertex(vertex))
             {
                 return;
             }
-            var vertexControl = ControlFactory.CreateVertexControl(vertex);
-            AddVertex(vertex, vertexControl);            
+            var vertexControl = (VertexView)ControlFactory.CreateVertexControl(vertex);            
+
+            AddVertex(vertex, vertexControl);
+
+            SafeSetPositon(vertexControl, vertex);
+
         }
 
-        private UserControlLogic CreateUserControlLogic()
+        private void SafeSetPositon(VertexControl vertexControl, DataVertex dataVertex)
         {
-            var viewModelLocator = ServiceLocator.Default.ResolveType<IViewModelLocator>();
-            Type viewModelType = viewModelLocator.ResolveViewModel(GetType());
-            _logic = new UserControlLogic(this, viewModelType);
-            return _logic;
+            var app = Application.Current;
+
+            if (app != null)
+            {
+                RunCodeInUiThread(() => SetPositon(vertexControl, dataVertex), app.Dispatcher, DispatcherPriority.Loaded);
+            }
+            else
+            {
+                SetPositon(vertexControl, dataVertex);
+            }
         }
+
+        private void SetPositon(VertexControl vertexControl, DataVertex dataVertex)
+        {
+            var point = (Point)dataVertex.Tag;
+
+            if (Math.Abs(point.X - double.MinValue) > 0d)
+            { SetX(vertexControl, point.X, true); }
+            if (Math.Abs(point.Y - double.MinValue) > 0d)
+            { SetY(vertexControl, point.Y, true); }
+
+            dataVertex.Tag = null;
+        }
+
+        public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
+        {
+            if (action == null)
+                return;
+
+            if (dispatcher == null && Application.Current != null)
+                dispatcher = Application.Current.Dispatcher;
+
+            if (dispatcher != null)
+            {
+                dispatcher.BeginInvoke(action, priority);
+            }
+            else
+            {
+                action.Invoke();
+            }
+        }
+
+
         #endregion
 
         private event EventHandler<EventArgs> _viewLoaded;

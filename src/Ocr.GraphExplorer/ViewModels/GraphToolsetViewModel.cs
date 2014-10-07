@@ -8,6 +8,7 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using Catel.Data;
+    using Catel.Memento;
     using Catel.MVVM;
 
     using GraphX.Controls;
@@ -17,13 +18,19 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class GraphToolsetViewModel : ViewModelBase
     {
-        public GraphToolsetViewModel(GraphToolset toolset)
+        private readonly IMementoService _mementoService;
+
+        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService)
         {
+            _mementoService = mementoService;
             Toolset = toolset;
 
             SaveToXml = new Command(OnSaveToXmlExecute);
             LoadFromXml = new Command(OnLoadFromXmlExecute);
             SaveToImage = new Command(OnSaveToImageExecute);
+
+            UndoCommand = new Command(OnUndoCommandExecute, OnUndoCommandCanExecute);
+            RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);          
         }
 
         /// <summary>
@@ -66,47 +73,211 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
+        /// Gets the UndoCommand command.
+        /// </summary>
+        public Command UndoCommand { get; private set; }
+
+        /// <summary>
+        /// Method to check whether the UndoCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnUndoCommandCanExecute()
+        {
+            return _mementoService.CanUndo;
+        }
+
+        /// <summary>
+        /// Method to invoke when the UndoCommand command is executed.
+        /// </summary>
+        private void OnUndoCommandExecute()
+        {
+            _mementoService.Undo();
+            RedoCommand.RaiseCanExecuteChanged();
+        }
+
+/// <summary>
+/// Gets the RedoCommand command.
+/// </summary>
+public Command RedoCommand { get; private set; }
+
+/// <summary>
+/// Method to check whether the RedoCommand command can be executed.
+/// </summary>
+/// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+private bool OnRedoCommandCanExecute()
+{
+    return _mementoService.CanRedo;
+}
+
+/// <summary>
+/// Method to invoke when the RedoCommand command is executed.
+/// </summary>
+private void OnRedoCommandExecute()
+{
+    _mementoService.Redo();
+    UndoCommand.RaiseCanExecuteChanged();
+}
+
+        /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [Model]
+        // TODO: Rename it
         public GraphToolset Toolset
         {
-            get { return GetValue<GraphToolset>(ToolsetProperty); }
-            set { SetValue(ToolsetProperty, value); }
+            get
+            {
+                return GetValue<GraphToolset>(ToolsetProperty);
+            }
+            set
+            {
+                SetValue(ToolsetProperty, value);
+            }
         }
 
         /// <summary>
         /// Register the Toolset property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData ToolsetProperty = RegisterProperty("Toolset", typeof (GraphToolset), null);
+        public static readonly PropertyData ToolsetProperty = RegisterProperty("Toolset", typeof(GraphToolset), null);
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Toolset")]
+        public string ToolsetName
+        {
+            get
+            {
+                return GetValue<string>(ToolsetNameProperty);
+            }
+            set
+            {
+                SetValue(ToolsetNameProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Register the ToolsetName property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData ToolsetNameProperty = RegisterProperty("ToolsetName", typeof(string));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Toolset")]
+        public PrimitivesCreator PrimitivesCreator
+        {
+            get
+            {
+                return GetValue<PrimitivesCreator>(PrimitivesCreatorProperty);
+            }
+            set
+            {
+                SetValue(PrimitivesCreatorProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Register the PrimitivesCreator property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData PrimitivesCreatorProperty = RegisterProperty("PrimitivesCreator", typeof(PrimitivesCreator));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Toolset")]
+        [Model]
         public GraphArea Area
         {
-            get { return GetValue<GraphArea>(AreaProperty); }
-            set { SetValue(AreaProperty, value); }
+            get
+            {
+                return GetValue<GraphArea>(AreaProperty);
+            }
+            set
+            {
+                SetValue(AreaProperty, value);
+            }
         }
 
         /// <summary>
         /// Register the Area property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData AreaProperty = RegisterProperty("Area", typeof (GraphArea));
+        public static readonly PropertyData AreaProperty = RegisterProperty("Area", typeof(GraphArea));
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Area")]
+        public bool IsDragEnabled
+        {
+            get
+            {
+                return GetValue<bool>(IsDragEnabledProperty);
+            }
+            set
+            {
+                SetValue(IsDragEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Register the IsDragEnabled property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool));
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         public ZoomControlModes ZoomMode
         {
-            get { return GetValue<ZoomControlModes>(ZoomModeProperty); }
-            set { SetValue(ZoomModeProperty, value); }
+            get
+            {
+                return GetValue<ZoomControlModes>(ZoomModeProperty);
+            }
+            set
+            {
+                SetValue(ZoomModeProperty, value);
+            }
         }
 
         /// <summary>
         /// Register the ZoomMode property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData ZoomModeProperty = RegisterProperty("ZoomMode", typeof (ZoomControlModes), null);
+        public static readonly PropertyData ZoomModeProperty = RegisterProperty("ZoomMode", typeof(ZoomControlModes), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Area")]
+        public bool IsInEditing
+        {
+            get
+            {
+                return GetValue<bool>(IsInEditingProperty);
+            }
+            set
+            {
+                SetValue(IsInEditingProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsAddingNewEdge
+        {
+            get { return GetValue<bool>(IsAddingNewEdgeProperty); }
+            set { SetValue(IsAddingNewEdgeProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsAddingNewEdge property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsAddingNewEdgeProperty = RegisterProperty("IsAddingNewEdge", typeof(bool), () => false);
+
+        /// <summary>
+        /// Register the IsInEditing property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
     }
 }
