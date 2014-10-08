@@ -9,16 +9,16 @@
 namespace Orc.GraphExplorer.Csv.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
+    using System.Linq;
 
     using CsvHelper;
 
     using Orc.GraphExplorer.Config;
     using Orc.GraphExplorer.Csv.Data;
     using Orc.GraphExplorer.Models;
+    using Orc.GraphExplorer.Models.Data;
     using Orc.GraphExplorer.Services.Interfaces;
 
     public class CsvGraphDataService : IGraphDataService
@@ -26,15 +26,13 @@ namespace Orc.GraphExplorer.Csv.Services
         #region Fields
         private readonly CsvGraphDataServiceConfig _config;
 
-        private ReplaySubject<DataVertex> _verticesWithProperties;
+        private List<DataVertex> _verticesWithProperties;
 
-        private ReplaySubject<DataVertex> _verticesWithoutProperties;
+        private IList<DataVertex> _verticesWithoutProperties;
 
-        private ReplaySubject<DataEdge> _edges;
+        private List<DataEdge> _edges;
 
-        private int _vertecesWitoutPropertiesCount;
-
-        private ISubject<RelationDataRecord> _loadedRelations;
+        private IList<RelationDataRecord> _loadedRelations;
         #endregion
 
         #region Constructors
@@ -45,41 +43,41 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region Properties
-        private IObservable<DataVertex> VertecesWithProperties
+        private IEnumerable<DataVertex> VertecesWithProperties
         {
             get
             {
                 if (_verticesWithProperties == null)
                 {
-                    _verticesWithProperties = new ReplaySubject<DataVertex>();
-                    InitializeVertexProperties().Subscribe(_verticesWithProperties);
+                    _verticesWithProperties = new List<DataVertex>();
+                    _verticesWithProperties.AddRange(InitializeVertexProperties());
                 }
 
                 return _verticesWithProperties;
             }
         }
 
-        private ISubject<DataVertex> VertecesWithoutProperties
+        private IList<DataVertex> VertecesWithoutProperties
         {
             get
             {
                 if (_verticesWithoutProperties == null)
                 {
-                    _verticesWithoutProperties = new ReplaySubject<DataVertex>();
+                    _verticesWithoutProperties = new List<DataVertex>();
                 }
 
                 return _verticesWithoutProperties;
             }
         }
 
-        private IObservable<DataEdge> Edges
+        private IEnumerable<DataEdge> Edges
         {
             get
             {
                 if (_edges == null)
                 {
-                    _edges = new ReplaySubject<DataEdge>();
-                    InitializeEdges().Subscribe(_edges);
+                    _edges = new List<DataEdge>();
+                    _edges.AddRange(InitializeEdges());
                 }
 
                 return _edges;
@@ -88,104 +86,112 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region IGraphDataService Members
-        public IObservable<DataVertex> GetVerteces()
+        public IEnumerable<DataVertex> GetVerteces()
         {
+            GetEdges();
             return VertecesWithProperties.Concat(VertecesWithoutProperties);
         }
 
-        public IObservable<DataEdge> GetEdges()
+        public IEnumerable<DataEdge> GetEdges()
         {
             return Edges;
+        }
+
+        public void SaveChanges(Graph graph)
+        {
+            using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Truncate))
+            using (var writer = new CsvWriter(new StreamWriter(fs)))
+            {
+                writer.WriteHeader<RelationDataRecord>();
+                foreach (var edge in graph.Edges)
+                {
+                    writer.WriteRecord(new RelationDataRecord { From = edge.Source.ID, To = edge.Target.ID });
+                }
+            }
+            
+            using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Truncate))
+            using (var writer = new CsvWriter(new StreamWriter(fs)))
+            {
+                writer.WriteHeader<PropertyDataRecord>();
+                foreach (var propertyData in graph.Vertices.SelectMany(x => x.Properties.Select(prop => new PropertyDataRecord{ ID = x.ID, Property = prop.Key, Value = prop.Value})))
+                {
+                    writer.WriteRecord(propertyData);
+                }
+            }
+
+            _edges.Clear();
+            _edges = null;
+
+            _verticesWithProperties.Clear();
+            _verticesWithProperties = null;
+
+            _verticesWithoutProperties.Clear();
+            _verticesWithoutProperties = null;
         }
         #endregion
 
         #region Methods
-        public IObservable<DataVertex> InitializeVertexProperties()
+        public IEnumerable<DataVertex> InitializeVertexProperties()
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
                 var vertex = DataVertex.Create(x.Key);
-                x.Subscribe(p => vertex.Properties.Add(new Property(){ Key = p.Property, Value = p.Value}));
+                foreach (var record in x)
+                {
+                    vertex.Properties.Add(new Property() { Key = record.Property, Value = record.Value });
+                }
 
                 return vertex;
             });
         }
 
-        public IObservable<DataEdge> InitializeEdges()
+        public IEnumerable<DataEdge> InitializeEdges()
         {
-            return Observable.Create<DataEdge>(observer => LoadRelations().Subscribe(e =>
-            {
-                var from = GetOrCreateVertex(e.From);
-                var to = GetOrCreateVertex(e.To);
-                var edge = new DataEdge(@from, to);
-                observer.OnNext(edge);
-            }, observer.OnError, () =>
-            {
-                observer.OnCompleted();
-                VertecesWithoutProperties.OnCompleted();
-            }));
+            return from relation in LoadRelations()
+                let @from = GetOrCreateVertex(relation.From)
+                let to = GetOrCreateVertex(relation.To)
+                select new DataEdge(@from, to);           
         }
 
         private DataVertex GetOrCreateVertex(int id)
         {
-            var vertex = VertecesWithProperties.Concat(VertecesWithoutProperties.Take(_vertecesWitoutPropertiesCount)).FirstOrDefault(x => x.ID == id);
+            var vertex = VertecesWithProperties.FirstOrDefault(x => x.ID == id) ?? VertecesWithoutProperties.FirstOrDefault(x => x.ID == id);
+
             if (vertex == null)
             {
-                try
-                {
-                    vertex = DataVertex.Create(id);
-                    _vertecesWitoutPropertiesCount++;
-                    VertecesWithoutProperties.OnNext(vertex);
-                }
-                catch (Exception ex)
-                {
-                    VertecesWithoutProperties.OnError(ex);
-                }
+                vertex = DataVertex.Create(id);
+                VertecesWithoutProperties.Add(vertex);
             }
 
             return vertex;
         }
 
-        private IObservable<PropertyDataRecord> LoadProperties()
+        private IEnumerable<PropertyDataRecord> LoadProperties()
         {
-            return Observable.Create<PropertyDataRecord>(observer =>
+            using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Open))
             {
-                bool disposed = false;
-                using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Open))
+                using (var reader = new CsvReader(new StreamReader(fs)))
                 {
-                    using (var reader = new CsvReader(new StreamReader(fs)))
+                    while (reader.Read())
                     {
-                        while (reader.Read() && !disposed)
-                        {
-                            observer.OnNext(reader.GetRecord<PropertyDataRecord>());
-                        }
+                        yield return reader.GetRecord<PropertyDataRecord>();
                     }
                 }
-
-                observer.OnCompleted();
-                return Disposable.Create(() => disposed = true);
-            });
+            }
         }
 
-        private IObservable<RelationDataRecord> LoadRelations()
+        private IEnumerable<RelationDataRecord> LoadRelations()
         {
-            return Observable.Create<RelationDataRecord>(observer =>
+            using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Open))
             {
-                bool disposed = false;
-                using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Open))
+                using (var reader = new CsvReader(new StreamReader(fs)))
                 {
-                    using (var reader = new CsvReader(new StreamReader(fs)))
+                    while (reader.Read())
                     {
-                        while (reader.Read() && !disposed)
-                        {
-                            observer.OnNext(reader.GetRecord<RelationDataRecord>());
-                        }
+                        yield return reader.GetRecord<RelationDataRecord>();
                     }
                 }
-
-                observer.OnCompleted();
-                return Disposable.Create(() => disposed = true);
-            });
+            }
         }
         #endregion
     }

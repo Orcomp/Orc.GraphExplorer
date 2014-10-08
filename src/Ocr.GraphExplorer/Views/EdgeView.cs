@@ -13,6 +13,8 @@ namespace Orc.GraphExplorer.Views
     using Catel.MVVM.Views;
     using GraphX;
 
+    using Orc.GraphExplorer.ViewModels;
+
     public class EdgeView : EdgeViewBase
     {
         public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true) : base(source, target, edge, showLabels, showArrows)
@@ -45,6 +47,13 @@ namespace Orc.GraphExplorer.Views
         {
             get { return base.IsEnabled; }
             set { base.IsEnabled = value; }
-        } 
+        }
+
+        public EdgeViewModel ViewModel {
+            get
+            {
+                return ViewModel as EdgeViewModel;
+            }
+        }
     }
 }

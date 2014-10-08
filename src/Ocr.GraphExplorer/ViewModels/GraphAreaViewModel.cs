@@ -8,6 +8,7 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System;
+    using System.ComponentModel;
     using System.Linq;
     using System.Windows;
     using Behaviors.Interfaces;
@@ -29,7 +30,7 @@ namespace Orc.GraphExplorer.ViewModels
         protected override void Initialize()
         {
             base.Initialize();
-            Area.CreateGraphArea(600);
+            Area.ReloadGraphArea(600);
         }
 
         /// <summary>
@@ -119,23 +120,16 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), null, (sender, e) => ((GraphAreaViewModel)sender).OnIsInEditingChanged());
 
-        public GraphToolsetViewModel ToolSetViewModel {
-            get
-            {
-                return ParentViewModel as GraphToolsetViewModel;
-            }
-        }
-
         /// <summary>
         /// Called when the IsInEditing property has changed.
         /// </summary>
         private void OnIsInEditingChanged()
-        {
+        {            
             var vertexViewModels = ServiceLocator.Default.ResolveType<IViewModelManager>().GetChildViewModels(this).OfType<VertexViewModel>();
             foreach (var vertex in vertexViewModels)
             {
                 vertex.IsInEditing = IsInEditing;
-            }
+            }         
         }
 
         public Type DataTypeFormat {
@@ -158,6 +152,15 @@ namespace Orc.GraphExplorer.ViewModels
             {
                 ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
                 ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
+                ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        public GraphToolsetViewModel ToolSetViewModel
+        {
+            get
+            {
+                return ParentViewModel as GraphToolsetViewModel;
             }
         }
     }

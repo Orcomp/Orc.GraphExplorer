@@ -7,6 +7,9 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System.ComponentModel;
+    using System.Windows;
+
     using Catel.Data;
     using Catel.Memento;
     using Catel.MVVM;
@@ -30,7 +33,10 @@ namespace Orc.GraphExplorer.ViewModels
             SaveToImage = new Command(OnSaveToImageExecute);
 
             UndoCommand = new Command(OnUndoCommandExecute, OnUndoCommandCanExecute);
-            RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);          
+            RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);
+
+            SaveChangesCommand = new Command(OnSaveChangesCommandExecute, OnSaveChangesCommandCanExecute);
+            RefreshCommand = new Command(OnRefreshCommandExecute);
         }
 
         /// <summary>
@@ -73,6 +79,57 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
+        /// Gets the RefreshCommand command.
+        /// </summary>
+        public Command RefreshCommand { get; private set; }
+
+        /// <summary>
+        /// Method to invoke when the RefreshCommand command is executed.
+        /// </summary>
+        private void OnRefreshCommandExecute()
+        {
+            if (IsInEditing && _mementoService.CanUndo)
+            {
+                if (MessageBox.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    IsInEditing = false;
+                    IsDragEnabled = false;
+                  //  IsFilterApplied = false;
+                    Area.ReloadGraphArea(600);
+                }
+            }
+            else
+            {
+
+                Area.ReloadGraphArea(600);
+            }
+        }
+
+        /// <summary>
+        /// Gets the SaveChangesCommand command.
+        /// </summary>
+        public Command SaveChangesCommand { get; private set; }
+
+        /// <summary>
+        /// Method to check whether the SaveChangesCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnSaveChangesCommandCanExecute()
+        {
+            return _mementoService.CanUndo;
+        }
+
+        /// <summary>
+        /// Method to invoke when the SaveChangesCommand command is executed.
+        /// </summary>
+        private void OnSaveChangesCommandExecute()
+        {
+            Area.SaveChanges();
+            _mementoService.Clear();
+            IsInEditing = false;
+        }
+
+        /// <summary>
         /// Gets the UndoCommand command.
         /// </summary>
         public Command UndoCommand { get; private set; }
@@ -86,6 +143,7 @@ namespace Orc.GraphExplorer.ViewModels
             return _mementoService.CanUndo;
         }
 
+
         /// <summary>
         /// Method to invoke when the UndoCommand command is executed.
         /// </summary>
@@ -93,30 +151,32 @@ namespace Orc.GraphExplorer.ViewModels
         {
             _mementoService.Undo();
             RedoCommand.RaiseCanExecuteChanged();
+            SaveChangesCommand.RaiseCanExecuteChanged();
         }
 
-/// <summary>
-/// Gets the RedoCommand command.
-/// </summary>
-public Command RedoCommand { get; private set; }
+        /// <summary>
+        /// Gets the RedoCommand command.
+        /// </summary>
+        public Command RedoCommand { get; private set; }
 
-/// <summary>
-/// Method to check whether the RedoCommand command can be executed.
-/// </summary>
-/// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
-private bool OnRedoCommandCanExecute()
-{
-    return _mementoService.CanRedo;
-}
+        /// <summary>
+        /// Method to check whether the RedoCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnRedoCommandCanExecute()
+        {
+            return _mementoService.CanRedo;
+        }
 
-/// <summary>
-/// Method to invoke when the RedoCommand command is executed.
-/// </summary>
-private void OnRedoCommandExecute()
-{
-    _mementoService.Redo();
-    UndoCommand.RaiseCanExecuteChanged();
-}
+        /// <summary>
+        /// Method to invoke when the RedoCommand command is executed.
+        /// </summary>
+        private void OnRedoCommandExecute()
+        {
+            _mementoService.Redo();
+            UndoCommand.RaiseCanExecuteChanged();
+            SaveChangesCommand.RaiseCanExecuteChanged();
+        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -266,8 +326,14 @@ private void OnRedoCommandExecute()
         /// </summary>
         public bool IsAddingNewEdge
         {
-            get { return GetValue<bool>(IsAddingNewEdgeProperty); }
-            set { SetValue(IsAddingNewEdgeProperty, value); }
+            get
+            {
+                return GetValue<bool>(IsAddingNewEdgeProperty);
+            }
+            set
+            {
+                SetValue(IsAddingNewEdgeProperty, value);
+            }
         }
 
         /// <summary>

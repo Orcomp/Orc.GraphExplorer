@@ -41,19 +41,16 @@ namespace Orc.GraphExplorer.Models
             Logic = new GraphLogic();            
         }
 
-        public void CreateGraphArea(double offsetY)
+        public void ReloadGraphArea(double offsetY)
         {
             Logic.PrepareGraphReloading();
 
             var graph = new Graph(_graphDataService);
 
-            graph.ReloadGraph().Subscribe(x =>
-            {
-                Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
+            graph.ReloadGraph();
+            Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
-                Logic.ResumeGraphReloading(graph);
-            }, ex =>
-            { });
+            Logic.ResumeGraphReloading(graph);
         }
 
         /// <summary>
@@ -122,6 +119,21 @@ namespace Orc.GraphExplorer.Models
             _mementoService.Add(operation);
         }
 
-        
+        public void AddEdge(DataVertex startVertex, DataVertex endVertex)
+        {
+            var edge = new DataEdge(startVertex, endVertex);
+
+            var operation = new AddEdgeOperation(this, edge);
+            operation.Do();
+
+            _mementoService.ClearRedoBatches();
+
+            _mementoService.Add(operation);
+        }
+
+        public void SaveChanges()
+        {
+            _graphDataService.SaveChanges(Logic.Graph);
+        }
     }
 }

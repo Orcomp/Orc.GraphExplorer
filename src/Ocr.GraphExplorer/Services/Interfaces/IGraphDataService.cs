@@ -11,11 +11,14 @@ namespace Orc.GraphExplorer.Services.Interfaces
     using System.Collections.Generic;
 
     using Orc.GraphExplorer.Models;
+    using Orc.GraphExplorer.Models.Data;
 
     public interface IGraphDataService
     {
-        IObservable<DataVertex> GetVerteces();
+        IEnumerable<DataVertex> GetVerteces();
 
-        IObservable<DataEdge> GetEdges();
+        IEnumerable<DataEdge> GetEdges();
+
+        void SaveChanges(Graph graph);
     }
 }

@@ -9,8 +9,6 @@
 namespace Orc.GraphExplorer.Models.Data
 {
     using System;
-    using System.Reactive;
-    using System.Reactive.Linq;
     using Catel;
     using Events;
     using GraphX.Logic;

@@ -16,9 +16,7 @@ namespace Orc.GraphExplorer.Behaviors
     using System.Windows.Media;
     using Catel.IoC;
     using Catel.MVVM.Views;
-    using Enums;
     using Events;
-    using GraphX;
     using GraphX.Controls;
     using GraphX.Models;
     using Models;
@@ -26,6 +24,35 @@ namespace Orc.GraphExplorer.Behaviors
 
     public class DrawEdgeBehavior : Behavior<GraphAreaView>
     {
+        #region Fields
+        private EdgeView _edge;
+
+        private VertexView _startVertex;
+        private DataVertex _fakeEndVertex;
+        private PathGeometry _pathGeometry;
+
+        private ZoomControl _zoomControl;
+        #endregion
+
+        #region Properties
+        private ZoomControl ZoomControl
+        {
+            get
+            {
+                if (_zoomControl == null)
+                {
+                    var toolsetView = ServiceLocator.Default.ResolveType<IViewManager>().GetViewsOfViewModel(AssociatedObject.ViewModel.ToolSetViewModel).OfType<GraphToolsetView>().FirstOrDefault();
+                    if (toolsetView != null)
+                    {
+                        _zoomControl = toolsetView.ZoomControl;
+                    }
+                }
+
+                return _zoomControl;
+            }
+        }
+        #endregion
+
         #region Methods
         protected override void OnAttached()
         {
@@ -35,24 +62,21 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.ViewModelChanged += AssociatedObject_ViewModelChanged;
         }
 
-        void AssociatedObject_ViewModelChanged(object sender, System.EventArgs e)
+        private void AssociatedObject_ViewModelChanged(object sender, System.EventArgs e)
         {
             ZoomControl.PreviewMouseMove += ZoomControl_PreviewMouseMove;
         }
 
-        void ZoomControl_PreviewMouseMove(object sender, MouseEventArgs e)
+        private void ZoomControl_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (!AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _endVertex == null || _edge == null)
+            if (!AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _fakeEndVertex == null || _edge == null)
             {
                 return;
             }
-            var pos = ZoomControl.TranslatePoint(e.GetPosition(ZoomControl), AssociatedObject);
-            var lastseg = _pathGeometry.Figures[0].Segments[_pathGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-            lastseg.Points[lastseg.Points.Count - 1] = pos;
+            SetLastPoint(e.GetPosition(ZoomControl));
+            
             _edge.SetEdgePathManually(_pathGeometry);
         }
-
-        private EdgeView _edge;
 
         private void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeViewCreatedAventArgs e)
         {
@@ -60,21 +84,16 @@ namespace Orc.GraphExplorer.Behaviors
             _edge.SetEdgePathManually(_pathGeometry);
         }
 
-        private VertexView _startVertex;
-        private DataVertex _endVertex;
-        private PathGeometry _pathGeometry;
-
         private void AssociatedObject_VertexSelected(object sender, VertexSelectedEventArgs args)
         {
             if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
             {
-               // SelectVertex(args.VertexControl);
-                if (AssociatedObject.ViewModel.IsInEditing && AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge) 
+                if (AssociatedObject.ViewModel.IsInEditing && AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge)
                 {
                     if (_startVertex == null) //select starting vertex
                     {
-                        _startVertex = (VertexView)args.VertexControl;
-                        _endVertex = DataVertex.CreateFakeVertex();
+                        _startVertex = (VertexView) args.VertexControl;
+                        _fakeEndVertex = DataVertex.CreateFakeVertex();
                         var pathFigureCollection = new PathFigureCollection
                         {
                             new PathFigure
@@ -87,13 +106,10 @@ namespace Orc.GraphExplorer.Behaviors
                         };
                         _pathGeometry = new PathGeometry(pathFigureCollection);
 
+                        SetLastPoint(args.VertexControl.GetPosition());
 
-                        Point pos = ZoomControl.TranslatePoint(args.VertexControl.GetPosition(), AssociatedObject);
-                        var lastseg = _pathGeometry.Figures[0].Segments[_pathGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-                        lastseg.Points[lastseg.Points.Count - 1] = pos;
-
-                        var dedge = new DataEdge(_startVertex.ViewModel.DataVertex, _endVertex);
-                        AssociatedObject.ViewModel.Logic.Graph.AddVertex(_endVertex);
+                        var dedge = new DataEdge(_startVertex.ViewModel.DataVertex, _fakeEndVertex);
+                        AssociatedObject.ViewModel.Logic.Graph.AddVertex(_fakeEndVertex);
                         AssociatedObject.ViewModel.Logic.Graph.AddEdge(dedge);
 /*
 
@@ -101,29 +117,30 @@ namespace Orc.GraphExplorer.Behaviors
                         GraphExplorerViewModel.PostStatusMessage("Select Target Node");
 */
                     }
-/*
-                    else if (!GraphExplorerViewModel.View.IsEdVertex(args.VertexControl as VertexControl) && GraphExplorerViewModel.Status.HasFlag(GraphExplorerStatus.CreateLinkSelectTarget)) //finish draw
+
+                    else if (!Equals(_startVertex, args.VertexControl)) //finish draw
                     {
-                        GraphExplorerViewModel.CreateEdge(GraphExplorerViewModel.View.GetEdVertex().ID, (args.VertexControl.Vertex as DataVertex).ID);
+                        AssociatedObject.ViewModel.Area.AddEdge(_startVertex.ViewModel.DataVertex, (DataVertex) args.VertexControl.Vertex);
+                        AssociatedObject.ViewModel.Logic.Graph.RemoveVertex(_fakeEndVertex);
 
-                        GraphExplorerViewModel.ClearEdgeDrawing();
+                        _startVertex = null;
+                        _fakeEndVertex = null;
+                        _edge = null;
+                        _pathGeometry.Clear();
+                        _pathGeometry = null;
 
-                        GraphExplorerViewModel.Status = GraphExplorerStatus.Ready;
-
-                        GraphExplorerViewModel.IsAddingNewEdge = false;
-                    }*/
+                        AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge = false;
+                    }
                 }
             }
         }
 
-        private ZoomControl ZoomControl {
-            get
-            {
-                var toolsetView = ServiceLocator.Default.ResolveType<IViewManager>().GetViewsOfViewModel(AssociatedObject.ViewModel.ToolSetViewModel).OfType<GraphToolsetView>().Single();
-                return toolsetView.ZoomControl;
-            }
+        private void SetLastPoint(Point point)
+        {
+            Point pos = ZoomControl.TranslatePoint(point, AssociatedObject);
+            var lastseg = _pathGeometry.Figures[0].Segments[_pathGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
+            lastseg.Points[lastseg.Points.Count - 1] = pos;
         }
-
         #endregion
     }
 }
