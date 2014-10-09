@@ -19,15 +19,15 @@
     </catel:UserControl.Resources>
     <Grid>
         <Grid Margin="6,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid Visibility="{Binding IsEditing,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter='R'}">
+            <Grid Visibility="{Binding IsInEditing,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter='R'}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock HorizontalAlignment="Left" Text="{Binding Key,StringFormat=' {0}: '}"></TextBlock>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Key,StringFormat=' {0}: ' }"></TextBlock>
                 <TextBlock Text="{Binding Value}" Grid.Column="1"></TextBlock>
             </Grid>
-            <Grid Visibility="{Binding IsEditing,Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid Visibility="{Binding IsInEditing,Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>

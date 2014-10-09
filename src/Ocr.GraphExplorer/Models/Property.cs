@@ -38,5 +38,19 @@ namespace Orc.GraphExplorer.Models
         /// Register the Value property so it is known in the class.
         /// </summary>
         public static readonly PropertyData ValueProperty = RegisterProperty("Value", typeof(string), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsInEditing
+        {
+            get { return GetValue<bool>(IsInEditingProperty); }
+            set { SetValue(IsInEditingProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsInEditing property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
     }
 }

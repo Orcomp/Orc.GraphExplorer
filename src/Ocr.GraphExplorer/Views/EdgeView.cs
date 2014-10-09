@@ -19,6 +19,12 @@ namespace Orc.GraphExplorer.Views
     {
         public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true) : base(source, target, edge, showLabels, showArrows)
         {
+            Loaded += EdgeView_Loaded;
+        }
+
+        void EdgeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataContext = ViewModel;
         }
 
         [ViewToViewModel]
@@ -52,8 +58,10 @@ namespace Orc.GraphExplorer.Views
         public EdgeViewModel ViewModel {
             get
             {
-                return ViewModel as EdgeViewModel;
+                return base.ViewModel as EdgeViewModel;
             }
         }
+
+
     }
 }

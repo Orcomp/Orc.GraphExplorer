@@ -1,32 +1,32 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="AddEdgeOperation.cs" company="Orcomp development team">
+// <copyright file="OperationsBatch.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 namespace Orc.GraphExplorer.Operations
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Catel.Memento;
     using Interfaces;
-    using Orc.GraphExplorer.Models;
 
-    public class AddEdgeOperation : IOperation
+    public class OperationsBatch : IOperation
     {
-        private readonly GraphArea _graphArea;
-
-        private readonly DataEdge _edge;
-
-        public AddEdgeOperation(GraphArea graphArea, DataEdge edge)
+        public OperationsBatch()
         {
-            _graphArea = graphArea;
-            _edge = edge;
+            _operations = new List<IOperation>();
             CanRedo = true;
         }
 
         public void Undo()
         {
-            _graphArea.Logic.Graph.RemoveEdge(_edge);
+            for (int i = _operations.Count - 1; i >= 0; i--)
+            {
+                var operation = _operations[i];
+                operation.Undo();
+            }
         }
 
         public void Redo()
@@ -35,16 +35,25 @@ namespace Orc.GraphExplorer.Operations
         }
 
         public object Target { get; private set; }
-
         public string Description { get; set; }
-
         public object Tag { get; set; }
-
         public bool CanRedo { get; private set; }
-
         public void Do()
-        {            
-            _graphArea.Logic.Graph.AddEdge(_edge);
+        {
+            foreach (var operation in _operations)
+            {
+                operation.Do();
+            }
+        }
+
+        private readonly List<IOperation> _operations;
+        public IEnumerable<IOperation> Operations {
+            get { return _operations.AsEnumerable(); }
+        }
+
+        public void AddOperation(IOperation operation)
+        {
+            _operations.Add(operation);
         }
     }
 }

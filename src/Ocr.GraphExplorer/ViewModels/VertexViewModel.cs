@@ -7,6 +7,7 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Windows.Media;
 
@@ -22,6 +23,8 @@ namespace Orc.GraphExplorer.ViewModels
             DataVertex = dataVertex;
             AddCommand = new Command(OnAddCommandExecute);
             DeleteCommand = new Command(OnDeleteCommandExecute, OnDeleteCommandCanExecute);
+
+            DeleteVertexCommand = new Command(OnDeleteVertexCommandExecute, OnDeleteVertexCommandCanExecute);
         }
 
         protected override void Initialize()
@@ -40,11 +43,9 @@ namespace Orc.GraphExplorer.ViewModels
             IsDragEnabled = GraphAreaViewModel.IsDragEnabled;
         }
 
-        public new GraphAreaViewModel GraphAreaViewModel {
-            get
-            {
-                return base.ParentViewModel as GraphAreaViewModel;
-            }
+        public new GraphAreaViewModel GraphAreaViewModel
+        {
+            get { return base.ParentViewModel as GraphAreaViewModel; }
         }
 
         /// <summary>
@@ -53,20 +54,14 @@ namespace Orc.GraphExplorer.ViewModels
         [Model]
         public DataVertex DataVertex
         {
-            get
-            {
-                return GetValue<DataVertex>(DataProperty);
-            }
-            set
-            {
-                SetValue(DataProperty, value);
-            }
+            get { return GetValue<DataVertex>(DataProperty); }
+            set { SetValue(DataProperty, value); }
         }
 
         /// <summary>
         /// Register the DataVertex property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData DataProperty = RegisterProperty("DataVertex", typeof(DataVertex));
+        public static readonly PropertyData DataProperty = RegisterProperty("DataVertex", typeof (DataVertex));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -74,20 +69,14 @@ namespace Orc.GraphExplorer.ViewModels
         [ViewModelToModel("DataVertex")]
         public ImageSource Icon
         {
-            get
-            {
-                return GetValue<ImageSource>(IconProperty);
-            }
-            set
-            {
-                SetValue(IconProperty, value);
-            }
+            get { return GetValue<ImageSource>(IconProperty); }
+            set { SetValue(IconProperty, value); }
         }
 
         /// <summary>
         /// Register the Icon property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IconProperty = RegisterProperty("Icon", typeof(ImageSource));
+        public static readonly PropertyData IconProperty = RegisterProperty("Icon", typeof (ImageSource));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -95,20 +84,14 @@ namespace Orc.GraphExplorer.ViewModels
         [ViewModelToModel("DataVertex")]
         public new string Title
         {
-            get
-            {
-                return GetValue<string>(TitleProperty);
-            }
-            set
-            {
-                SetValue(TitleProperty, value);
-            }
+            get { return GetValue<string>(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
         }
 
         /// <summary>
         /// Register the Title property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof(string));
+        public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof (string));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -116,20 +99,14 @@ namespace Orc.GraphExplorer.ViewModels
         [ViewModelToModel("DataVertex")]
         public ObservableCollection<Property> Properties
         {
-            get
-            {
-                return GetValue<ObservableCollection<Property>>(PropertiesProperty);
-            }
-            set
-            {
-                SetValue(PropertiesProperty, value);
-            }
+            get { return GetValue<ObservableCollection<Property>>(PropertiesProperty); }
+            set { SetValue(PropertiesProperty, value); }
         }
 
         /// <summary>
         /// Register the Properties property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof(ObservableCollection<Property>));
+        public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof (ObservableCollection<Property>));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -144,7 +121,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the X property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData XProperty = RegisterProperty("X", typeof(double));
+        public static readonly PropertyData XProperty = RegisterProperty("X", typeof (double));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -159,27 +136,21 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the Y property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double));
+        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof (double));
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         public bool IsExpanded
         {
-            get
-            {
-                return GetValue<bool>(IsExpandedProperty);
-            }
-            set
-            {
-                SetValue(IsExpandedProperty, value);
-            }
+            get { return GetValue<bool>(IsExpandedProperty); }
+            set { SetValue(IsExpandedProperty, value); }
         }
 
         /// <summary>
         /// Register the IsExpanded property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof(bool), () => false);
+        public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof (bool), () => false);
 
 
         /// <summary>
@@ -187,20 +158,14 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         public bool IsDragging
         {
-            get
-            {
-                return GetValue<bool>(IsDraggingProperty);
-            }
-            set
-            {
-                SetValue(IsDraggingProperty, value);
-            }
+            get { return GetValue<bool>(IsDraggingProperty); }
+            set { SetValue(IsDraggingProperty, value); }
         }
 
         /// <summary>
         /// Register the IsDragging property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsDraggingProperty = RegisterProperty("IsDragging", typeof(bool), () => false);
+        public static readonly PropertyData IsDraggingProperty = RegisterProperty("IsDragging", typeof (bool), () => false);
 
         /// <summary>
         /// Gets the AddCommand command.
@@ -239,6 +204,40 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
+        /// Gets the DeleteVertexCommand command.
+        /// </summary>
+        public Command DeleteVertexCommand { get; private set; }
+
+        /// <summary>
+        /// Method to check whether the DeleteVertexCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnDeleteVertexCommandCanExecute()
+        {
+            return IsInEditing;
+        }
+
+        /// <summary>
+        /// Method to invoke when the DeleteVertexCommand command is executed.
+        /// </summary>
+        private void OnDeleteVertexCommandExecute()
+        {
+            if (AreaViewModel != null)
+            {
+                AreaViewModel.RemoveVertex(DataVertex);
+            }
+        }
+
+        public GraphAreaViewModel AreaViewModel
+        {
+            get
+            {
+                return ParentViewModel as GraphAreaViewModel;
+
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         public bool IsHighlightEnabled
@@ -250,7 +249,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsHighlightEnabled property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsHighlightEnabledProperty = RegisterProperty("IsHighlightEnabled", typeof(bool), () => true);
+        public static readonly PropertyData IsHighlightEnabledProperty = RegisterProperty("IsHighlightEnabled", typeof (bool), () => true);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -264,7 +263,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsHighlighted property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsHighlightedProperty = RegisterProperty("IsHighlighted", typeof(bool), () => false);
+        public static readonly PropertyData IsHighlightedProperty = RegisterProperty("IsHighlighted", typeof (bool), () => false);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -278,7 +277,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsDragEnabled property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool), () => false);
+        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof (bool), () => false);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -292,7 +291,15 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsInEditing property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof (bool), () => false, (sender, args) => ((VertexViewModel) sender).OnIsInEditingChanged());
+
+        private void OnIsInEditingChanged()
+        {
+            foreach (var property in Properties)
+            {
+                property.IsInEditing = IsInEditing;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -306,7 +313,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsVisible property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
+        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof (bool), () => true);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -320,6 +327,6 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsEnabled property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsEnabledProperty = RegisterProperty("IsEnabled", typeof(bool), () => true);
+        public static readonly PropertyData IsEnabledProperty = RegisterProperty("IsEnabled", typeof (bool), () => true);
     }
 }

@@ -9,6 +9,7 @@ namespace Orc.GraphExplorer.Helpers
 {
     using System.Linq;
     using Catel.Memento;
+    using Operations.Interfaces;
 
     public static class MementoServiceExtensions
     {
@@ -25,6 +26,13 @@ namespace Orc.GraphExplorer.Helpers
                     mementoService.Add(mementoBatch);
                 }
             }
+        }
+
+        public static void Do(this IMementoService mementoService, IOperation operation)
+        {
+            operation.Do();
+            mementoService.ClearRedoBatches();
+            mementoService.Add(operation);
         }
     }
 }

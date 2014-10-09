@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="VertexView.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 namespace Orc.GraphExplorer.Views
 {
-    using Catel.MVVM.Views;
-    using GraphX;
-    using ViewModels;
+    using System;
+    using System.Windows;
+    using System.Windows.Controls;
 
-    /// <summary>
-    /// Логика взаимодействия для VertexView.xaml
-    /// </summary>
-    public partial class VertexView
+    using Catel.MVVM.Views;
+
+    using GraphX;
+
+    using Orc.GraphExplorer.ViewModels;
+    using Orc.GraphExplorer.Views.Base;
+
+    public class VertexView : VertexViewBase
     {
         public VertexView(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
-        {
+        {            
+            Loaded += VertexView_Loaded;
         }
+
+        void VertexView_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataContext = ViewModel;            
+        }
+
 
         [ViewToViewModel]
         public bool IsHighlightEnabled
@@ -54,8 +58,8 @@ namespace Orc.GraphExplorer.Views
         {
             get { return base.IsVisible; }
             set { base.Visibility = value ? Visibility.Visible : Visibility.Hidden; }
-        } 
-        
+        }
+
         [ViewToViewModel]
         public new bool IsEnabled
         {
@@ -63,9 +67,9 @@ namespace Orc.GraphExplorer.Views
             set { base.IsEnabled = value; }
         }
 
-        public new VertexViewModel ViewModel {
+        public new VertexViewModel ViewModel
+        {
             get { return base.ViewModel as VertexViewModel; }
-        }
-
+        } 
     }
 }

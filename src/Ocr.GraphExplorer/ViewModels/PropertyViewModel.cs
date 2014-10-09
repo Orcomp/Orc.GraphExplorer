@@ -67,16 +67,17 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsEditing
+        [ViewModelToModel("Property")]
+        public bool IsInEditing
         {
-            get { return GetValue<bool>(IsEditingProperty); }
-            set { SetValue(IsEditingProperty, value); }
+            get { return GetValue<bool>(IsInEditingProperty); }
+            set { SetValue(IsInEditingProperty, value); }
         }
 
         /// <summary>
-        /// Register the IsEditing property so it is known in the class.
+        /// Register the IsInEditing property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsEditingProperty = RegisterProperty("IsEditing", typeof(bool), () => false);
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool));
 
         /// <summary>
         /// Gets or sets the property value.

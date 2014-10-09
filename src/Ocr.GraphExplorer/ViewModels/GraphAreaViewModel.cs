@@ -129,7 +129,13 @@ namespace Orc.GraphExplorer.ViewModels
             foreach (var vertex in vertexViewModels)
             {
                 vertex.IsInEditing = IsInEditing;
-            }         
+            }
+
+            var edgeViewModels = ServiceLocator.Default.ResolveType<IViewModelManager>().GetChildViewModels(this).OfType<EdgeViewModel>();
+            foreach (var edge in edgeViewModels)
+            {
+                edge.IsInEditing = IsInEditing;
+            }
         }
 
         public Type DataTypeFormat {
@@ -162,6 +168,22 @@ namespace Orc.GraphExplorer.ViewModels
             {
                 return ParentViewModel as GraphToolsetViewModel;
             }
+        }
+
+        public void RemoveEdge(DataEdge dataEdge)
+        {
+            Area.RemoveEdge(dataEdge);
+            ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+        }
+
+        public void RemoveVertex(DataVertex dataVertex)
+        {
+            Area.RemoveVertex(dataVertex);
+            ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
         }
     }
 }

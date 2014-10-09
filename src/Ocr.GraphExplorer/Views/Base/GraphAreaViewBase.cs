@@ -285,7 +285,9 @@ namespace Orc.GraphExplorer.Views.Base
             if (Math.Abs(point.Y - double.MinValue) > 0d)
             { SetY(vertexControl, point.Y, true); }
 
-            dataVertex.Tag = null;
+            dataVertex.X = point.X;
+            dataVertex.Y = point.Y;
+            //dataVertex.Tag = null;
         }
 
         public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)

@@ -8,28 +8,18 @@
 
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System;
     using System.Linq;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Interactivity;
 
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
-    using Catel.Windows;
-
-    using GraphX.Controls;
-
-    using Interfaces;
 
     using Orc.GraphExplorer.Behaviors.Base;
     using Orc.GraphExplorer.ViewModels;
 
-    using Views;
-
     public class ZoomDropBehavior : BaseDropBehavior
     {
+        #region Methods
         protected override IUserControl GetDropableContent()
         {
             var toolset = AssociatedObject.DataContext as GraphToolsetViewModel;
@@ -48,5 +38,6 @@ namespace Orc.GraphExplorer.Behaviors
             var viewManager = ServiceLocator.Default.ResolveType<IViewManager>();
             return (IUserControl)viewManager.GetViewsOfViewModel(graphAreaViewModel).FirstOrDefault();
         }
+        #endregion
     }
 }

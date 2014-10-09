@@ -112,28 +112,38 @@ namespace Orc.GraphExplorer.Models
         public void AddVertex(DataVertex dataVertex, Point point)
         {
             var operation = new AddVertexOperation(this, dataVertex, point);
-            operation.Do();
-
-            _mementoService.ClearRedoBatches();
-
-            _mementoService.Add(operation);
+            _mementoService.Do(operation);
         }
 
         public void AddEdge(DataVertex startVertex, DataVertex endVertex)
         {
             var edge = new DataEdge(startVertex, endVertex);
-
             var operation = new AddEdgeOperation(this, edge);
-            operation.Do();
-
-            _mementoService.ClearRedoBatches();
-
-            _mementoService.Add(operation);
+            _mementoService.Do(operation);
         }
 
         public void SaveChanges()
         {
             _graphDataService.SaveChanges(Logic.Graph);
+        }
+
+        public void RemoveEdge(DataEdge edge)
+        {
+            var operation = new RemoveEdgeOperation(this, edge);
+            _mementoService.Do(operation);
+        }
+
+        public void RemoveVertex(DataVertex vertex)
+        {
+            _mementoService.ClearRedoBatches();
+            var operations = new OperationsBatch();
+            foreach (var edge in Logic.Graph.InEdges(vertex).Concat(Logic.Graph.OutEdges(vertex)).ToArray())
+            {
+                operations.AddOperation(new RemoveEdgeOperation(this, edge));
+            }
+
+            operations.AddOperation(new RemoveVertexOperation(this, vertex));
+            _mementoService.Do(operations);
         }
     }
 }
