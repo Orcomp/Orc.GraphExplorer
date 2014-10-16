@@ -1,6 +1,6 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="IGraphDataService.cs" company="Orcomp development team">
+// <copyright file="IGraphDataGetter.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -13,12 +13,10 @@ namespace Orc.GraphExplorer.Services.Interfaces
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Models.Data;
 
-    public interface IGraphDataService
+    public interface IGraphDataGetter
     {
         IEnumerable<DataVertex> GetVerteces();
 
-        IEnumerable<DataEdge> GetEdges();
-
-        void SaveChanges(Graph graph);
+        IEnumerable<DataEdge> GetEdges();        
     }
 }

@@ -18,6 +18,11 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class VertexViewModel : ViewModelBase
     {
+        public VertexViewModel()
+        {
+            
+        }
+
         public VertexViewModel(DataVertex dataVertex)
         {
             DataVertex = dataVertex;
@@ -25,6 +30,8 @@ namespace Orc.GraphExplorer.ViewModels
             DeleteCommand = new Command(OnDeleteCommandExecute, OnDeleteCommandCanExecute);
 
             DeleteVertexCommand = new Command(OnDeleteVertexCommandExecute, OnDeleteVertexCommandCanExecute);
+
+            
         }
 
         protected override void Initialize()

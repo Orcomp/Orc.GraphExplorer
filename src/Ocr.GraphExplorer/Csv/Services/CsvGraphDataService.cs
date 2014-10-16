@@ -8,20 +8,17 @@
 
 namespace Orc.GraphExplorer.Csv.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-
+    using Config;
     using CsvHelper;
+    using Data;
+    using GraphExplorer.Services.Interfaces;
+    using Models;
+    using Models.Data;
 
-    using Orc.GraphExplorer.Config;
-    using Orc.GraphExplorer.Csv.Data;
-    using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Models.Data;
-    using Orc.GraphExplorer.Services.Interfaces;
-
-    public class CsvGraphDataService : IGraphDataService
+    public class CsvGraphDataService : IGraphDataGetter, IGraphDataSaver
     {
         #region Fields
         private readonly CsvGraphDataServiceConfig _config;
@@ -85,7 +82,7 @@ namespace Orc.GraphExplorer.Csv.Services
         }
         #endregion
 
-        #region IGraphDataService Members
+        #region IGraphDataGetter Members
         public IEnumerable<DataVertex> GetVerteces()
         {
             GetEdges();
@@ -96,26 +93,32 @@ namespace Orc.GraphExplorer.Csv.Services
         {
             return Edges;
         }
+        #endregion
 
+        #region IGraphDataSaver Members
         public void SaveChanges(Graph graph)
         {
             using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Truncate))
-            using (var writer = new CsvWriter(new StreamWriter(fs)))
             {
-                writer.WriteHeader<RelationDataRecord>();
-                foreach (var edge in graph.Edges)
+                using (var writer = new CsvWriter(new StreamWriter(fs)))
                 {
-                    writer.WriteRecord(new RelationDataRecord { From = edge.Source.ID, To = edge.Target.ID });
+                    writer.WriteHeader<RelationDataRecord>();
+                    foreach (var edge in graph.Edges)
+                    {
+                        writer.WriteRecord(new RelationDataRecord {From = edge.Source.ID, To = edge.Target.ID});
+                    }
                 }
             }
-            
+
             using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Truncate))
-            using (var writer = new CsvWriter(new StreamWriter(fs)))
             {
-                writer.WriteHeader<PropertyDataRecord>();
-                foreach (var propertyData in graph.Vertices.SelectMany(x => x.Properties.Select(prop => new PropertyDataRecord{ ID = x.ID, Property = prop.Key, Value = prop.Value})))
+                using (var writer = new CsvWriter(new StreamWriter(fs)))
                 {
-                    writer.WriteRecord(propertyData);
+                    writer.WriteHeader<PropertyDataRecord>();
+                    foreach (var propertyData in graph.Vertices.SelectMany(x => x.Properties.Select(prop => new PropertyDataRecord {ID = x.ID, Property = prop.Key, Value = prop.Value})))
+                    {
+                        writer.WriteRecord(propertyData);
+                    }
                 }
             }
 
@@ -138,7 +141,7 @@ namespace Orc.GraphExplorer.Csv.Services
                 var vertex = DataVertex.Create(x.Key);
                 foreach (var record in x)
                 {
-                    vertex.Properties.Add(new Property() { Key = record.Property, Value = record.Value });
+                    vertex.Properties.Add(new Property() {Key = record.Property, Value = record.Value});
                 }
 
                 return vertex;
@@ -150,7 +153,7 @@ namespace Orc.GraphExplorer.Csv.Services
             return from relation in LoadRelations()
                 let @from = GetOrCreateVertex(relation.From)
                 let to = GetOrCreateVertex(relation.To)
-                select new DataEdge(@from, to);           
+                select new DataEdge(@from, to);
         }
 
         private DataVertex GetOrCreateVertex(int id)

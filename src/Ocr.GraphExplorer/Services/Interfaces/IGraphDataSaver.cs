@@ -1,19 +1,16 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="PrimitivesCreator.cs" company="Orcomp development team">
+// <copyright file="IGraphDataSaver.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Models
+namespace Orc.GraphExplorer.Services.Interfaces
 {
-    using Catel.Data;
+    using Models.Data;
 
-    public class PrimitivesCreator : ModelBase
+    public interface IGraphDataSaver
     {
-        public DataVertex NewDataVertex()
-        {
-            return DataVertex.Create();
-        }
+        void SaveChanges(Graph graph); 
     }
 }

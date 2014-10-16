@@ -8,16 +8,16 @@
 
     public class Graph : BidirectionalGraph<DataVertex, DataEdge>
     {
-        private readonly IGraphDataService _graphDataService;
+        private readonly IGraphDataGetter _graphDataGetter;
 
         public Graph()
         {
             
         }
 
-        public Graph(IGraphDataService graphDataService)
+        public Graph(IGraphDataGetter graphDataGetter)
         {
-            _graphDataService = graphDataService;
+            _graphDataGetter = graphDataGetter;
         }
 
         public void ReloadGraph()
@@ -25,8 +25,8 @@
             RemoveEdgeIf(e => true);
             RemoveVertexIf(v => true);
 
-            AddVertexRange(_graphDataService.GetVerteces());
-            AddEdgeRange(_graphDataService.GetEdges());
+            AddVertexRange(_graphDataGetter.GetVerteces());
+            AddEdgeRange(_graphDataGetter.GetEdges());
         }
     }
 }

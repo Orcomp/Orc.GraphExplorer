@@ -21,7 +21,9 @@ namespace Orc.GraphExplorer.Behaviors
     using GraphX.Models;
     using Models;
     using Views;
+    using Views.Base;
 
+    // TODO: This behavior must be reviewed
     public class DrawEdgeBehavior : Behavior<GraphAreaView>
     {
         #region Fields
@@ -69,7 +71,7 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void ZoomControl_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (!AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _fakeEndVertex == null || _edge == null)
+            if (AssociatedObject.ViewModel == null || !AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _fakeEndVertex == null || _edge == null)
             {
                 return;
             }

@@ -8,11 +8,12 @@
 namespace Orc.GraphExplorer.Models
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Windows;
 
     using Catel.Data;
     using Catel.Memento;
-
+    using Data;
     using GraphX;
     using Microsoft.Win32;
 
@@ -26,10 +27,9 @@ namespace Orc.GraphExplorer.Models
         public string ToolsetName { get; set; }
 
         public GraphToolset(string toolsetName, IMementoService mementoService)
-        {
+        {            
             ToolsetName = toolsetName;
             Area = new GraphArea(ToolsetName, mementoService);
-            PrimitivesCreator = new PrimitivesCreator();
         }
 
         /// <summary>
@@ -45,20 +45,6 @@ namespace Orc.GraphExplorer.Models
         /// Register the Area property so it is known in the class.
         /// </summary>
         public static readonly PropertyData EditorAreaProperty = RegisterProperty("Area", typeof(GraphArea), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public PrimitivesCreator PrimitivesCreator
-        {
-            get { return GetValue<PrimitivesCreator>(PrimitivesCreatorProperty); }
-            set { SetValue(PrimitivesCreatorProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the PrimitivesCreator property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PrimitivesCreatorProperty = RegisterProperty("PrimitivesCreator", typeof(PrimitivesCreator), null);
 
         public void SaveToXml()
         {

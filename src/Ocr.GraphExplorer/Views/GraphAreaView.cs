@@ -8,11 +8,16 @@
 namespace Orc.GraphExplorer.Views
 {
     using System;
+    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
+    using Catel;
     using Catel.Data;
     using Catel.IoC;
+    using Catel.MVVM;
     using Catel.MVVM.Views;
+
+    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.ViewModels;
     using Orc.GraphExplorer.Views.Base;
@@ -22,11 +27,13 @@ namespace Orc.GraphExplorer.Views
     {
         public GraphAreaView()
         {
-            ViewModelChanged += GraphAreaView_ViewModelChanged;
+            Loaded += GraphAreaView_Loaded;
         }
 
-        void GraphAreaView_ViewModelChanged(object sender, EventArgs e)
+        protected override void OnViewModelChanged()
         {
+            base.OnViewModelChanged();
+
             if (ViewModel == null)
             {
                 return;
@@ -35,6 +42,20 @@ namespace Orc.GraphExplorer.Views
             SaveToXmlMessage.Register(this, OnSaveToXmlMessage, ViewModel.ToolsetName);
             LoadFromXmlMessage.Register(this, OnLoadFromXmlMessage, ViewModel.ToolsetName);
             SaveToImageMessage.Register(this, OnSaveToImageMessage, ViewModel.ToolsetName);
+            
+            ReadyToLoadGraphMessage.SendWith(ViewModel.ToolsetName);            
+        }
+
+        void GraphAreaView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var toolset = this.FindFirstParentOfType<GraphToolsetView>();
+            if (toolset != null && relationalViewModel != null && ViewModel.ToolSetViewModel == null)
+            {
+                relationalViewModel.SetParentViewModel(toolset.ViewModel);
+            }
+
+            RelayoutGraph();
         }
 
         private void OnSaveToXmlMessage(SaveToXmlMessage message)

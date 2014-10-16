@@ -16,6 +16,9 @@ namespace Orc.GraphExplorer.Views
 {
     using System.ComponentModel;
 
+    using Catel.MVVM;
+
+    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.ViewModels;
 
@@ -26,7 +29,19 @@ namespace Orc.GraphExplorer.Views
     {
         public GraphToolsetView()
         {
-            InitializeComponent();            
+            CloseViewModelOnUnloaded = false;
+            InitializeComponent();
+            Loaded += GraphToolsetView_Loaded;
+        }
+
+        void GraphToolsetView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var parentView = this.FindFirstParentOfType<GraphExplorerView>();
+            if (parentView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            {
+                relationalViewModel.SetParentViewModel(parentView.ViewModel);
+            }
         }
 
         protected override void OnViewModelChanged()

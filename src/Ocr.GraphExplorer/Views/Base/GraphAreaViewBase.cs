@@ -9,6 +9,7 @@
 namespace Orc.GraphExplorer.Views.Base
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Data;
     using System.Threading;
@@ -53,8 +54,10 @@ namespace Orc.GraphExplorer.Views.Base
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
 
-            _logic = new UserControlLogic(this);            
+            _logic = new UserControlLogic(this);
         }
+
+       
 
         public override void BeginInit()
         {
@@ -67,6 +70,7 @@ namespace Orc.GraphExplorer.Views.Base
             this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
 
             ViewModelChanged += GraphAreaViewBase_ViewModelChanged;
+            CloseViewModelOnUnloaded = false;
 
             base.BeginInit();
         }
@@ -75,6 +79,12 @@ namespace Orc.GraphExplorer.Views.Base
         {            
             GenerateGraph(e.Graph, true);
             SubscribeOnGraphEvents();
+            
+        }
+
+        public override List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType resultType = GraphControlType.VertexAndEdge, EdgesType edgesType = EdgesType.Out)
+        {
+            return base.GetRelatedControls(ctrl, resultType, edgesType);
         }
 
         void GraphAreaViewBase_BeforeReloadingGraph(object sender, EventArgs e)
@@ -158,16 +168,22 @@ namespace Orc.GraphExplorer.Views.Base
 
         #region Methods
 
-        void GraphAreaViewBase_ViewModelChanged(object sender, EventArgs e)
+        protected virtual void OnViewModelChanged()
         {
             if (ViewModel != null)
             {
-                var logic = (GraphLogic) ViewModel.GetPropertyValue("Logic");
+                var logic = (GraphLogic)ViewModel.GetPropertyValue("Logic");
+
                 logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
                 logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
             }
 
-       //     DataContext = ViewModel;
+            //     DataContext = ViewModel;
+        }
+
+        void GraphAreaViewBase_ViewModelChanged(object sender, EventArgs e)
+        {
+            OnViewModelChanged();
         }
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -217,22 +233,28 @@ namespace Orc.GraphExplorer.Views.Base
             logic.Graph.EdgeRemoved -= GraphEdgeRemoved;
         }
 
-        private void GraphEdgeRemoved(DataEdge e)
+        private void GraphEdgeRemoved(DataEdge edge)
         {
-            RemoveEdge(e);
+            RunCodeInUiThread(() => RemoveEdge(edge), null, DispatcherPriority.Loaded); 
         }
 
-        private void GraphEdgeAdded(DataEdge e)
+        private void GraphEdgeAdded(DataEdge edge)
         {
-            if (EdgesList.ContainsKey(e))
+            if (EdgesList.ContainsKey(edge))
             {
                 return;
             }
-            VertexControl source = VertexList[e.Source];
-            VertexControl target = DataVertex.IsFakeVertex(e.Target) ? null : VertexList[e.Target];
 
-            var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, e);
-            AddEdge(e, edgeView);
+            RunCodeInUiThread(() => AddEdge(edge), null, DispatcherPriority.Loaded); 
+        }
+
+        private void AddEdge(DataEdge edge)
+        {
+            VertexControl source = VertexList[edge.Source];
+            VertexControl target = DataVertex.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
+
+            var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, edge);
+            AddEdge(edge, edgeView);
             edgeView.ShowArrows = true;
             edgeView.ShowLabel = true;
             edgeView.ManualDrawing = target == null;
@@ -241,11 +263,15 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 TemporaryEdgeCreated(this, new EdgeViewCreatedAventArgs(edgeView));
             }
+            else
+            {
+                
+            }
         }
 
         private void GraphVertexRemoved(DataVertex vertex)
         {
-            RemoveVertex(vertex);
+            RunCodeInUiThread(() => RemoveVertex(vertex), null, DispatcherPriority.Loaded); 
         }
 
         private void GraphVertexAdded(DataVertex vertex)
@@ -254,26 +280,22 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 return;
             }
+
+            SafeAddVertex(vertex);
+        }
+
+        private void SafeAddVertex(DataVertex vertex)
+        {
+            RunCodeInUiThread(() => AddVertex(vertex), null, DispatcherPriority.Loaded);
+        }
+
+        private void AddVertex(DataVertex vertex)
+        {
             var vertexControl = (VertexView)ControlFactory.CreateVertexControl(vertex);            
 
             AddVertex(vertex, vertexControl);
-
-            SafeSetPositon(vertexControl, vertex);
-
-        }
-
-        private void SafeSetPositon(VertexControl vertexControl, DataVertex dataVertex)
-        {
-            var app = Application.Current;
-
-            if (app != null)
-            {
-                RunCodeInUiThread(() => SetPositon(vertexControl, dataVertex), app.Dispatcher, DispatcherPriority.Loaded);
-            }
-            else
-            {
-                SetPositon(vertexControl, dataVertex);
-            }
+            
+            SetPositon(vertexControl, vertex);
         }
 
         private void SetPositon(VertexControl vertexControl, DataVertex dataVertex)

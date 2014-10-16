@@ -9,6 +9,8 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Orc.GraphExplorer.Behaviors"
              xmlns:converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"
+             xmlns:toolkit="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+             xmlns:filterViews="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <catel:UserControl.Resources>
@@ -21,6 +23,7 @@
                 <ResourceDictionary Source="../Resources/ThemedGraphXTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
+            <catel:BooleanToCollapsingVisibilityConverter x:Key="BooleanToCollapsingVisibilityConverter"/>
             <converters:DoubleToLog10Converter x:Key="log10Converter" />
             <converters:EqualityToBooleanConverter x:Key="equalityConverter" />
         </ResourceDictionary>
@@ -47,13 +50,12 @@
 								Style="{StaticResource ExportButtonStyle}" Command="{Binding SaveToImage}"/>
                 <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                 <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding IsDragEnabled, Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" />
-                <ToggleButton DockPanel.Dock="Left" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" Command="{Binding CanEditCommand}"/>
+                <ToggleButton DockPanel.Dock="Left" Visibility="{Binding CanEdit, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" Command="{Binding CanEditCommand}"/>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"
-								Visibility="{Binding IsInEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+								Visibility="{Binding IsInEditing, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}">
                     <ToggleButton Height="28" DockPanel.Dock="Left" ToolTip="Create Link"
 									IsChecked="{Binding IsAddingNewEdge}" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" Command="{Binding CreateLinkCommand}"/>
-                    <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Create Node"
-                                              DataContext="{Binding Path=DataContext.PrimitivesCreator, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
+                    <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Create Node"                                              
 									Width="28" Style="{StaticResource VertexButtonStyle}">
                         <i:Interaction.Behaviors>
                             <behaviors:DragBehavior/>
@@ -87,6 +89,17 @@
                 <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="Fill" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Fill}, ElementName=ZoomControl, Converter={StaticResource equalityConverter}}" />
                 <ToggleButton DockPanel.Dock="Left" Margin="1" Style="{StaticResource ToggleButtonStyle}" Width="28" Content="1:1" IsChecked="{Binding Mode, ConverterParameter={x:Static controls:ZoomControlModes.Original}, ElementName=ZoomControl, Converter={StaticResource equalityConverter}}" />
                 <Rectangle  DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
+                <toolkit:DropDownButton Visibility="{Binding CanEdit, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}" ToolTip="Filter" Style="{StaticResource FilterButtonStyle}" HorizontalAlignment="Left" DockPanel.Dock="Left" Height="28" Width="28">
+                    <StackPanel Height="200" Width="320">
+                        <filterViews:FilterBuilderControl Margin="2,2,6,2" RawCollection="{Binding FilterableEntities}" FilteredCollection="{Binding FilteredEntities}"/>
+                        <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes, Mode=TwoWay}" Content="Hide vertexes been filtered"/>
+                        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
+                    </StackPanel>
+                </toolkit:DropDownButton>
+                <StackPanel Visibility="Collapsed" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBox Width="120" VerticalContentAlignment="Center" Height="22" Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ToggleButton Margin="1" Height="24" Width="24" Style="{StaticResource FilterToggleButtonStyle}" ToolTip="Apply Filter" IsChecked="{Binding IsFilterApplied}"/>
+                </StackPanel>
             </DockPanel>
         </Border>
         <controls:ZoomControl x:Name="ZoomControl" AllowDrop="True" MinZoom="0.1" MaxZoom="2" ZoomDeltaMultiplier="20" Grid.Row="1" Grid.Column="0">
@@ -98,7 +111,7 @@
                 <i:Interaction.Behaviors>
                     <behaviors:RelayoutBehavior />
                     <behaviors:DrawEdgeBehavior/>
-                    <behaviors:ContextMenuBehavior/>
+                    <behaviors:GraphNavigationBehavior/>
                 </i:Interaction.Behaviors>
             </views:GraphAreaView>
         </controls:ZoomControl>

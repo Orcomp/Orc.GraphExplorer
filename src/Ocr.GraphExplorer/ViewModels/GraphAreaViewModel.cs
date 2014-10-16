@@ -20,19 +20,19 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Models.Data;
 
-    public class GraphAreaViewModel : ViewModelBase, IDropable
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator
     {
+        public GraphAreaViewModel()
+        {
+            
+        }
+
         public GraphAreaViewModel(GraphArea area)
         {
             Area = area;
         }
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            Area.ReloadGraphArea(600);
-        }
-
+        
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -184,6 +184,11 @@ namespace Orc.GraphExplorer.ViewModels
             ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
             ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
             ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+        }
+
+        public void NavigateTo(DataVertex dataVertex)
+        {
+            ToolSetViewModel.NavigateTo(dataVertex);
         }
     }
 }

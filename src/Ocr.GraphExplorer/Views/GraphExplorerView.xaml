@@ -24,9 +24,9 @@
         </ResourceDictionary>
     </catel:UserControl.Resources>
     <Grid>
-        <TabControl HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch">
-            <TabItem>
+        <catel:TabControl HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch" UseLayoutRounding="False" >
+            <TabItem IsSelected="{Binding IsEditorTabSelected, Mode=TwoWay}">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="8,0,8,0"
@@ -39,6 +39,24 @@
                 </TabItem.Header>
                 <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.EditorToolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
             </TabItem>
-        </TabControl>
+            <TabItem x:Name="navTab" Visibility="{Binding IsNavTabVisible, Converter={StaticResource BooleanToHidingVisibilityConverter}}" IsSelected="{Binding IsNavTabSelected, Mode=TwoWay}" Padding="1" FontWeight="Bold">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="8,0,8,0"
+                                   FontWeight="Bold"
+                                   Text="Navigate"
+                                   VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Height="20"
+                                    Foreground="{Binding Foreground, ElementName=navTab}"
+                                    Width="20"
+                                    Style="{StaticResource CloseButtonStyle}"
+                                    Command="{Binding CloseNavTabCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem.Header>
+                <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.NavigatorToolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
+            </TabItem>
+        </catel:TabControl>
     </Grid>
 </catel:UserControl>

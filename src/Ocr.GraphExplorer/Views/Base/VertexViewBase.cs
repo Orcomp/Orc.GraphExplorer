@@ -34,11 +34,8 @@ namespace Orc.GraphExplorer.Views.Base
         public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
-            _logic = new UserControlLogic(this);            
-        }
+            _logic = new UserControlLogic(this);
 
-        public override void BeginInit()
-        {
             _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);
             _logic.Loaded += (sender, args) => _viewLoaded.SafeInvoke(this);
             _logic.Unloaded += (sender, args) => _viewUnloaded.SafeInvoke(this);
@@ -49,8 +46,11 @@ namespace Orc.GraphExplorer.Views.Base
 
             ViewModelChanged += VertexViewBase_ViewModelChanged;
 
-            base.BeginInit();
+            SupportParentViewModelContainers = true;
+            CloseViewModelOnUnloaded = false;
+
         }
+
 
         void VertexViewBase_ViewModelChanged(object sender, EventArgs e)
         {

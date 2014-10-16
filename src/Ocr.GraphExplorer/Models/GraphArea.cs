@@ -8,6 +8,7 @@
 namespace Orc.GraphExplorer.Models
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
@@ -29,29 +30,119 @@ namespace Orc.GraphExplorer.Models
     {
         private readonly IMementoService _mementoService;
 
-        private readonly IGraphDataService _graphDataService;
-
         public GraphArea(string toolsetName, IMementoService mementoService)
         {
             _mementoService = mementoService;
             ToolsetName = toolsetName;
 
-            _graphDataService = new CsvGraphDataService();
-
-            Logic = new GraphLogic();            
+            Logic = new GraphLogic();   
         }
 
         public void ReloadGraphArea(double offsetY)
         {
+            if (GraphDataGetter == null)
+            {
+                return;
+            }
             Logic.PrepareGraphReloading();
 
-            var graph = new Graph(_graphDataService);
+            var graph = new Graph(GraphDataGetter);
 
             graph.ReloadGraph();
             Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
             Logic.ResumeGraphReloading(graph);
+
+
         }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ObservableCollection<FilterableEntity> FilterableEntities
+        {
+            get { return GetValue<ObservableCollection<FilterableEntity>>(FilterableEntitiesProperty); }
+            set { SetValue(FilterableEntitiesProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the FilterableEntities property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData FilterableEntitiesProperty = RegisterProperty("FilterableEntities", typeof(ObservableCollection<FilterableEntity>), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ObservableCollection<FilterableEntity> FilteredEntities
+        {
+            get { return GetValue<ObservableCollection<FilterableEntity>>(FilteredEntitiesProperty); }
+            set { SetValue(FilteredEntitiesProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the FilteredEntities property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData FilteredEntitiesProperty = RegisterProperty("FilteredEntities", typeof(ObservableCollection<FilterableEntity>), null);
+
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public IGraphDataGetter GraphDataGetter
+        {
+            get { return GetValue<IGraphDataGetter>(GraphDataGetterProperty); }
+            set { SetValue(GraphDataGetterProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the GraphDataGetter property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData GraphDataGetterProperty = RegisterProperty("GraphDataGetter", typeof(IGraphDataGetter), null, (sender, e) => ((GraphArea)sender).OnGraphDataGetterChanged());
+
+        /// <summary>
+        /// Called when the GraphDataGetter property has changed.
+        /// </summary>
+        private void OnGraphDataGetterChanged()
+        {            
+            if (GraphDataGetter == null)
+            {
+                return;
+            }
+            ReloadGraphArea(600);
+        }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public IGraphDataSaver GraphDataSaver
+        {
+            get { return GetValue<IGraphDataSaver>(GraphDataSaverProperty); }
+            set { SetValue(GraphDataSaverProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the GraphDataSaver property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData GraphDataSaverProperty = RegisterProperty("GraphDataSaver", typeof(IGraphDataSaver), null, (sender, e) => ((GraphArea)sender).OnGraphDataSaverChanged());
+
+        private void OnGraphDataSaverChanged()
+        {
+            CanEdit = GraphDataSaver != null;
+        }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool CanEdit
+        {
+            get { return GetValue<bool>(CanEditProperty); }
+            set { SetValue(CanEditProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the CanEdit property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData CanEditProperty = RegisterProperty("CanEdit", typeof(bool), () => false);
 
         /// <summary>
         /// Gets or sets the property value.
@@ -65,7 +156,20 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Register the Logic property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic), null);
+        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic), () => new GraphLogic(), (sender, e) => ((GraphArea)sender).OnLogicChanged());
+
+        /// <summary>
+        /// Called when the Logic property has changed.
+        /// </summary>
+        private void OnLogicChanged()
+        {
+            Logic.GraphReloaded += Logic_GraphReloaded;
+        }
+
+        void Logic_GraphReloaded(object sender, Events.GraphEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -109,6 +213,7 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
 
+
         public void AddVertex(DataVertex dataVertex, Point point)
         {
             var operation = new AddVertexOperation(this, dataVertex, point);
@@ -124,7 +229,12 @@ namespace Orc.GraphExplorer.Models
 
         public void SaveChanges()
         {
-            _graphDataService.SaveChanges(Logic.Graph);
+            if (GraphDataSaver == null)
+            {
+                return;
+            }
+
+            GraphDataSaver.SaveChanges(Logic.Graph);
         }
 
         public void RemoveEdge(DataEdge edge)

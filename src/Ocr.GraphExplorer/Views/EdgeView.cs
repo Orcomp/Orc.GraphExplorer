@@ -9,10 +9,13 @@ namespace Orc.GraphExplorer.Views
 {
     using System.Windows;
     using Base;
+
+    using Catel.MVVM;
     using Catel.MVVM.Converters;
     using Catel.MVVM.Views;
     using GraphX;
 
+    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
 
     public class EdgeView : EdgeViewBase
@@ -25,6 +28,13 @@ namespace Orc.GraphExplorer.Views
         void EdgeView_Loaded(object sender, RoutedEventArgs e)
         {
             DataContext = ViewModel;
+
+            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var graphAreaView = this.FindFirstParentOfType<GraphAreaView>();
+            if (graphAreaView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            {
+                relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
+            }
         }
 
         [ViewToViewModel]

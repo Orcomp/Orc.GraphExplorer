@@ -14,6 +14,10 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class PropertyViewModel : ViewModelBase
     {
+        public PropertyViewModel()
+        {
+            
+        }
         public PropertyViewModel(Property property)
         {
             Property = property;

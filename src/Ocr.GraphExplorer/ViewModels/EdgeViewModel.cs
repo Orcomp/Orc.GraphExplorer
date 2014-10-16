@@ -14,6 +14,11 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class EdgeViewModel : ViewModelBase
     {
+        public EdgeViewModel()
+        {
+            
+        }
+
         public EdgeViewModel(DataEdge dataEdge)
         {
             DataEdge = dataEdge;

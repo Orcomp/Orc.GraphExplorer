@@ -7,14 +7,42 @@
 #endregion
 namespace Orc.GraphExplorer.Models
 {
+    using System;
+    using System.Linq;
+    using Behaviors.Interfaces;
     using Catel.Data;
     using Catel.Memento;
+    using Csv.Services;
+    using Data;
+    using GraphX.GraphSharp;
+    using Messages;
+    using Services;
 
-    public class Explorer : ModelBase
+    public class Explorer : ModelBase, IGraphNavigator
     {
         public Explorer(IMementoService mementoService)
         {
             EditorToolset = new GraphToolset("Editor", mementoService);
+            
+            NavigatorToolset = new GraphToolset("Navigator", mementoService);
+
+            ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
+        }
+
+        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
+        {
+            if (message.Data == "Editor" && EditorToolset.Area.GraphDataGetter == null)
+            {
+                var graphDataService = new CsvGraphDataService();
+                EditorToolset.Area.GraphDataGetter = graphDataService;
+                EditorToolset.Area.GraphDataSaver = graphDataService;
+            }
+
+            if (message.Data == "Navigator" && NavigatorToolset.Area.GraphDataGetter == null)
+            {
+                NavigatorToolset.Area.GraphDataGetter = new NavigatorGraphDataGetter(EditorToolset.Area.Logic.Graph);
+            }
+            
         }
 
         /// <summary>
@@ -30,5 +58,26 @@ namespace Orc.GraphExplorer.Models
         /// Register the EditorToolset property so it is known in the class.
         /// </summary>
         public static readonly PropertyData EditorToolsetProperty = RegisterProperty("EditorToolset", typeof(GraphToolset), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public GraphToolset NavigatorToolset
+        {
+            get { return GetValue<GraphToolset>(NavigatorToolsetProperty); }
+            set { SetValue(NavigatorToolsetProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the NavigatorToolset property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData NavigatorToolsetProperty = RegisterProperty("NavigatorToolset", typeof(GraphToolset), null);
+
+        public void NavigateTo(DataVertex dataVertex)
+        {
+            ((IGraphNavigator)NavigatorToolset.Area.GraphDataGetter).NavigateTo(dataVertex);
+
+            NavigatorToolset.Area.ReloadGraphArea(0);
+        }
     }
 }

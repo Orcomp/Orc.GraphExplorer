@@ -69,6 +69,12 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
       <HintPath>..\..\lib\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="Orc.FilterBuilder">
+      <HintPath>..\..\lib\Orc.FilterBuilder.1.4.0-unstable0019\lib\net40\Orc.FilterBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Orc.Toolkit">
+      <HintPath>..\..\lib\Orc.Toolkit.1.0.9.0\lib\NET40\Orc.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="QuickGraph">
@@ -111,12 +117,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Behaviors\ContextMenuBehavior.cs" />
     <Compile Include="Behaviors\DrawEdgeBehavior.cs" />
     <Compile Include="Behaviors\Base\BaseDropBehavior.cs" />
     <Compile Include="Behaviors\DragBehavior.cs" />
+    <Compile Include="Behaviors\GraphNavigationBehavior.cs" />
     <Compile Include="Behaviors\Interfaces\IDragable.cs" />
     <Compile Include="Behaviors\Interfaces\IDropable.cs" />
+    <Compile Include="Behaviors\Interfaces\IGraphNavigator.cs" />
     <Compile Include="Behaviors\RelayoutBehavior.cs" />
     <Compile Include="Behaviors\ZoomDropBehavior.cs" />
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
@@ -124,15 +131,16 @@
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Events\EdgeViewCreatedAventArgs.cs" />
     <Compile Include="Events\GraphEventArgs.cs" />
+    <Compile Include="Helpers\FrameworkElementExtensions.cs" />
     <Compile Include="Helpers\MementoServiceExtensions.cs" />
-    <Compile Include="Messages\CanDragChangedMessage.cs" />
     <Compile Include="Messages\LoadFromXmlMessage.cs" />
+    <Compile Include="Messages\ReadyToLoadGraphMessage.cs" />
     <Compile Include="Messages\SaveToImageMessage.cs" />
     <Compile Include="Messages\SaveToXmlMessage.cs" />
     <Compile Include="Models\DataEdge.cs" />
     <Compile Include="Models\DataVertex.cs" />
+    <Compile Include="Models\Data\FilterableEntity.cs" />
     <Compile Include="Models\Data\Graph.cs" />
-    <Compile Include="Models\PrimitivesCreator.cs" />
     <Compile Include="Models\Explorer.cs" />
     <Compile Include="Models\GraphArea.cs" />
     <Compile Include="Models\Data\GraphLogic.cs" />
@@ -150,7 +158,9 @@
     <Compile Include="Csv\Services\CsvGraphDataService.cs" />
     <Compile Include="Services\CustomGraphControlFactory.cs" />
     <Compile Include="Csv\Data\RelationDataRecord.cs" />
-    <Compile Include="Services\Interfaces\IGraphDataService.cs" />
+    <Compile Include="Services\Interfaces\IGraphDataSaver.cs" />
+    <Compile Include="Services\NavigatorGraphDataGetter.cs" />
+    <Compile Include="Services\Interfaces\IGraphDataGetter.cs" />
     <Compile Include="Services\TopologicalLayoutAlgorithm.cs" />
     <Compile Include="Csv\Data\PropertyDataRecord.cs" />
     <Compile Include="ViewModels\DragableButtonViewModel.cs" />
@@ -160,7 +170,6 @@
     <Compile Include="ViewModels\GraphToolsetViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\VertexViewModel.cs" />
-    <Compile Include="ViewModels\ZoomViewModel.cs" />
     <Compile Include="Views\Base\ButtonBaseView.cs" />
     <Compile Include="Views\Base\GraphAreaViewBase.cs" />
     <Compile Include="Views\Base\EdgeViewBase.cs" />

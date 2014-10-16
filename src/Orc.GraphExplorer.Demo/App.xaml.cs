@@ -19,7 +19,7 @@ namespace Orc.GraphExplorer.Demo
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-     //       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var serviceLocator = ServiceLocator.Default;
 
             var shellService = serviceLocator.ResolveType<IShellService>();
@@ -27,10 +27,10 @@ namespace Orc.GraphExplorer.Demo
 
         }
 
-       /* void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             //throw new NotImplementedException();
-        }*/
+        }
 
 
     }
