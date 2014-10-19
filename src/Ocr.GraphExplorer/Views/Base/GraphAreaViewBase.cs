@@ -78,8 +78,7 @@ namespace Orc.GraphExplorer.Views.Base
         void GraphAreaViewBase_GraphReloaded(object sender, GraphEventArgs e)
         {            
             GenerateGraph(e.Graph, true);
-            SubscribeOnGraphEvents();
-            
+            SubscribeOnGraphEvents();            
         }
 
         public override List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType resultType = GraphControlType.VertexAndEdge, EdgesType edgesType = EdgesType.Out)

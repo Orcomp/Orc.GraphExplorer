@@ -7,10 +7,12 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System;
     using Behaviors.Interfaces;
     using Catel.Data;
     using Catel.Memento;
     using Catel.MVVM;
+    using Messages;
     using Models.Data;
     using Orc.GraphExplorer.Models;
 
@@ -20,6 +22,9 @@ namespace Orc.GraphExplorer.ViewModels
         {
             
         }
+
+        
+
         private readonly IMementoService _mementoService;
 
         public GraphExplorerViewModel(IMementoService mementoService)
@@ -28,6 +33,16 @@ namespace Orc.GraphExplorer.ViewModels
             Explorer = new Explorer(_mementoService);
 
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
+
+            EditingStartStopMessage.Register(this, OnEditingStartStopMessage, Explorer.EditorToolset.ToolsetName);
+        }
+
+        private void OnEditingStartStopMessage(EditingStartStopMessage message)
+        {
+            if (message.Data)
+            {
+                IsNavTabVisible = false;
+            }
         }
 
         /// <summary>
@@ -108,5 +123,6 @@ namespace Orc.GraphExplorer.ViewModels
             IsNavTabSelected = true;
             Explorer.NavigateTo(dataVertex);
         }
+
     }
 }

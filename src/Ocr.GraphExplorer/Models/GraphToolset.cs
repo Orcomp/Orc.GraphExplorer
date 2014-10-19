@@ -26,10 +26,11 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public string ToolsetName { get; set; }
 
-        public GraphToolset(string toolsetName, IMementoService mementoService)
+        public GraphToolset(string toolsetName, bool isFilterEnabled, IMementoService mementoService)
         {            
             ToolsetName = toolsetName;
             Area = new GraphArea(ToolsetName, mementoService);
+            Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};
         }
 
         /// <summary>
@@ -45,6 +46,20 @@ namespace Orc.GraphExplorer.Models
         /// Register the Area property so it is known in the class.
         /// </summary>
         public static readonly PropertyData EditorAreaProperty = RegisterProperty("Area", typeof(GraphArea), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public Filter Filter
+        {
+            get { return GetValue<Filter>(FilterProperty); }
+            set { SetValue(FilterProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Filter property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData FilterProperty = RegisterProperty("Filter", typeof(Filter), null);
 
         public void SaveToXml()
         {

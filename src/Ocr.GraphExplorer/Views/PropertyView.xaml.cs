@@ -35,6 +35,7 @@ namespace Orc.GraphExplorer.Views
             base.OnViewModelChanged();
 
             Loaded += PropertyView_Loaded;
+            CloseViewModelOnUnloaded = false;
         }
 
         void PropertyView_Loaded(object sender, RoutedEventArgs e)

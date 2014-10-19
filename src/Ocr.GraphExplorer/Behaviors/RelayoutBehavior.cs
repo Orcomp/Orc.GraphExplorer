@@ -11,6 +11,10 @@ namespace Orc.GraphExplorer.Behaviors
     using System;
     using System.Windows.Interactivity;
     using GraphX.Controls;
+
+    using Orc.GraphExplorer.Behaviors.Interfaces;
+    using Orc.GraphExplorer.Helpers;
+
     using Views;
     using Views.Base;
 
@@ -26,8 +30,12 @@ namespace Orc.GraphExplorer.Behaviors
         private void AssociatedObject_GenerateGraphFinished(object sender, EventArgs e)
         {
             ShowAllEdgesLabels(true);
-
             FitToBounds();
+            var filterable = AssociatedObject.ViewModel as IFilterable;
+            if (filterable != null)
+            {
+                filterable.UpdateFilterSource();
+            }
         }
 
         private void ShowAllEdgesLabels(bool show)
@@ -38,7 +46,7 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void FitToBounds()
         {
-            var zoom = (ZoomControl) AssociatedObject.Parent;
+            var zoom = AssociatedObject.FindFirstParentOfType<ZoomControl>();
             zoom.ZoomToFill();
             zoom.Mode = ZoomControlModes.Custom;
         }

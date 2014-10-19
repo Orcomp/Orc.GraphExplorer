@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\output\Debug\Orc.GraphExplorer\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -123,6 +123,8 @@
     <Compile Include="Behaviors\GraphNavigationBehavior.cs" />
     <Compile Include="Behaviors\Interfaces\IDragable.cs" />
     <Compile Include="Behaviors\Interfaces\IDropable.cs" />
+    <Compile Include="Behaviors\Interfaces\IFilterable.cs" />
+    <Compile Include="Behaviors\Interfaces\IGraphNavigationController.cs" />
     <Compile Include="Behaviors\Interfaces\IGraphNavigator.cs" />
     <Compile Include="Behaviors\RelayoutBehavior.cs" />
     <Compile Include="Behaviors\ZoomDropBehavior.cs" />
@@ -133,15 +135,18 @@
     <Compile Include="Events\GraphEventArgs.cs" />
     <Compile Include="Helpers\FrameworkElementExtensions.cs" />
     <Compile Include="Helpers\MementoServiceExtensions.cs" />
+    <Compile Include="Messages\EditingStartStopMessage.cs" />
     <Compile Include="Messages\LoadFromXmlMessage.cs" />
     <Compile Include="Messages\ReadyToLoadGraphMessage.cs" />
     <Compile Include="Messages\SaveToImageMessage.cs" />
     <Compile Include="Messages\SaveToXmlMessage.cs" />
+    <Compile Include="Messages\StatusMessage.cs" />
     <Compile Include="Models\DataEdge.cs" />
     <Compile Include="Models\DataVertex.cs" />
     <Compile Include="Models\Data\FilterableEntity.cs" />
     <Compile Include="Models\Data\Graph.cs" />
     <Compile Include="Models\Explorer.cs" />
+    <Compile Include="Models\Filter.cs" />
     <Compile Include="Models\GraphArea.cs" />
     <Compile Include="Models\Data\GraphLogic.cs" />
     <Compile Include="Models\GraphToolset.cs" />
@@ -165,6 +170,7 @@
     <Compile Include="Csv\Data\PropertyDataRecord.cs" />
     <Compile Include="ViewModels\DragableButtonViewModel.cs" />
     <Compile Include="ViewModels\EdgeViewModel.cs" />
+    <Compile Include="ViewModels\FilterViewModel.cs" />
     <Compile Include="ViewModels\GraphAreaViewModel.cs" />
     <Compile Include="ViewModels\GraphExplorerViewModel.cs" />
     <Compile Include="ViewModels\GraphToolsetViewModel.cs" />
@@ -175,6 +181,9 @@
     <Compile Include="Views\Base\EdgeViewBase.cs" />
     <Compile Include="Views\DragableButtonView.cs" />
     <Compile Include="Views\EdgeView.cs" />
+    <Compile Include="Views\FilterView.xaml.cs">
+      <DependentUpon>FilterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GraphAreaView.cs" />
     <Compile Include="Views\GraphExplorerView.xaml.cs">
       <DependentUpon>GraphExplorerView.xaml</DependentUpon>
@@ -229,6 +238,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Page Include="Views\FilterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GraphToolsetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

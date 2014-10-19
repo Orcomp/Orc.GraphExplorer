@@ -3,6 +3,8 @@
     using System.Windows;
     using System.Windows.Controls;
 
+    using Orchestra.Services;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -11,6 +13,7 @@
         public MainWindow()
         {
             InitializeComponent();
+            
         }
     }
 }

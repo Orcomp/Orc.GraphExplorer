@@ -1,17 +1,16 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="IGraphNavigator.cs" company="Orcomp development team">
+// <copyright file="EditingStartedMessage.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Behaviors.Interfaces
+namespace Orc.GraphExplorer.Messages
 {
-    using Models;
-    using Models.Data;
+    using Catel.Messaging;
 
-    public interface IGraphNavigator
+    public class EditingStartStopMessage : MessageBase<EditingStartStopMessage, bool>
     {
-        void NavigateTo(DataVertex dataVertex);        
+         
     }
 }

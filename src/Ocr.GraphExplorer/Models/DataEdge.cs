@@ -18,7 +18,7 @@ namespace Orc.GraphExplorer.Models
 
     using YAXLib;
 
-    [Serializable]
+    [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataEdge : ModelBase, IGraphXEdge<DataVertex>
     {
   
@@ -64,5 +64,19 @@ namespace Orc.GraphExplorer.Models
 
         public double Weight { get; set; }
         #endregion
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return GetValue<bool>(IsVisibleProperty); }
+            set { SetValue(IsVisibleProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsVisible property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
     }
 }

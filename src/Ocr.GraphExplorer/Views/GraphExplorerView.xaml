@@ -34,7 +34,7 @@
                                    Text="Overrall"
                                    VerticalAlignment="Center" />
                         <TextBlock Text=" *"
-                                   VerticalAlignment="Center" />
+                                   VerticalAlignment="Center" Visibility="{Binding Path=EditorToolset.IsDirty, Converter={StaticResource BooleanToHidingVisibilityConverter}}"/>
                     </StackPanel>
                 </TabItem.Header>
                 <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.EditorToolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>

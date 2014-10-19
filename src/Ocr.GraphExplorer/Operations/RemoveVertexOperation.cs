@@ -13,6 +13,8 @@ namespace Orc.GraphExplorer.Operations
     using Interfaces;
     using Models;
 
+    using Orc.GraphExplorer.Messages;
+
     public class RemoveVertexOperation : IOperation
     {
         private readonly GraphArea _graphArea;
@@ -35,17 +37,22 @@ namespace Orc.GraphExplorer.Operations
 
             Target = _graphArea;
             CanRedo = true;
+
+            Description = "remove vertex";
         }
 
         public void Undo()
         {
             _vertex.Tag = _point;
             _graphArea.Logic.Graph.AddVertex(_vertex);
+
+            StatusMessage.SendWith(string.Format("Undo {0}", Description));
         }
 
         public void Redo()
         {
             Do();
+            StatusMessage.SendWith(string.Format("Redo {0}", Description));
         }
 
         public void Do()

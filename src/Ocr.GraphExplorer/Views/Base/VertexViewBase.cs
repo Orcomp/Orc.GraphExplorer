@@ -45,10 +45,8 @@ namespace Orc.GraphExplorer.Views.Base
             this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this));
 
             ViewModelChanged += VertexViewBase_ViewModelChanged;
-
-            SupportParentViewModelContainers = true;
+            
             CloseViewModelOnUnloaded = false;
-
         }
 
 

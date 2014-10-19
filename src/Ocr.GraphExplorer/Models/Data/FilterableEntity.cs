@@ -6,6 +6,16 @@
 
     public class FilterableEntity
     {
+        public FilterableEntity(DataVertex vertex)
+        {
+            ID = vertex.ID;
+            Title = vertex.Title;
+            FirstName = vertex.Properties.Any(p => p.Key == "FirstName") ? vertex.Properties.First(p => p.Key == "FirstName").Value : string.Empty;
+            LastName = vertex.Properties.Any(p => p.Key == "LastName") ? vertex.Properties.First(p => p.Key == "LastName").Value : string.Empty;
+            Age = vertex.Properties.Any(p => p.Key == "Age" && IsInt(p.Value)) ? int.Parse((vertex.Properties.First(p => p.Key == "Age").Value)) : 0;
+            Vertex = vertex;
+        }
+
         public int ID { get; set; }
 
         public string Title { get; set; }
@@ -20,16 +30,7 @@
 
         public static IEnumerable<FilterableEntity> GenerateFilterableEntities(IEnumerable<DataVertex> vertices)
         {
-            var enumerable = vertices.Select(v =>
-                new FilterableEntity
-                {
-                    ID = v.ID,
-                    Title = v.Title,
-                    FirstName = v.Properties.Any(p => p.Key == "FirstName") ? v.Properties.First(p => p.Key == "FirstName").Value : string.Empty,
-                    LastName = v.Properties.Any(p => p.Key == "LastName") ? v.Properties.First(p => p.Key == "LastName").Value : string.Empty,
-                    Age = v.Properties.Any(p => p.Key == "Age" && IsInt(p.Value)) ? int.Parse((v.Properties.First(p => p.Key == "Age").Value)) : 0,
-                    Vertex = v
-                });
+            var enumerable = vertices.Select(v => new FilterableEntity(v));
 
             return enumerable;
         }

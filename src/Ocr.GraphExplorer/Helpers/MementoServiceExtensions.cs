@@ -11,6 +11,8 @@ namespace Orc.GraphExplorer.Helpers
     using Catel.Memento;
     using Operations.Interfaces;
 
+    using Orc.GraphExplorer.Messages;
+
     public static class MementoServiceExtensions
     {
         public static void ClearRedoBatches(this IMementoService mementoService)
@@ -33,6 +35,19 @@ namespace Orc.GraphExplorer.Helpers
             operation.Do();
             mementoService.ClearRedoBatches();
             mementoService.Add(operation);
+            if (string.IsNullOrEmpty(operation.Description))
+            {
+                return;
+            }
+
+            if (operation.Description.Length < 2)
+            {
+                StatusMessage.SendWith(operation.Description);
+            }
+
+            var firstLetter = operation.Description.Substring(0, 1);
+            var lastPart = operation.Description.Substring(1);
+            StatusMessage.SendWith(firstLetter.ToUpper() + lastPart);
         }
     }
 }

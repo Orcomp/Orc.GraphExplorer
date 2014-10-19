@@ -12,6 +12,8 @@ namespace Orc.GraphExplorer.Operations
     using Catel.Memento;
     using Interfaces;
 
+    using Orc.GraphExplorer.Messages;
+
     public class OperationsBatch : IOperation
     {
         public OperationsBatch()
@@ -27,11 +29,14 @@ namespace Orc.GraphExplorer.Operations
                 var operation = _operations[i];
                 operation.Undo();
             }
+
+            StatusMessage.SendWith(string.Format("Undo {0}", Description));
         }
 
         public void Redo()
         {
             Do();
+            StatusMessage.SendWith(string.Format("Redo {0}", Description));
         }
 
         public object Target { get; private set; }

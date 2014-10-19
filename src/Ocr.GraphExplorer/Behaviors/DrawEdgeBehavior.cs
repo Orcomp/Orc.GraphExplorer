@@ -16,16 +16,25 @@ namespace Orc.GraphExplorer.Behaviors
     using System.Windows.Media;
     using Catel.IoC;
     using Catel.MVVM.Views;
+    using Catel.Services;
+
     using Events;
     using GraphX.Controls;
     using GraphX.Models;
     using Models;
+
+    using Orc.GraphExplorer.Messages;
+
     using Views;
     using Views.Base;
 
-    // TODO: This behavior must be reviewed
+    // TODO: This class need to be reviewed
     public class DrawEdgeBehavior : Behavior<GraphAreaView>
     {
+        public DrawEdgeBehavior()
+        {
+        }
+
         #region Fields
         private EdgeView _edge;
 
@@ -113,11 +122,8 @@ namespace Orc.GraphExplorer.Behaviors
                         var dedge = new DataEdge(_startVertex.ViewModel.DataVertex, _fakeEndVertex);
                         AssociatedObject.ViewModel.Logic.Graph.AddVertex(_fakeEndVertex);
                         AssociatedObject.ViewModel.Logic.Graph.AddEdge(dedge);
-/*
 
-                        GraphExplorerViewModel.Status = GraphExplorerStatus.CreateLinkSelectTarget;
-                        GraphExplorerViewModel.PostStatusMessage("Select Target Node");
-*/
+                        StatusMessage.SendWith("Select Target Node");
                     }
 
                     else if (!Equals(_startVertex, args.VertexControl)) //finish draw

@@ -22,9 +22,9 @@ namespace Orc.GraphExplorer.Models
     {
         public Explorer(IMementoService mementoService)
         {
-            EditorToolset = new GraphToolset("Editor", mementoService);
+            EditorToolset = new GraphToolset("Editor", true, mementoService);
             
-            NavigatorToolset = new GraphToolset("Navigator", mementoService);
+            NavigatorToolset = new GraphToolset("Navigator", false, mementoService);
 
             ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
         }
@@ -79,5 +79,6 @@ namespace Orc.GraphExplorer.Models
 
             NavigatorToolset.Area.ReloadGraphArea(0);
         }
+
     }
 }

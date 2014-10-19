@@ -135,6 +135,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
+        [ViewModelToModel("DataEdge")]
         public bool IsVisible
         {
             get { return GetValue<bool>(IsVisibleProperty); }
@@ -144,7 +145,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsVisible property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof (bool), () => true);
+        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof (bool));
 
         /// <summary>
         /// Gets or sets the property value.

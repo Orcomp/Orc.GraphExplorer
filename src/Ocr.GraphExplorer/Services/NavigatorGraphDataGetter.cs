@@ -24,11 +24,9 @@ namespace Orc.GraphExplorer.Services
             
         }
 
-        public NavigatorGraphDataGetter(Graph graph/*, DataVertex dataVertex*/)
+        public NavigatorGraphDataGetter(Graph graph)
         {
             _graph = graph;
-
-           /* NavigateTo(dataVertex);*/
         }
 
         public IEnumerable<DataVertex> GetVerteces()
@@ -58,5 +56,6 @@ namespace Orc.GraphExplorer.Services
 
             _vertices = _graph.GetNeighbours(dataVertex).Concat(Enumerable.Repeat(dataVertex, 1));
         }
+
     }
 }

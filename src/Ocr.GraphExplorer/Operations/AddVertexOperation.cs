@@ -12,6 +12,8 @@ namespace Orc.GraphExplorer.Operations
     using Interfaces;
     using Models;
 
+    using Orc.GraphExplorer.Messages;
+
     public class AddVertexOperation : IOperation
     {
         private readonly GraphArea _graphArea;
@@ -26,16 +28,20 @@ namespace Orc.GraphExplorer.Operations
 
             Target = _graphArea;
             CanRedo = true;
+
+            Description = "add vertex";
         }
 
         public void Undo()
         {
             _graphArea.Logic.Graph.RemoveVertex(_dataVertex);
+            StatusMessage.SendWith(string.Format("Undo {0}", Description));
         }
 
         public void Redo()
         {
             Do();
+            StatusMessage.SendWith(string.Format("Redo {0}", Description));
         }
 
         public object Target { get; private set; }

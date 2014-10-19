@@ -9,6 +9,8 @@ namespace Orc.GraphExplorer.Operations
 {
     using Catel.Memento;
     using Interfaces;
+
+    using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;
 
     public class AddEdgeOperation : IOperation
@@ -22,16 +24,20 @@ namespace Orc.GraphExplorer.Operations
             _graphArea = graphArea;
             _edge = edge;
             CanRedo = true;
+            Description = "add egde";
         }
 
         public void Undo()
         {
             _graphArea.Logic.Graph.RemoveEdge(_edge);
+            StatusMessage.SendWith(string.Format("Undo {0}", Description));
         }
 
         public void Redo()
         {
             Do();
+
+            StatusMessage.SendWith(string.Format("Redo {0}", Description));
         }
 
         public object Target { get; private set; }

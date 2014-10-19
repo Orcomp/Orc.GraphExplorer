@@ -20,7 +20,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Models.Data;
 
-    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable
     {
         public GraphAreaViewModel()
         {
@@ -156,9 +156,7 @@ namespace Orc.GraphExplorer.ViewModels
             Area.AddVertex((DataVertex)dataObject.GetData(typeof(DataVertex)), position);
             if (ToolSetViewModel != null)
             {
-                ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
-                ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
-                ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+                ToolSetViewModel.UpdateEditingState();
             }
         }
 
@@ -173,22 +171,28 @@ namespace Orc.GraphExplorer.ViewModels
         public void RemoveEdge(DataEdge dataEdge)
         {
             Area.RemoveEdge(dataEdge);
-            ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
-            ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
-            ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.UpdateEditingState();
         }
 
         public void RemoveVertex(DataVertex dataVertex)
         {
             Area.RemoveVertex(dataVertex);
-            ToolSetViewModel.UndoCommand.RaiseCanExecuteChanged();
-            ToolSetViewModel.RedoCommand.RaiseCanExecuteChanged();
-            ToolSetViewModel.SaveChangesCommand.RaiseCanExecuteChanged();
+            ToolSetViewModel.UpdateEditingState();
         }
 
         public void NavigateTo(DataVertex dataVertex)
         {
             ToolSetViewModel.NavigateTo(dataVertex);
+        }
+
+        public bool CanNavigate { get { return !IsInEditing; } }
+
+        public void UpdateFilterSource()
+        {
+            if (ToolSetViewModel != null)
+            {
+                ToolSetViewModel.Toolset.Filter.UpdateFilterSource();
+            }
         }
     }
 }

@@ -181,6 +181,34 @@ namespace Orc.GraphExplorer.Models
         /// Register the Y property so it is known in the class.
         /// </summary>
         public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double), () => double.NaN);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return GetValue<bool>(IsVisibleProperty); }
+            set { SetValue(IsVisibleProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsVisible property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsEnabled
+        {
+            get { return GetValue<bool>(IsEnabledProperty); }
+            set { SetValue(IsEnabledProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsEnabled property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsEnabledProperty = RegisterProperty("IsEnabled", typeof(bool), () => true);
         #endregion // Properties
 
         public static bool IsFakeVertex(DataVertex vertex)

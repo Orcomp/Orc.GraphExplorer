@@ -9,12 +9,13 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Threading.Tasks;
     using System.Windows;
     using Behaviors.Interfaces;
     using Catel.Data;
     using Catel.Memento;
     using Catel.MVVM;
-
+    using Catel.Services;
     using GraphX.Controls;
     using Models.Data;
     using Orc.GraphExplorer.Messages;
@@ -24,14 +25,16 @@ namespace Orc.GraphExplorer.ViewModels
     public class GraphToolsetViewModel : ViewModelBase, IGraphNavigator
     {
         private readonly IMementoService _mementoService;
+        private readonly IMessageService _messageService;
 
         public GraphToolsetViewModel()
         {
             
         }
-        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService)
+        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService)
         {
             _mementoService = mementoService;
+            _messageService = messageService;
             Toolset = toolset;
 
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -42,7 +45,7 @@ namespace Orc.GraphExplorer.ViewModels
             RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);
 
             SaveChangesCommand = new Command(OnSaveChangesCommandExecute, OnSaveChangesCommandCanExecute);
-            RefreshCommand = new Command(OnRefreshCommandExecute);
+            RefreshCommand = new Command(() => OnRefreshCommandExecute());
         }
 
         /// <summary>
@@ -92,16 +95,18 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Method to invoke when the RefreshCommand command is executed.
         /// </summary>
-        private void OnRefreshCommandExecute()
+        private async Task OnRefreshCommandExecute()
         {
             if (IsInEditing && _mementoService.CanUndo)
             {
-                if (MessageBox.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                var messageResult = await _messageService.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageButton.YesNo);
+                if (messageResult == MessageResult.Yes)
                 {
+                    _mementoService.Clear();
                     IsInEditing = false;
                     IsDragEnabled = false;
-                  //  IsFilterApplied = false;
                     Area.ReloadGraphArea(600);
+                    StatusMessage.SendWith("Graph Refreshed");
                 }
             }
             else
@@ -130,7 +135,7 @@ namespace Orc.GraphExplorer.ViewModels
         private void OnSaveChangesCommandExecute()
         {
             Area.SaveChanges();
-            _mementoService.Clear();
+            
             IsInEditing = false;
         }
 
@@ -155,8 +160,7 @@ namespace Orc.GraphExplorer.ViewModels
         private void OnUndoCommandExecute()
         {
             _mementoService.Undo();
-            RedoCommand.RaiseCanExecuteChanged();
-            SaveChangesCommand.RaiseCanExecuteChanged();
+            UpdateEditingState();
         }
 
         /// <summary>
@@ -179,8 +183,7 @@ namespace Orc.GraphExplorer.ViewModels
         private void OnRedoCommandExecute()
         {
             _mementoService.Redo();
-            UndoCommand.RaiseCanExecuteChanged();
-            SaveChangesCommand.RaiseCanExecuteChanged();
+            UpdateEditingState();
         }
 
         /// <summary>
@@ -285,35 +288,6 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool));
 
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public ObservableCollection<FilterableEntity> FilterableEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilterableEntitiesProperty); }
-            set { SetValue(FilterableEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilterableEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilterableEntitiesProperty = RegisterProperty("FilterableEntities", typeof(ObservableCollection<FilterableEntity>));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public ObservableCollection<FilterableEntity> FilteredEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilteredEntitiesProperty); }
-            set { SetValue(FilteredEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilteredEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilteredEntitiesProperty = RegisterProperty("FilteredEntities", typeof(ObservableCollection<FilterableEntity>));
 
         /// <summary>
         /// Gets or sets the property value.
@@ -352,29 +326,84 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
+        /// Register the IsInEditing property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false, (sender, e) => ((GraphToolsetViewModel)sender).OnIsInEditingChanged());
+
+        /// <summary>
+        /// Called when the IsInEditing property has changed.
+        /// </summary>
+        private async Task OnIsInEditingChanged()
+        {
+            if (IsInEditing)
+            {                
+                StatusMessage.SendWith("Edit Mode");                
+            }
+            else
+            {
+                if (_mementoService.CanUndo)
+                {
+                    var messageResult = await _messageService.Show("Do you want to save changes?", "Confirmation", MessageButton.YesNoCancel, MessageImage.Question);
+                    if (messageResult == MessageResult.Yes)
+                    {
+                        Area.SaveChanges();
+                    }
+                    else if (messageResult == MessageResult.Cancel)
+                    {
+                        IsInEditing = true;
+                        return;
+                    }
+                    else
+                    {
+                        while (_mementoService.CanUndo)
+                        {
+                            _mementoService.Undo();
+                        }
+                    }
+                }
+                _mementoService.Clear();
+                UpdateEditingState();
+                StatusMessage.SendWith("Exit Edit Mode");
+            }
+            EditingStartStopMessage.SendWith(IsInEditing, ToolsetName);
+        }
+
+        public void UpdateEditingState()
+        {
+            IsDirty = _mementoService.CanUndo;
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+            SaveChangesCommand.RaiseCanExecuteChanged();
+        }
+
+        /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         public bool IsAddingNewEdge
         {
-            get
-            {
-                return GetValue<bool>(IsAddingNewEdgeProperty);
-            }
-            set
-            {
-                SetValue(IsAddingNewEdgeProperty, value);
-            }
+            get { return GetValue<bool>(IsAddingNewEdgeProperty); }
+            set { SetValue(IsAddingNewEdgeProperty, value); }
         }
 
         /// <summary>
         /// Register the IsAddingNewEdge property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsAddingNewEdgeProperty = RegisterProperty("IsAddingNewEdge", typeof(bool), () => false);
+        public static readonly PropertyData IsAddingNewEdgeProperty = RegisterProperty("IsAddingNewEdge", typeof(bool), () => false, (sender, e) => ((GraphToolsetViewModel)sender).OnIsAddingNewEdgeChanged());
 
         /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
+        /// Called when the IsAddingNewEdge property has changed.
         /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
+        private void OnIsAddingNewEdgeChanged()
+        {
+            if (IsAddingNewEdge)
+            {
+                StatusMessage.SendWith("Select Source Node");
+            }
+            else
+            {
+                StatusMessage.SendWith("Exit Create Link");
+            }
+        }        
 
 
         public void NavigateTo(DataVertex dataVertex)

@@ -52,38 +52,7 @@ namespace Orc.GraphExplorer.Models
             Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
             Logic.ResumeGraphReloading(graph);
-
-
         }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ObservableCollection<FilterableEntity> FilterableEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilterableEntitiesProperty); }
-            set { SetValue(FilterableEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilterableEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilterableEntitiesProperty = RegisterProperty("FilterableEntities", typeof(ObservableCollection<FilterableEntity>), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ObservableCollection<FilterableEntity> FilteredEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilteredEntitiesProperty); }
-            set { SetValue(FilteredEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilteredEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilteredEntitiesProperty = RegisterProperty("FilteredEntities", typeof(ObservableCollection<FilterableEntity>), null);
-
 
         /// <summary>
         /// Gets or sets the property value.
@@ -163,13 +132,13 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         private void OnLogicChanged()
         {
-            Logic.GraphReloaded += Logic_GraphReloaded;
+            //Logic.GraphReloaded += Logic_GraphReloaded;
         }
 
-        void Logic_GraphReloaded(object sender, Events.GraphEventArgs e)
+/*        void Logic_GraphReloaded(object sender, Events.GraphEventArgs e)
         {
             //throw new NotImplementedException();
-        }
+        }*/
 
         /// <summary>
         /// Gets or sets the property value.
@@ -247,6 +216,7 @@ namespace Orc.GraphExplorer.Models
         {
             _mementoService.ClearRedoBatches();
             var operations = new OperationsBatch();
+            operations.Description = "remove vertex";
             foreach (var edge in Logic.Graph.InEdges(vertex).Concat(Logic.Graph.OutEdges(vertex)).ToArray())
             {
                 operations.AddOperation(new RemoveEdgeOperation(this, edge));
