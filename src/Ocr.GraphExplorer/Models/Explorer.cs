@@ -11,20 +11,24 @@ namespace Orc.GraphExplorer.Models
     using System.Linq;
     using Behaviors.Interfaces;
     using Catel.Data;
+    using Catel.IoC;
     using Catel.Memento;
+    using Catel.Services;
     using Csv.Services;
     using Data;
     using GraphX.GraphSharp;
     using Messages;
     using Services;
+    using Services.Interfaces;
 
     public class Explorer : ModelBase, IGraphNavigator
     {
-        public Explorer(IMementoService mementoService)
+        public Explorer(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService)
         {
-            EditorToolset = new GraphToolset("Editor", true, mementoService);
-            
-            NavigatorToolset = new GraphToolset("Navigator", false, mementoService);
+            EditorToolset = new GraphToolset("Editor", true, mementoService, messageService);
+            NavigatorToolset = new GraphToolset("Navigator", false, mementoService, messageService);
+
+            Settings = new Settings(configLocationService);
 
             ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
         }
@@ -44,6 +48,20 @@ namespace Orc.GraphExplorer.Models
             }
             
         }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public Settings Settings
+        {
+            get { return GetValue<Settings>(SettingsProperty); }
+            set { SetValue(SettingsProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the Settings property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData SettingsProperty = RegisterProperty("Settings", typeof(Settings)   );
 
         /// <summary>
         /// Gets or sets the property value.

@@ -18,6 +18,7 @@ namespace Orc.GraphExplorer.Models
     using Catel.Data;
     using Messages;
     using Orc.GraphExplorer.Models.Data;
+    using QuickGraph;
 
     public class Filter : ModelBase
     {
@@ -40,16 +41,20 @@ namespace Orc.GraphExplorer.Models
 
         void _logic_GraphReloaded(object sender, Events.GraphEventArgs e)
         {
+            FilterableEntities.Clear();
+            FilterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(_logic.Graph.Vertices));
+
+            FilterEntities();
+            FilterEdges();
+        }
+
+        public void FilterEntities()
+        {
             if (!IsFilterApplied || !IsFilterEnabled)
             {
                 return;
             }
 
-            ApplyFilter();
-        }
-
-        public void ApplyFilter()
-        {
             foreach (var filterable in FilterableEntities.Except(FilteredEntities))
             {
                 ApplyFilterForEntity(filterable, false);
@@ -59,8 +64,6 @@ namespace Orc.GraphExplorer.Models
             {
                 ApplyFilterForEntity(filteredEntity, true);
             }
-
-            UpdateEdgesVisibility();
         }
 
         private void ApplyFilterForEntity(FilterableEntity entity, bool filtered)
@@ -68,16 +71,28 @@ namespace Orc.GraphExplorer.Models
             entity.Vertex.IsVisible = !IsHideVertexes || filtered;
         }
 
-        private void UpdateEdgesVisibility()
+        private void FilterEdges()
         {
+            if (!IsFilterApplied || !IsFilterEnabled)
+            {
+                return;
+            }
+            
             foreach (var dataEdge in _logic.Graph.Edges)
             {
                 DataEdge edge = dataEdge;
-                var sourceVertex = FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Source)); 
-                var targetVertex = FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Target));
-                bool filtered = sourceVertex != null && targetVertex != null;
+                bool filtered = true;
+                if(FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Source)) == null)
+                {
+                    filtered = false;
+                }
 
-                dataEdge.IsVisible = !IsHideVertexes || filtered;
+                if (filtered && FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Target)) == null)
+                {
+                    filtered = false;
+                }
+                
+                dataEdge.IsVisible = IsFilterApplied && IsFilterEnabled && !IsHideVertexes || filtered;
             }
         }
 
@@ -90,8 +105,7 @@ namespace Orc.GraphExplorer.Models
                     {
                         foreach (var item in e.NewItems.OfType<FilterableEntity>())
                         {
-                            ApplyFilterForEntity(item, true);
-                            UpdateEdgesVisibility();
+                            ApplyFilterForEntity(item, true);                            
                         }
                     }
                     break;
@@ -102,10 +116,13 @@ namespace Orc.GraphExplorer.Models
                 case NotifyCollectionChangedAction.Reset:
                     if (IsFilterEnabled)
                     {
-                        ApplyFilter();
+                        IsFilterApplied = true;
+                        FilterEntities();
                     }
                     break;
             }
+
+            FilterEdges();
         }
         
         void OnVertexAdded(DataVertex vertex)
@@ -152,10 +169,8 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         private void OnIsHideVertexesChanged()
         {
-            if (IsFilterEnabled)
-            {
-                ApplyFilter();
-            }
+            FilterEntities();                
+            FilterEdges();
         }
 
         /// <summary>

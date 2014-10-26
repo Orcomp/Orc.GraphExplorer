@@ -20,12 +20,13 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Models.Data;
 
-    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable/*, IEdgeDrwingCanvas*/
     {
         public GraphAreaViewModel()
         {
             
         }
+
 
         public GraphAreaViewModel(GraphArea area)
         {
@@ -151,13 +152,8 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         public void Drop(IDataObject dataObject, Point position)
-        {
-            
+        {            
             Area.AddVertex((DataVertex)dataObject.GetData(typeof(DataVertex)), position);
-            if (ToolSetViewModel != null)
-            {
-                ToolSetViewModel.UpdateEditingState();
-            }
         }
 
         public GraphToolsetViewModel ToolSetViewModel
@@ -171,13 +167,11 @@ namespace Orc.GraphExplorer.ViewModels
         public void RemoveEdge(DataEdge dataEdge)
         {
             Area.RemoveEdge(dataEdge);
-            ToolSetViewModel.UpdateEditingState();
         }
 
         public void RemoveVertex(DataVertex dataVertex)
         {
             Area.RemoveVertex(dataVertex);
-            ToolSetViewModel.UpdateEditingState();
         }
 
         public void NavigateTo(DataVertex dataVertex)

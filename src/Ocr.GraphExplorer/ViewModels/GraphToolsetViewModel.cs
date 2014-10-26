@@ -7,6 +7,7 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Orc.GraphExplorer.ViewModels
         {
             
         }
+
         public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService)
         {
             _mementoService = mementoService;
@@ -45,7 +47,17 @@ namespace Orc.GraphExplorer.ViewModels
             RedoCommand = new Command(OnRedoCommandExecute, OnRedoCommandCanExecute);
 
             SaveChangesCommand = new Command(OnSaveChangesCommandExecute, OnSaveChangesCommandCanExecute);
-            RefreshCommand = new Command(() => OnRefreshCommandExecute());
+            RefreshCommand = new Command(OnRefreshCommandExecute);
+
+            GraphChangedMessage.Register(this, OnAreaChangedMessage);
+        }
+
+        private void OnAreaChangedMessage(GraphChangedMessage message)
+        {
+            IsChanged = message.Data;
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+            SaveChangesCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -95,24 +107,9 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Method to invoke when the RefreshCommand command is executed.
         /// </summary>
-        private async Task OnRefreshCommandExecute()
+        private void OnRefreshCommandExecute()
         {
-            if (IsInEditing && _mementoService.CanUndo)
-            {
-                var messageResult = await _messageService.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageButton.YesNo);
-                if (messageResult == MessageResult.Yes)
-                {
-                    _mementoService.Clear();
-                    IsInEditing = false;
-                    IsDragEnabled = false;
-                    Area.ReloadGraphArea(600);
-                    StatusMessage.SendWith("Graph Refreshed");
-                }
-            }
-            else
-            {
-                Area.ReloadGraphArea(600);
-            }
+            Toolset.Refresh();
         }
 
         /// <summary>
@@ -134,9 +131,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveChangesCommandExecute()
         {
-            Area.SaveChanges();
-            
-            IsInEditing = false;
+            Area.SaveChanges();                        
         }
 
         /// <summary>
@@ -159,8 +154,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnUndoCommandExecute()
         {
-            _mementoService.Undo();
-            UpdateEditingState();
+            Toolset.Undo();           
         }
 
         /// <summary>
@@ -174,7 +168,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
         private bool OnRedoCommandCanExecute()
         {
-            return _mementoService.CanRedo;
+            return Toolset.CanRedo;
         }
 
         /// <summary>
@@ -182,8 +176,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnRedoCommandExecute()
         {
-            _mementoService.Redo();
-            UpdateEditingState();
+            Toolset.Redo();            
         }
 
         /// <summary>
@@ -328,53 +321,22 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsInEditing property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false, (sender, e) => ((GraphToolsetViewModel)sender).OnIsInEditingChanged());
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool));       
 
         /// <summary>
-        /// Called when the IsInEditing property has changed.
+        /// Gets or sets the property value.
         /// </summary>
-        private async Task OnIsInEditingChanged()
+        [ViewModelToModel("Toolset")]
+        public bool IsChanged
         {
-            if (IsInEditing)
-            {                
-                StatusMessage.SendWith("Edit Mode");                
-            }
-            else
-            {
-                if (_mementoService.CanUndo)
-                {
-                    var messageResult = await _messageService.Show("Do you want to save changes?", "Confirmation", MessageButton.YesNoCancel, MessageImage.Question);
-                    if (messageResult == MessageResult.Yes)
-                    {
-                        Area.SaveChanges();
-                    }
-                    else if (messageResult == MessageResult.Cancel)
-                    {
-                        IsInEditing = true;
-                        return;
-                    }
-                    else
-                    {
-                        while (_mementoService.CanUndo)
-                        {
-                            _mementoService.Undo();
-                        }
-                    }
-                }
-                _mementoService.Clear();
-                UpdateEditingState();
-                StatusMessage.SendWith("Exit Edit Mode");
-            }
-            EditingStartStopMessage.SendWith(IsInEditing, ToolsetName);
+            get { return GetValue<bool>(IsChangedProperty); }
+            set { SetValue(IsChangedProperty, value); }
         }
 
-        public void UpdateEditingState()
-        {
-            IsDirty = _mementoService.CanUndo;
-            UndoCommand.RaiseCanExecuteChanged();
-            RedoCommand.RaiseCanExecuteChanged();
-            SaveChangesCommand.RaiseCanExecuteChanged();
-        }
+        /// <summary>
+        /// Register the IsChanged property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
 
         /// <summary>
         /// Gets or sets the property value.

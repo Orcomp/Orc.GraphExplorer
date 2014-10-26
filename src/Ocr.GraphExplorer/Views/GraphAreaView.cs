@@ -70,7 +70,6 @@ namespace Orc.GraphExplorer.Views
 
         private void OnLoadFromXmlMessage(LoadFromXmlMessage message)
         {
-            // TODO: test and fix it
             ClearLayout();
             LoadFromFile(message.Data);
             RelayoutGraph();

@@ -18,6 +18,7 @@ public static class ModuleInitializer
     public static void Initialize()
     {
         var serviceLocator = ServiceLocator.Default;
+        serviceLocator.RegisterType<IConfigLocationService, ConfigLocationService>();    
         serviceLocator.RegisterType<IGraphControlFactory, CustomGraphControlFactory>();
         serviceLocator.RegisterType(typeof(IGraphDataGetter), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv);
         serviceLocator.RegisterType<IMementoService, MementoService>();

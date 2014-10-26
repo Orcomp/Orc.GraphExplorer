@@ -11,14 +11,16 @@ namespace Orc.GraphExplorer.Models
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
 
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
-
+    using Catel.Services;
     using Csv.Services;
     using Helpers;
+    using Messages;
     using Operations;
     using Orc.GraphExplorer.Models.Data;
     using Orc.GraphExplorer.Services.Interfaces;
@@ -29,10 +31,12 @@ namespace Orc.GraphExplorer.Models
     public class GraphArea : ModelBase
     {
         private readonly IMementoService _mementoService;
+        private readonly IMessageService _messageService;
 
-        public GraphArea(string toolsetName, IMementoService mementoService)
+        public GraphArea(string toolsetName, IMementoService mementoService, IMessageService messageService)
         {
             _mementoService = mementoService;
+            _messageService = messageService;
             ToolsetName = toolsetName;
 
             Logic = new GraphLogic();   
@@ -135,11 +139,6 @@ namespace Orc.GraphExplorer.Models
             //Logic.GraphReloaded += Logic_GraphReloaded;
         }
 
-/*        void Logic_GraphReloaded(object sender, Events.GraphEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }*/
-
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -180,13 +179,53 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Register the IsInEditing property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false);
+        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false, (sender, e) => ((GraphArea)sender).OnIsInEditingChanged());
 
+        /// <summary>
+        /// Called when the IsInEditing property has changed.
+        /// </summary>
+        private async Task OnIsInEditingChanged()
+        {
+            if (IsInEditing)
+            {
+                StatusMessage.SendWith("Edit Mode");
+            }
+            else
+            {
+                if (_mementoService.CanUndo)
+                {
+                    var messageResult = await _messageService.Show("Do you want to save changes?", "Confirmation", MessageButton.YesNoCancel, MessageImage.Question);
+                    if (messageResult == MessageResult.Yes)
+                    {
+                        SaveChanges();
+                    }
+                    else if (messageResult == MessageResult.Cancel)
+                    {
+                        IsInEditing = true;
+                        return;
+                    }
+                    else
+                    {
+                        while (_mementoService.CanUndo)
+                        {
+                            _mementoService.Undo();
+                        }
+                    }
+                }
+                _mementoService.Clear();
+
+                GraphChangedMessage.SendWith(_mementoService.CanUndo);
+
+                StatusMessage.SendWith("Exit Edit Mode");
+            }
+            EditingStartStopMessage.SendWith(IsInEditing, ToolsetName);
+        }
 
         public void AddVertex(DataVertex dataVertex, Point point)
         {
             var operation = new AddVertexOperation(this, dataVertex, point);
             _mementoService.Do(operation);
+            GraphChangedMessage.SendWith(_mementoService.CanUndo);
         }
 
         public void AddEdge(DataVertex startVertex, DataVertex endVertex)
@@ -204,19 +243,21 @@ namespace Orc.GraphExplorer.Models
             }
 
             GraphDataSaver.SaveChanges(Logic.Graph);
+
+            IsInEditing = false;
         }
 
         public void RemoveEdge(DataEdge edge)
         {
             var operation = new RemoveEdgeOperation(this, edge);
             _mementoService.Do(operation);
+            GraphChangedMessage.SendWith(_mementoService.CanUndo);
         }
 
         public void RemoveVertex(DataVertex vertex)
         {
             _mementoService.ClearRedoBatches();
-            var operations = new OperationsBatch();
-            operations.Description = "remove vertex";
+            var operations = new OperationsBatch {Description = "remove vertex"};
             foreach (var edge in Logic.Graph.InEdges(vertex).Concat(Logic.Graph.OutEdges(vertex)).ToArray())
             {
                 operations.AddOperation(new RemoveEdgeOperation(this, edge));
@@ -224,6 +265,7 @@ namespace Orc.GraphExplorer.Models
 
             operations.AddOperation(new RemoveVertexOperation(this, vertex));
             _mementoService.Do(operations);
+            GraphChangedMessage.SendWith(_mementoService.CanUndo);
         }
     }
 }

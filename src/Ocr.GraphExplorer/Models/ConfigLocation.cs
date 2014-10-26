@@ -1,0 +1,92 @@
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="FilePicker.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+namespace Orc.GraphExplorer.Models
+{
+    using System.Configuration;
+    using Catel.Data;
+    using Catel.MVVM;
+    using Messages;
+    using Microsoft.Win32;
+    using Services.Interfaces;
+
+    public class ConfigLocation : ModelBase
+    {
+        private readonly IConfigLocationService _configLocationService;
+
+        public ConfigLocation(IConfigLocationService configLocationService)
+        {
+            _configLocationService = configLocationService;
+        }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public string RelationshipsFile
+        {
+            get { return GetValue<string>(RelationshipsFileProperty); }
+            set { SetValue(RelationshipsFileProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the RelationshipsFile property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData RelationshipsFileProperty = RegisterProperty("RelationshipsFile", typeof(string), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public string PropertiesFile
+        {
+            get { return GetValue<string>(PropertiesFileProperty); }
+            set { SetValue(PropertiesFileProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the PropertiesFile property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData PropertiesFileProperty = RegisterProperty("PropertiesFile", typeof(string), null);
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool? EnableProperty
+        {
+            get { return GetValue<bool?>(EnablePropertyProperty); }
+            set { SetValue(EnablePropertyProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the EnableProperty property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData EnablePropertyProperty = RegisterProperty("EnableProperty", typeof(bool?), null);
+
+        public void Save()
+        {
+            _configLocationService.Save(this);
+            SettingsChangedMessage.SendWith(true);
+        }
+
+        public void ChangeRelationshipsFileLOcation()
+        {
+            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = "Select Relationship File" };
+            if (dlg.ShowDialog() == true)
+            {
+                RelationshipsFile = dlg.FileName;
+            }        
+        }
+
+        public void ChangePropertiesFileLOcation()
+        {
+            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = "Select Properties File" };
+            if (dlg.ShowDialog() == true)
+            {
+                PropertiesFile = dlg.FileName;
+            }
+        }
+    }
+}

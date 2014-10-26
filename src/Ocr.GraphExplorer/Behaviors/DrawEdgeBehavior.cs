@@ -21,6 +21,7 @@ namespace Orc.GraphExplorer.Behaviors
     using Events;
     using GraphX.Controls;
     using GraphX.Models;
+    using Helpers;
     using Models;
 
     using Orc.GraphExplorer.Messages;
@@ -52,11 +53,7 @@ namespace Orc.GraphExplorer.Behaviors
             {
                 if (_zoomControl == null)
                 {
-                    var toolsetView = ServiceLocator.Default.ResolveType<IViewManager>().GetViewsOfViewModel(AssociatedObject.ViewModel.ToolSetViewModel).OfType<GraphToolsetView>().FirstOrDefault();
-                    if (toolsetView != null)
-                    {
-                        _zoomControl = toolsetView.ZoomControl;
-                    }
+                    _zoomControl = AssociatedObject.FindFirstParentOfType<ZoomControl>();
                 }
 
                 return _zoomControl;

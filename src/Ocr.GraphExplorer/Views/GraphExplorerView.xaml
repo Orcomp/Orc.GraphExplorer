@@ -34,7 +34,7 @@
                                    Text="Overrall"
                                    VerticalAlignment="Center" />
                         <TextBlock Text=" *"
-                                   VerticalAlignment="Center" Visibility="{Binding Path=EditorToolset.IsDirty, Converter={StaticResource BooleanToHidingVisibilityConverter}}"/>
+                                   VerticalAlignment="Center" Visibility="{Binding IsChanged, Converter={StaticResource BooleanToHidingVisibilityConverter}}"/>
                     </StackPanel>
                 </TabItem.Header>
                 <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.EditorToolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
@@ -58,5 +58,15 @@
                 <views:GraphToolsetView DataContext="{Binding Path=DataContext.Explorer.NavigatorToolset, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
             </TabItem>
         </catel:TabControl>
+        <Button Height="22" Width="22" Margin="2,1" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource SettingButtonStyle}" ToolTip="Open Setting"
+                Command ="{Binding OpenSettingsCommand}" />
+        <views:SettingView Grid.RowSpan="3" Visibility="{Binding IsSettingsVisible, Mode=TwoWay, Converter={StaticResource BooleanToHidingVisibilityConverter}}" Margin="-1" 
+                           DataContext="{Binding Path=DataContext.Explorer.Settings, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SettingApplied">
+                    <catel:EventToCommand Command="{Binding SettingAppliedCommand}" DisableAssociatedObjectOnCannotExecute="False" PassEventArgsToCommand="True" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </views:SettingView>
     </Grid>
 </catel:UserControl>

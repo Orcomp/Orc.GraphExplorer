@@ -176,8 +176,6 @@ namespace Orc.GraphExplorer.Views.Base
                 logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
                 logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
             }
-
-            //     DataContext = ViewModel;
         }
 
         void GraphAreaViewBase_ViewModelChanged(object sender, EventArgs e)
