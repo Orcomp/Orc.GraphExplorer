@@ -71,22 +71,26 @@ namespace Orc.GraphExplorer.Models
             SettingsChangedMessage.SendWith(true);
         }
 
-        public void ChangeRelationshipsFileLOcation()
+        public void ChangeRelationshipsFileLocation()
         {
-            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = "Select Relationship File" };
-            if (dlg.ShowDialog() == true)
+            var rellationshipsFile = _configLocationService.OpenRelationshipsFile();
+            if (string.IsNullOrEmpty(rellationshipsFile))
             {
-                RelationshipsFile = dlg.FileName;
-            }        
+                return;
+            }
+
+            RelationshipsFile = rellationshipsFile;
         }
 
-        public void ChangePropertiesFileLOcation()
+        public void ChangePropertiesFileLocation()
         {
-            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = "Select Properties File" };
-            if (dlg.ShowDialog() == true)
+            var propertiesFile = _configLocationService.OpenPropertiesFile();
+            if (string.IsNullOrEmpty(propertiesFile))
             {
-                PropertiesFile = dlg.FileName;
+                return;
             }
+
+            PropertiesFile = propertiesFile;           
         }
     }
 }

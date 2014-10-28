@@ -104,7 +104,7 @@ namespace Orc.GraphExplorer.Models
                     if (IsFilterEnabled)
                     {
                         foreach (var item in e.NewItems.OfType<FilterableEntity>())
-                        {
+                        {       
                             ApplyFilterForEntity(item, true);                            
                         }
                     }
@@ -122,7 +122,7 @@ namespace Orc.GraphExplorer.Models
                     break;
             }
 
-            FilterEdges();
+            FilterEdges();            
         }
         
         void OnVertexAdded(DataVertex vertex)

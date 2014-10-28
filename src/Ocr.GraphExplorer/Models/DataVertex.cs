@@ -23,13 +23,14 @@ namespace Orc.GraphExplorer.Models
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataVertex : ModelBase, IGraphXVertex
     {
+        public const int FakeVertexId = -666;
         #region Constructors
         /// <summary>
         /// Default constructor for this class
         /// (required for serialization).
         /// </summary>
         private DataVertex()
-            : this(-666)
+            : this(FakeVertexId)
         {
         }
 
@@ -43,7 +44,7 @@ namespace Orc.GraphExplorer.Models
         private static int _maxId = 0;
         public static DataVertex CreateFakeVertex()
         {
-            return new DataVertex(-666);
+            return new DataVertex(FakeVertexId);
         }
 
         public static DataVertex Create()
@@ -198,7 +199,7 @@ namespace Orc.GraphExplorer.Models
 
         public static bool IsFakeVertex(DataVertex vertex)
         {
-            return vertex.ID == -666;
+            return vertex.ID == FakeVertexId;
         }
     }
 }

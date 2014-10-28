@@ -39,5 +39,26 @@
 
             GraphExplorerSection.Current.Save();
         }
+
+        public string OpenRelationshipsFile()
+        {
+            return OpenFile("Select Relationship File");
+        }
+
+        public string OpenPropertiesFile()
+        {
+            return OpenFile("Select Properties File");
+        }
+
+        private string OpenFile(string title)
+        {
+            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = title };
+            if (dlg.ShowDialog() == true)
+            {
+                return dlg.FileName;
+            }
+
+            return string.Empty;
+        }
     }
 }

@@ -96,6 +96,8 @@ namespace Orc.GraphExplorer.Models
             ((IGraphNavigator)NavigatorToolset.Area.GraphDataGetter).NavigateTo(dataVertex);
 
             NavigatorToolset.Area.ReloadGraphArea(0);
+
+            NavigatorToolset.Refresh();
         }
 
     }

@@ -42,7 +42,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnChangeRelationshipsExecute()
         {
-            ConfigLocation.ChangeRelationshipsFileLOcation();
+            ConfigLocation.ChangeRelationshipsFileLocation();
         }
 
 
@@ -56,7 +56,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnChangePropertiesExecute()
         {
-            ConfigLocation.ChangePropertiesFileLOcation();            
+            ConfigLocation.ChangePropertiesFileLocation();            
         }
 
         /// <summary>

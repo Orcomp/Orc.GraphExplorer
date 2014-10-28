@@ -15,5 +15,9 @@ namespace Orc.GraphExplorer.Services.Interfaces
 
         void Save(ConfigLocation configLocation);
 /*        string ChangeRelationshipsFileLocation();*/
+
+        string OpenRelationshipsFile();
+
+        string OpenPropertiesFile();
     }
 }
