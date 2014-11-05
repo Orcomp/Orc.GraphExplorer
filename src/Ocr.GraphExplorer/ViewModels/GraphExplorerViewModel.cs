@@ -44,6 +44,12 @@ namespace Orc.GraphExplorer.ViewModels
             }
         }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+            IsEditorTabSelected = true;
+        }
+
         /// <summary>
         /// Gets the OpenSettingsCommand command.
         /// </summary>
@@ -189,7 +195,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Register the IsEditorTabSelected property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsEditorTabSelectedProperty = RegisterProperty("IsEditorTabSelected", typeof (bool), () => true);
+        public static readonly PropertyData IsEditorTabSelectedProperty = RegisterProperty("IsEditorTabSelected", typeof (bool), () => false);
 
         public void NavigateTo(DataVertex dataVertex)
         {

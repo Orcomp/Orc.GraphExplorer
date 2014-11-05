@@ -43,6 +43,14 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public int ID { get; set; }
 
+        public bool IsFiltered 
+        {
+            get
+            {
+                return Source != null && Target != null && (Source.IsFiltered && Target.IsFiltered);                 
+            }
+        }
+
         /// <summary>
         /// Returns true if Source vertex equals Target vertex
         /// </summary>

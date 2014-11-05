@@ -96,6 +96,20 @@ namespace Orc.GraphExplorer.Models
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsFiltered
+        {
+            get { return GetValue<bool>(IsFilteredProperty); }
+            set { SetValue(IsFilteredProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsFiltered property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsFilteredProperty = RegisterProperty("IsFiltered", typeof(bool), () => true);
+
         public object Tag { get; set; }
 
         /// <summary>

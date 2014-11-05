@@ -43,14 +43,11 @@ namespace Orc.GraphExplorer.Models
         {
             FilterableEntities.Clear();
             FilterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(_logic.Graph.Vertices));
-
-            FilterEntities();
-            FilterEdges();
         }
 
         public void FilterEntities()
         {
-            if (!IsFilterApplied || !IsFilterEnabled)
+            if (!IsFilterEnabled)
             {
                 return;
             }
@@ -68,31 +65,21 @@ namespace Orc.GraphExplorer.Models
 
         private void ApplyFilterForEntity(FilterableEntity entity, bool filtered)
         {
+            entity.Vertex.IsFiltered = filtered;
             entity.Vertex.IsVisible = !IsHideVertexes || filtered;
+            FilterEdges();
         }
 
         private void FilterEdges()
         {
-            if (!IsFilterApplied || !IsFilterEnabled)
+            if (!IsFilterEnabled)
             {
                 return;
             }
-            
+
             foreach (var dataEdge in _logic.Graph.Edges)
             {
-                DataEdge edge = dataEdge;
-                bool filtered = true;
-                if(FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Source)) == null)
-                {
-                    filtered = false;
-                }
-
-                if (filtered && FilteredEntities.FirstOrDefault(x => x.Vertex.Equals(edge.Target)) == null)
-                {
-                    filtered = false;
-                }
-                
-                dataEdge.IsVisible = IsFilterApplied && IsFilterEnabled && !IsHideVertexes || filtered;
+                dataEdge.IsVisible = dataEdge.IsFiltered;
             }
         }
 
@@ -103,9 +90,21 @@ namespace Orc.GraphExplorer.Models
                 case NotifyCollectionChangedAction.Add:
                     if (IsFilterEnabled)
                     {
-                        foreach (var item in e.NewItems.OfType<FilterableEntity>())
-                        {       
-                            ApplyFilterForEntity(item, true);                            
+                        if (IsFilterApplied && FilteredEntities.Count == FilterableEntities.Count)
+                        {
+                            IsFilterApplied = false;
+                        }
+                        else if (!IsFilterApplied && FilteredEntities.Count != FilterableEntities.Count)
+                        {
+                            IsFilterApplied = true;
+                        }
+
+                        if (IsFilterApplied && IsFilterEnabled)
+                        {
+                            foreach (var item in e.NewItems.OfType<FilterableEntity>())
+                            {       
+                                ApplyFilterForEntity(item, true);                            
+                            }
                         }
                     }
                     break;
@@ -116,13 +115,10 @@ namespace Orc.GraphExplorer.Models
                 case NotifyCollectionChangedAction.Reset:
                     if (IsFilterEnabled)
                     {
-                        IsFilterApplied = true;
-                        FilterEntities();
+                        IsFilterApplied = false;
                     }
                     break;
-            }
-
-            FilterEdges();            
+            }         
         }
         
         void OnVertexAdded(DataVertex vertex)
@@ -169,8 +165,11 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         private void OnIsHideVertexesChanged()
         {
-            FilterEntities();                
-            FilterEdges();
+            if (IsFilterEnabled && IsFilterApplied)
+            {
+                FilterEntities();
+                FilterEdges();
+            }                            
         }
 
         /// <summary>
@@ -185,7 +184,29 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Register the IsFilterApplied property so it is known in the class.
         /// </summary>
-        public static readonly PropertyData IsFilterAppliedProperty = RegisterProperty("IsFilterApplied", typeof(bool), null);
+        public static readonly PropertyData IsFilterAppliedProperty = RegisterProperty("IsFilterApplied", typeof(bool), null, (sender, args) => ((Filter)sender).OnIsFilterAppliedChanged());
+
+        private void OnIsFilterAppliedChanged()
+        {
+            if (IsFilterApplied)
+            {
+                FilterEntities();
+                FilterEdges();
+            }
+            else
+            {
+                foreach (var filterableEntity in FilterableEntities)
+                {
+                    filterableEntity.Vertex.IsFiltered = true;
+                    filterableEntity.Vertex.IsVisible = true;
+                }
+
+                foreach (var dataEdge in _logic.Graph.Edges)
+                {
+                    dataEdge.IsVisible = true;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the property value.
