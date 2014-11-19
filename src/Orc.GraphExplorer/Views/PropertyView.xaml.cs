@@ -16,7 +16,6 @@ namespace Orc.GraphExplorer.Views
 {
     using Catel.MVVM;
 
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
 
     /// <summary>

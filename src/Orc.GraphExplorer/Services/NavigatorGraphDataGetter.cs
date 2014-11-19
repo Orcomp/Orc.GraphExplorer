@@ -9,9 +9,8 @@ namespace Orc.GraphExplorer.Services
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Behaviors.Interfaces;
+    using Behaviors;
     using GraphX.GraphSharp;
-    using Interfaces;
     using Models;
     using Models.Data;
 

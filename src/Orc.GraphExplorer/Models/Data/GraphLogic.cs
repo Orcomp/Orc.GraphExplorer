@@ -13,8 +13,6 @@ namespace Orc.GraphExplorer.Models.Data
     using Events;
     using GraphX.Logic;
 
-    using Orc.GraphExplorer.Services.Interfaces;
-
     public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>
     {
         public GraphLogic()

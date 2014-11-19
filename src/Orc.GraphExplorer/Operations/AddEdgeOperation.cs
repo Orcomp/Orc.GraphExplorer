@@ -8,7 +8,6 @@
 namespace Orc.GraphExplorer.Operations
 {
     using Catel.Memento;
-    using Interfaces;
 
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;

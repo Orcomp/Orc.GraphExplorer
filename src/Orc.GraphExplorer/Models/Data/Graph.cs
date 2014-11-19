@@ -2,9 +2,9 @@
 {
     using System;
 
-    using Orc.GraphExplorer.Services.Interfaces;
 
     using QuickGraph;
+    using Services;
 
     public class Graph : BidirectionalGraph<DataVertex, DataEdge>
     {

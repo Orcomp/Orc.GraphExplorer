@@ -17,11 +17,10 @@ namespace Orc.GraphExplorer.Behaviors
     using Catel.IoC;
     using Catel.MVVM.Views;
     using Catel.Services;
-
+    using Catel.Windows.Interactivity;
     using Events;
     using GraphX.Controls;
     using GraphX.Models;
-    using Helpers;
     using Models;
 
     using Orc.GraphExplorer.Messages;
@@ -30,7 +29,7 @@ namespace Orc.GraphExplorer.Behaviors
     using Views.Base;
 
     // TODO: This class need to be reviewed
-    public class DrawEdgeBehavior : Behavior<GraphAreaView>
+    public class DrawEdgeBehavior : BehaviorBase<GraphAreaView>
     {
         public DrawEdgeBehavior()
         {
@@ -62,9 +61,9 @@ namespace Orc.GraphExplorer.Behaviors
         #endregion
 
         #region Methods
-        protected override void OnAttached()
+        protected override void OnAssociatedObjectLoaded()
         {
-            base.OnAttached();
+            base.OnAssociatedObjectLoaded();
             AssociatedObject.VertexSelected += AssociatedObject_VertexSelected;
             AssociatedObject.TemporaryEdgeCreated += AssociatedObject_TemporaryEdgeCreated;
             AssociatedObject.ViewModelChanged += AssociatedObject_ViewModelChanged;
@@ -89,7 +88,10 @@ namespace Orc.GraphExplorer.Behaviors
         private void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeViewCreatedAventArgs e)
         {
             _edge = e.EdgeViewBase as EdgeView;
-            _edge.SetEdgePathManually(_pathGeometry);
+            if (_edge != null)
+            {
+                _edge.SetEdgePathManually(_pathGeometry);
+            }
         }
 
         private void AssociatedObject_VertexSelected(object sender, VertexSelectedEventArgs args)

@@ -17,7 +17,6 @@ namespace Orc.GraphExplorer.Views
 
     using GraphX;
 
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
     using Orc.GraphExplorer.Views.Base;
 

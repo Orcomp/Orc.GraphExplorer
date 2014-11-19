@@ -9,7 +9,7 @@ namespace Orc.GraphExplorer.Models
 {
     using System;
     using System.Linq;
-    using Behaviors.Interfaces;
+    using Behaviors;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -19,7 +19,6 @@ namespace Orc.GraphExplorer.Models
     using GraphX.GraphSharp;
     using Messages;
     using Services;
-    using Services.Interfaces;
 
     public class Explorer : ModelBase, IGraphNavigator
     {

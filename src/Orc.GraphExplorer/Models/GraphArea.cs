@@ -19,11 +19,9 @@ namespace Orc.GraphExplorer.Models
     using Catel.Memento;
     using Catel.Services;
     using Csv.Services;
-    using Helpers;
     using Messages;
     using Operations;
     using Orc.GraphExplorer.Models.Data;
-    using Orc.GraphExplorer.Services.Interfaces;
     using Orc.GraphExplorer.Views;
 
     using Services;

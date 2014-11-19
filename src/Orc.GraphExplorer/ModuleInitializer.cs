@@ -1,10 +1,10 @@
 ﻿using Catel.IoC;
 
+using Orc.GraphExplorer;
 using Orc.GraphExplorer.Csv.Services;
-using Orc.GraphExplorer.Services.Interfaces;
 using Orc.GraphExplorer.Services;
 using GraphX.Controls.Models;
-using Orc.GraphExplorer.Enums;
+
 using Catel.Memento;
 
 /// <summary>

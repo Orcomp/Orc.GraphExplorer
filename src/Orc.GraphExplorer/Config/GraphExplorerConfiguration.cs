@@ -8,7 +8,7 @@ using System.Text;
 namespace Orc.GraphExplorer
 {
     using Config;
-    using Orc.GraphExplorer.Enums;
+
 
     public class GraphExplorerSection : ConfigurationSection
     {

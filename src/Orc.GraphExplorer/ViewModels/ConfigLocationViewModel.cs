@@ -17,8 +17,6 @@ namespace Orc.GraphExplorer.ViewModels
     using Microsoft.Win32;
     using Models;
 
-    using Orc.GraphExplorer.Services.Interfaces;
-
     public class ConfigLocationViewModel : ViewModelBase
     {
     

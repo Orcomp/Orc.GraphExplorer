@@ -22,7 +22,6 @@ namespace Orc.GraphExplorer.Views
     using Catel.MVVM;
     using Models;
     using Orc.FilterBuilder.ViewModels;
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
 
     /// <summary>

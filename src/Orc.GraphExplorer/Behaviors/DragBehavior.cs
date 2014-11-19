@@ -14,14 +14,15 @@ namespace Orc.GraphExplorer.Behaviors
 
     using Catel.MVVM.Converters;
     using Catel.MVVM.Views;
-    using Interfaces;
+    using Catel.Windows.Interactivity;
+    using DragDrop = System.Windows.DragDrop;
 
-    public class DragBehavior : Behavior<FrameworkElement>
+    public class DragBehavior : BehaviorBase<FrameworkElement>
     {
         #region Methods
-        protected override void OnAttached()
+        protected override void OnAssociatedObjectLoaded()
         {
-            base.OnAttached();
+            base.OnAssociatedObjectLoaded();
             AssociatedObject.PreviewMouseLeftButtonDown += AssociatedObject_PreviewMouseLeftButtonDown;
         }
 

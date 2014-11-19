@@ -10,7 +10,6 @@ namespace Orc.GraphExplorer.Operations
     using System.Collections.Generic;
     using System.Windows;
     using Catel.Memento;
-    using Interfaces;
     using Models;
 
     using Orc.GraphExplorer.Messages;

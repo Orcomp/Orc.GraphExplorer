@@ -15,7 +15,6 @@ namespace Orc.GraphExplorer.Views
     using Catel.MVVM.Views;
     using GraphX;
 
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.ViewModels;
 
     public class EdgeView : EdgeViewBase

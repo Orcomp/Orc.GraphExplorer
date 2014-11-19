@@ -5,12 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Helpers
+namespace Orc.GraphExplorer
 {
     using System.Linq;
     using Catel.Memento;
-    using Operations.Interfaces;
-
+    using Operations;
     using Orc.GraphExplorer.Messages;
 
     public static class MementoServiceExtensions

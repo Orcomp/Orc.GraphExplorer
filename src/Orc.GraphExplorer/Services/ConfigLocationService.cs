@@ -3,7 +3,6 @@
     using System.Configuration;
     using Microsoft.Win32;
     using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Services.Interfaces;
 
     class ConfigLocationService : IConfigLocationService
     {

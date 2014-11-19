@@ -12,7 +12,7 @@ namespace Orc.GraphExplorer.Models
     using Catel.MVVM;
     using Messages;
     using Microsoft.Win32;
-    using Services.Interfaces;
+    using Services;
 
     public class ConfigLocation : ModelBase
     {

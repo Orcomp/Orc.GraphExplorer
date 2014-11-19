@@ -14,7 +14,7 @@ namespace Orc.GraphExplorer.Csv.Services
     using Config;
     using CsvHelper;
     using Data;
-    using GraphExplorer.Services.Interfaces;
+    using GraphExplorer.Services;
     using Models;
     using Models.Data;
 

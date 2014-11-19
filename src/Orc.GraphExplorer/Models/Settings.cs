@@ -9,7 +9,7 @@ namespace Orc.GraphExplorer.Models
 {
     using Catel.Data;
     using Messages;
-    using Services.Interfaces;
+    using Services;
 
     public class Settings : ModelBase
     {

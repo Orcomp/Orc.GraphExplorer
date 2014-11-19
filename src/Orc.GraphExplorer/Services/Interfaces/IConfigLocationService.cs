@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Services.Interfaces
+namespace Orc.GraphExplorer.Services
 {
     using Orc.GraphExplorer.Models;
 

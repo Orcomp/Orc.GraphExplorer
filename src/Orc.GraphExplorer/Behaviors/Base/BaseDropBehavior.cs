@@ -14,17 +14,16 @@ namespace Orc.GraphExplorer.Behaviors.Base
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
-
-    using Orc.GraphExplorer.Behaviors.Interfaces;
+    using Catel.Windows.Interactivity;
     using Orc.GraphExplorer.ViewModels;
     using Orc.GraphExplorer.Views;
 
-    public abstract class BaseDropBehavior : Behavior<FrameworkElement>
+    public abstract class BaseDropBehavior : BehaviorBase<FrameworkElement>
     {
         #region Methods
-        protected override void OnAttached()
+        protected override void OnAssociatedObjectLoaded()
         {
-            base.OnAttached();
+            base.OnAssociatedObjectLoaded();
             AssociatedObject.PreviewDrop += AssociatedObject_PreviewDrop;
             AssociatedObject.DragEnter += AssociatedObject_DragEnter;
         }

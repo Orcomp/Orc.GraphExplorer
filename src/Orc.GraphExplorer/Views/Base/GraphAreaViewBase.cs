@@ -31,7 +31,6 @@ namespace Orc.GraphExplorer.Views.Base
     using Models;
     using Models.Data;
     using Services;
-    using Services.Interfaces;
 
     public abstract class GraphAreaViewBase : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
     {

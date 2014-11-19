@@ -8,23 +8,17 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows.Interactivity;
-    using Interfaces;
+    using Catel.Windows.Interactivity;
     using Models.Data;
     using Views;
     using Views.Base;
 
-    public class GraphNavigationBehavior : Behavior<GraphAreaViewBase>
+    public class GraphNavigationBehavior : BehaviorBase<GraphAreaViewBase>
     {
-        protected override void OnAttached()
+        protected override void OnAssociatedObjectLoaded()
         {
-            base.OnAttached();
+            base.OnAssociatedObjectLoaded();
 
-            AssociatedObject.ViewModelChanged += AssociatedObject_ViewModelChanged;
-            
-        }
-
-        void AssociatedObject_ViewModelChanged(object sender, System.EventArgs e)
-        {
             _navigator = AssociatedObject.ViewModel as IGraphNavigator;
             _navigationController = AssociatedObject.ViewModel as IGraphNavigationController;
 

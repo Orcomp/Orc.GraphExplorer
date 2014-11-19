@@ -17,11 +17,9 @@ namespace Orc.GraphExplorer.Views
     using Catel.MVVM;
     using Catel.MVVM.Views;
 
-    using Orc.GraphExplorer.Helpers;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.ViewModels;
     using Orc.GraphExplorer.Views.Base;
-    using Services.Interfaces;
 
     public class GraphAreaView : GraphAreaViewBase
     {

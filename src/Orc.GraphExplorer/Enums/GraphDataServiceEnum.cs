@@ -1,4 +1,4 @@
-﻿namespace Orc.GraphExplorer.Enums
+﻿namespace Orc.GraphExplorer
 {
     public enum GraphDataServiceEnum
     {

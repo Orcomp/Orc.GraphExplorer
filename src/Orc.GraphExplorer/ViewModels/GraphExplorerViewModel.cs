@@ -8,7 +8,7 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System;
-    using Behaviors.Interfaces;
+    using Behaviors;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -17,7 +17,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Messages;
     using Models.Data;
     using Orc.GraphExplorer.Models;
-    using Services.Interfaces;
+    using Services;
 
     public class GraphExplorerViewModel : ViewModelBase, IGraphNavigator
     {

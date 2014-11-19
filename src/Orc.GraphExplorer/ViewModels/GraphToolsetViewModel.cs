@@ -12,7 +12,7 @@ namespace Orc.GraphExplorer.ViewModels
     using System.ComponentModel;
     using System.Threading.Tasks;
     using System.Windows;
-    using Behaviors.Interfaces;
+    using Behaviors;
     using Catel.Data;
     using Catel.Memento;
     using Catel.MVVM;
@@ -21,7 +21,6 @@ namespace Orc.GraphExplorer.ViewModels
     using Models.Data;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;
-    using Services.Interfaces;
 
     public class GraphToolsetViewModel : ViewModelBase, IGraphNavigator
     {

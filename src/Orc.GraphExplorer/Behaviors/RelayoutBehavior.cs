@@ -9,25 +9,30 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System;
+    using System.Threading;
     using System.Windows.Interactivity;
+    using Catel.Windows.Interactivity;
     using GraphX.Controls;
-
-    using Orc.GraphExplorer.Behaviors.Interfaces;
-    using Orc.GraphExplorer.Helpers;
 
     using Views;
     using Views.Base;
 
-    public class RelayoutBehavior : Behavior<GraphAreaViewBase>
+    public class RelayoutBehavior : BehaviorBase<GraphAreaViewBase>
     {
         #region Methods
-        protected override void OnAttached()
+        protected override void OnAssociatedObjectLoaded()
         {
-            base.OnAttached();
+            base.OnAssociatedObjectLoaded();
             AssociatedObject.GenerateGraphFinished += AssociatedObject_GenerateGraphFinished;
+            ResumeRelayout();
         }
 
         private void AssociatedObject_GenerateGraphFinished(object sender, EventArgs e)
+        {
+            ResumeRelayout();
+        }
+
+        private void ResumeRelayout()
         {
             ShowAllEdgesLabels(true);
             FitToBounds();
@@ -48,6 +53,7 @@ namespace Orc.GraphExplorer.Behaviors
         {
             var zoom = AssociatedObject.FindFirstParentOfType<ZoomControl>();
             zoom.ZoomToFill();
+            
             zoom.Mode = ZoomControlModes.Custom;
         }
         #endregion

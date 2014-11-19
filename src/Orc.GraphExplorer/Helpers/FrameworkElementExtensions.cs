@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Helpers
+namespace Orc.GraphExplorer
 {
     using System.Windows;
 
