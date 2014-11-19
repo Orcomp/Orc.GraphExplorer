@@ -22,6 +22,7 @@ TestResult.xml
 bin
 obj
 [Ll]ib/
+*.ide/
 *_i.c
 *_p.c
 *.ilk
