@@ -1,0 +1,169 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:win="clr-namespace:System.Windows;assembly=PresentationFramework"
+                    xmlns:gxlctrl="clr-namespace:GraphX;assembly=GraphX.Controls"
+                    xmlns:gxlcommon="clr-namespace:GraphX;assembly=GraphX.Common"
+                    xmlns:gxllogic="clr-namespace:GraphX;assembly=GraphX.Logic"
+                    xmlns:Controls="clr-namespace:GraphX.Controls;assembly=GraphX.Controls"
+                    xmlns:Converters="clr-namespace:GraphX.Converters;assembly=GraphX.Controls"       
+                    xmlns:orctk="clr-namespace:Orc.Toolkit;assembly=Orc.Toolkit"
+                    xmlns:views="clr-namespace:Orc.GraphExplorer.Views;assembly=Orc.GraphExplorer"
+                    xmlns:catel="http://catel.codeplex.com">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ThemedGraphXTemplates.xaml"/>        
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type views:VertexView}">
+        <!-- Set background color through attached property -->
+        <Setter Property="Background" Value="{StaticResource NormalBrush}"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{StaticResource NormalForegroudBrush}"/>
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="MinHeight" Value="100"/>
+        <Setter Property="MinWidth" Value="180"/>
+        <Setter Property ="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <MenuItem Header="Delete" Command="{Binding DeleteVertexCommand}"/>
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:VertexView}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="Highlight">
+<!--                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" />
+
+                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" />-->
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
+                            <ColorAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Color" To="{StaticResource AccentColor}" />
+                        </Storyboard>
+                        <Storyboard x:Key="HighlightOff">
+<!--                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" />
+
+                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" />-->
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
+
+                            <ColorAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Color" To="Black" />
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOn">
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="1" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
+
+                            <!--<DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" />
+                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" />-->
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOff">
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="0" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
+                            <!--<DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" />-->
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <Grid x:Name="root" Margin="{TemplateBinding Padding}" MinWidth="{TemplateBinding MinWidth}" MinHeight="{TemplateBinding MinHeight}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.RenderTransform>
+                            <ScaleTransform/>
+                        </Grid.RenderTransform>
+                        <Border x:Name="BackgroundNorm" Grid.RowSpan="2" CornerRadius="0" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="DropShadowEffect" Color="{StaticResource AccentColor}" Direction="315" Opacity=".2" RenderingBias="Performance" ShadowDepth="3"/>
+                            </Border.Effect>
+                        </Border>
+
+                        <Border x:Name="BackgroundOver" Grid.RowSpan="2" CornerRadius="0" BorderThickness="{TemplateBinding BorderThickness}" Opacity="0" Background="{DynamicResource MouseOverBrush}" BorderBrush="{DynamicResource MouseOverBorderBrush}"/>
+                        <Grid VerticalAlignment="Top" Margin="6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Margin="4" CornerRadius="1" Width="32" Height="32" BorderThickness="1" BorderBrush="{StaticResource NormalBorderBrush}">
+                                <Image Source="{Binding Icon,TargetNullValue={StaticResource ImageSource}}" Stretch="UniformToFill" />
+                            </Border>
+                            <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontWeight="Bold" Grid.Column="1" Grid.Row="0" Margin="3" MinWidth="100"/>
+                        </Grid>
+                        <Expander HorizontalAlignment="Stretch" IsExpanded="{Binding IsExpanded}" Foreground="{StaticResource NormalForegroudBrush}" Margin="0,10,0,0" Style="{StaticResource ExpanderStyle}" VerticalAlignment="Stretch">
+                            <Expander.Header>
+                                <Rectangle Height="40"/>
+                            </Expander.Header>
+                            <ScrollViewer Margin="1" Background="{StaticResource ScrollViewBackground}" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top" MaxHeight="200">
+                                <ItemsControl ItemsSource="{Binding Properties}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:PropertyView DataContext="{Binding}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Expander>
+                        <StackPanel Visibility="Collapsed" Margin="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource AddButtonStyle}" ToolTip="Add Property" Margin="2" Command="{Binding AddCommand}" Height="28" Width="28"/>
+                            <Button Style="{StaticResource DeleteButtonStyle}" ToolTip="Delete Selected Property" Margin="2" Command="{Binding DeleteCommand}" Height="28" Width="28"/>
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Highlight}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource HighlightOff}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource HoverOff}" x:Name="HoverOff_BeginStoryboard" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                                <!--<Setter Property="TextElement.Foreground" TargetName="root" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>-->
+                            <Setter Property="Background" TargetName="BackgroundNorm" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                       </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!-- VERTEX DRAGGING CONTROL -->
+                        <Setter Property="gxlctrl:DragBehaviour.IsDragEnabled"
+                Value="False" />
+                        <Setter Property="gxlctrl:DragBehaviour.UpdateEdgesOnMove"
+                Value="True" />
+                        <Setter Property="gxlctrl:DragBehaviour.IsDragging"
+                Value="{Binding IsDragging,Mode=OneWayToSource}" />
+
+                        <Setter Property="gxlctrl:HighlightBehaviour.IsHighlightEnabled"
+                Value="True" />
+                        <Setter Property="gxlctrl:HighlightBehaviour.HighlightControl"
+                Value="VertexAndEdge" />
+                        <Setter Property="gxlctrl:HighlightBehaviour.HighlightEdges" 
+                Value="All"/>
+                        <Setter Property="gxlctrl:GraphAreaBase.FinalX" Value="{Binding X,Mode=OneWayToSource}"/>
+                        <Setter Property="gxlctrl:GraphAreaBase.FinalY" Value="{Binding Y,Mode=OneWayToSource}"/>
+                        <Style.Triggers>
+                            <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="gxlctrl:HighlightBehaviour.Highlighted" Value="False">
+                                <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

@@ -1,100 +1,90 @@
-﻿using GraphX.GraphSharp;
-using GraphX;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Xml.Serialization;
-using YAXLib;
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="DataEdge.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace Orc.GraphExplorer.Models
 {
-    [Serializable]
-    public class DataEdge : EdgeBase<DataVertex>,INotifyPropertyChanged, IDisposable
+    using System;
+    using System.Windows;
+
+    using Catel.Data;
+
+    using GraphX;
+    using GraphX.Models.XmlSerializer;
+
+    using YAXLib;
+
+    [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
+    public class DataEdge : ModelBase, IGraphXEdge<DataVertex>
     {
-        #region Properties
-        bool _isEnabled = true;
-
-        public bool IsEnabled
-        {
-            get
-            {
-                return _isEnabled;
-            }
-            set
-            {
-                _isEnabled = value;
-                RaisePropertyChanged("IsEnabled");
-            }
-        }
-
-        bool _isVisible = true;
-
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set
-            {
-                _isVisible = value;
-                RaisePropertyChanged("IsVisible");
-            }
-        }
-        #endregion
-
+  
+        #region Constructors
         public DataEdge(DataVertex source, DataVertex target, double weight = 1)
-            : base(source, target, weight)
         {
+            Source = source;
+            Target = target;
+            Weight = weight;
+            ID = -1;
         }
 
         public DataEdge()
-            : base(null, null, 1)
+            : this(null, null, 1)
         {
         }
+        #endregion
 
+        #region IGraphXEdge<DataVertex> Members
         /// <summary>
-        /// Node main description (header)
+        /// Unique edge ID
         /// </summary>
-        public string Text { get; set; }
-        public string ToolTipText { get; set; }
-        public object Tag { get; set; }
+        public int ID { get; set; }
 
-        public override string ToString()
+        public bool IsFiltered 
         {
-            return Text;
-        }
-
-        [YAXDontSerialize]
-        public DataEdge Self
-        {
-            get { return this; }
-        }
-
-        public void Dispose()
-        {
-            //throw new NotImplementedException();
-        }
-
-
-        #region INotifyPropertyChanged
-        /// <summary>
-        /// Raised when a property on this object has a new value.
-        /// </summary>        
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Raises this object's PropertyChanged event.
-        /// </summary>
-        /// <param name="propertyName">The property that has a new value.</param>
-        protected virtual void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null)
+            get
             {
-                handler(this, new PropertyChangedEventArgs(propertyName));
+                return Source != null && Target != null && (Source.IsFiltered && Target.IsFiltered);                 
             }
         }
 
+        /// <summary>
+        /// Returns true if Source vertex equals Target vertex
+        /// </summary>
+        [YAXDontSerialize]
+        public bool IsSelfLoop
+        {
+            get { return Source.Equals(Target); }
+        }
+
+        /// <summary>
+        /// Routing points collection used to make Path visual object
+        /// </summary>
+        [YAXCustomSerializer(typeof (YAXPointArraySerializer))]
+        public Point[] RoutingPoints { get; set; }
+
+        public DataVertex Source { get; set; }
+
+        public DataVertex Target { get; set; }
+
+        public double Weight { get; set; }
         #endregion
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return GetValue<bool>(IsVisibleProperty); }
+            set { SetValue(IsVisibleProperty, value); }
+        }
+
+        /// <summary>
+        /// Register the IsVisible property so it is known in the class.
+        /// </summary>
+        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
     }
 }
