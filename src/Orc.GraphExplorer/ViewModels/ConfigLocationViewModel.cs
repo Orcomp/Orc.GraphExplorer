@@ -11,6 +11,7 @@ namespace Orc.GraphExplorer.ViewModels
     using System;
     using System.Windows;
     using Catel.Data;
+    using Catel.Fody;
     using Catel.IoC;
     using Catel.MVVM;
     using Microsoft.Win32;
@@ -75,65 +76,14 @@ namespace Orc.GraphExplorer.ViewModels
         #endregion // Commands
 
         #region Properties
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
         [Model]
-        public ConfigLocation ConfigLocation
-        {
-            get { return GetValue<ConfigLocation>(FilePickerProperty); }
-            private set { SetValue(FilePickerProperty, value); }
-        }
+        [Expose("RelationshipsFile")]
+        [Expose("PropertiesFile")]
+        [Expose("EnableProperty")]
+        public ConfigLocation ConfigLocation { get; private set; }
 
-        /// <summary>
-        /// Register the ConfigLocation property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilePickerProperty = RegisterProperty("ConfigLocation", typeof(ConfigLocation));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
         [ViewModelToModel("ConfigLocation")]
-        public string RelationshipsFile
-        {
-            get { return GetValue<string>(RelationshipsFileProperty); }
-            set { SetValue(RelationshipsFileProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the RelationshipsFile property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData RelationshipsFileProperty = RegisterProperty("RelationshipsFile", typeof(string), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("ConfigLocation")]
-        public string PropertiesFile
-        {
-            get { return GetValue<string>(PropertiesFileProperty); }
-            set { SetValue(PropertiesFileProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the PropertiesFile property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PropertiesFileProperty = RegisterProperty("PropertiesFile", typeof(string), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("ConfigLocation")]
-        public bool? EnableProperty
-        {
-            get { return GetValue<bool?>(EnablePropertyProperty); }
-            set { SetValue(EnablePropertyProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the EnableProperty property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EnablePropertyProperty = RegisterProperty("EnableProperty", typeof(bool?), null);
+        public bool? EnableProperty { get; set; }
         #endregion
     }
 }
