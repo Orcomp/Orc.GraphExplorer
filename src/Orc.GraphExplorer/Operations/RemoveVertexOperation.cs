@@ -9,6 +9,8 @@ namespace Orc.GraphExplorer.Operations
 {
     using System.Collections.Generic;
     using System.Windows;
+
+    using Catel;
     using Catel.Memento;
     using Models;
 
@@ -22,6 +24,9 @@ namespace Orc.GraphExplorer.Operations
 
         public RemoveVertexOperation(GraphArea graphArea, DataVertex vertex)
         {
+            Argument.IsNotNull(() => graphArea);
+            Argument.IsNotNull(() => vertex);
+
             _graphArea = graphArea;
             _vertex = vertex;
 

@@ -25,6 +25,8 @@ namespace Orc.GraphExplorer.Models.Data
 
         public void ResumeGraphReloading(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+
             GraphReloaded.SafeInvoke(this, new GraphEventArgs(graph));
         }
 

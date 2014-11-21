@@ -30,6 +30,9 @@ namespace Orc.GraphExplorer.Views.Base
         public EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
             : base(source, target, edge, showLabels, showArrows)
         {
+            Argument.IsNotNull(() => source);
+            Argument.IsNotNull(() => edge);
+
             _logic = new UserControlLogic(this);
         }
 
@@ -61,8 +64,6 @@ namespace Orc.GraphExplorer.Views.Base
         {
             get { return _logic.ViewModel as EdgeViewModel; }
         }
-
-
 
         public event EventHandler<EventArgs> ViewModelChanged;
 

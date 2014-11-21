@@ -1,6 +1,9 @@
 ﻿namespace Orc.GraphExplorer.Services
 {
     using System.Configuration;
+
+    using Catel;
+
     using Microsoft.Win32;
     using Orc.GraphExplorer.Models;
 
@@ -28,6 +31,8 @@
 
         public void Save(ConfigLocation configLocation)
         {
+            Argument.IsNotNull(() => configLocation);
+
             var config = GraphExplorerSection.Current.CsvGraphDataServiceConfig;
 
             config.EdgesFilePath = configLocation.RelationshipsFile;
@@ -51,6 +56,8 @@
 
         private string OpenFile(string title)
         {
+            Argument.IsNotNullOrEmpty(() => title);
+
             var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = title };
             if (dlg.ShowDialog() == true)
             {

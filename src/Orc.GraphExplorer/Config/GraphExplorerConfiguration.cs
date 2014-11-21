@@ -7,6 +7,8 @@ using System.Text;
 
 namespace Orc.GraphExplorer
 {
+    using Catel;
+
     using Config;
 
 
@@ -17,7 +19,7 @@ namespace Orc.GraphExplorer
             if (exeConfiguration != null)
             {
                 exeConfiguration.Save(ConfigurationSaveMode.Modified);
-                FireConfigurationChanged();
+                ConfigurationChanged.SafeInvoke(Current, new EventArgs());
             }
         }
 
@@ -62,14 +64,6 @@ namespace Orc.GraphExplorer
             set { base["graphDataServiceFactory"] = value; }
         }
 
-        static void FireConfigurationChanged()
-        {
-            var handler = ConfigurationChanged;
-            if (handler != null)
-            {
-                handler.Invoke(Current, new EventArgs());
-            }
-        }
 
         public static event EventHandler ConfigurationChanged;
     }

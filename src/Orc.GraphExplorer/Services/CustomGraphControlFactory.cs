@@ -9,6 +9,8 @@ namespace Orc.GraphExplorer.Services
 {
     using System.Windows;
     using System.Windows.Controls;
+
+    using Catel;
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
@@ -24,12 +26,17 @@ namespace Orc.GraphExplorer.Services
     {
         public EdgeControl CreateEdgeControl(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true, Visibility visibility = Visibility.Visible)
         {
+            Argument.IsNotNull(() => source);
+            Argument.IsNotNull(() => edge);
+
             var edgeControl = new EdgeView(source, target, edge, showLabels, showArrows) {Visibility = visibility, RootArea = FactoryRootArea};
             return edgeControl;
         }
 
         public VertexControl CreateVertexControl(object vertexData)
-        {            
+        {
+            Argument.IsNotNull(() => vertexData);
+
             var vertexControl = new VertexView(vertexData) {RootArea = FactoryRootArea, };
             return vertexControl;
         }

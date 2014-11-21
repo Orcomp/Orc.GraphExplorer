@@ -13,6 +13,8 @@ namespace Orc.GraphExplorer.ViewModels
     using System.Threading.Tasks;
     using System.Windows;
     using Behaviors;
+
+    using Catel;
     using Catel.Data;
     using Catel.Memento;
     using Catel.MVVM;
@@ -364,6 +366,8 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void NavigateTo(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             var graphExplorer = GraphExplorer;
             if(graphExplorer != null)
             {

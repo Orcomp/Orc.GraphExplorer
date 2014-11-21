@@ -4,13 +4,17 @@
     using System.Linq;
     using System.Windows;
 
+    using Catel;
+
     using GraphX.GraphSharp.Algorithms.Layout;
     using GraphX.GraphSharp.Algorithms.Layout.Simple.Hierarchical;
 
+    using QuickGraph;
+
     public class TopologicalLayoutAlgorithm<TVertex, TEdge, TGraph> : IExternalLayout<TVertex>
         where TVertex : class
-        where TEdge : global::QuickGraph.IEdge<TVertex>
-        where TGraph : global::QuickGraph.IVertexAndEdgeListGraph<TVertex, TEdge>
+        where TEdge : IEdge<TVertex>
+        where TGraph : IVertexAndEdgeListGraph<TVertex, TEdge>
     {
         TGraph _graph;
         double _rate;
@@ -18,6 +22,8 @@
         double _offsetY;
         public TopologicalLayoutAlgorithm(TGraph graph,double rate,double offsetX = 0,double offsetY = 600)
         {
+            Argument.IsNotNull(() => graph);
+
             _graph = graph;
             _rate = rate;
             _offsetX = offsetX;

@@ -78,11 +78,6 @@ namespace Orc.GraphExplorer.Views.Base
             SubscribeOnGraphEvents();            
         }
 
-        public override List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType resultType = GraphControlType.VertexAndEdge, EdgesType edgesType = EdgesType.Out)
-        {
-            return base.GetRelatedControls(ctrl, resultType, edgesType);
-        }
-
         void GraphAreaViewBase_BeforeReloadingGraph(object sender, EventArgs e)
         {
             if (LogicCore.Graph != null)
@@ -263,7 +258,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             if (target == null && TemporaryEdgeCreated != null)
             {
-                TemporaryEdgeCreated(this, new EdgeViewCreatedAventArgs(edgeView));
+                TemporaryEdgeCreated(this, new EdgeViewCreatedEventArgs(edgeView));
             }
             else
             {
@@ -288,11 +283,15 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void SafeAddVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             RunCodeInUiThread(() => AddVertex(vertex), null, DispatcherPriority.Loaded);
         }
 
         private void AddVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             var vertexControl = (VertexView)ControlFactory.CreateVertexControl(vertex);            
 
             AddVertex(vertex, vertexControl);
@@ -302,6 +301,8 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void SetPositon(VertexControl vertexControl, DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => vertexControl);
+
             var point = (Point)dataVertex.Tag;
 
             if (Math.Abs(point.X - double.MinValue) > 0d)
@@ -343,6 +344,6 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public event EventHandler<EdgeViewCreatedAventArgs> TemporaryEdgeCreated;
+        public event EventHandler<EdgeViewCreatedEventArgs> TemporaryEdgeCreated;
     }
 }

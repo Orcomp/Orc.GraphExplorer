@@ -11,6 +11,7 @@ namespace Orc.GraphExplorer.Models
     using System;
     using System.Windows;
 
+    using Catel;
     using Catel.Data;
 
     using GraphX;
@@ -25,6 +26,9 @@ namespace Orc.GraphExplorer.Models
         #region Constructors
         public DataEdge(DataVertex source, DataVertex target, double weight = 1)
         {
+            Argument.IsNotNull(() => source);
+            Argument.IsNotNull(() => target);
+
             Source = source;
             Target = target;
             Weight = weight;

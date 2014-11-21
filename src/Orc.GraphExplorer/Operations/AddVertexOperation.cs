@@ -8,6 +8,8 @@
 namespace Orc.GraphExplorer.Operations
 {
     using System.Windows;
+
+    using Catel;
     using Catel.Memento;
     using Models;
 
@@ -21,6 +23,9 @@ namespace Orc.GraphExplorer.Operations
 
         public AddVertexOperation(GraphArea graphArea, DataVertex dataVertex, Point point)
         {
+            Argument.IsNotNull(() => graphArea);
+            Argument.IsNotNull(() => dataVertex);
+
             _graphArea = graphArea;
             _dataVertex = dataVertex;
             _point = point;

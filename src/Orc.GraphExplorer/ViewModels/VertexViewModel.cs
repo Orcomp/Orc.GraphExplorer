@@ -30,8 +30,6 @@ namespace Orc.GraphExplorer.ViewModels
             DeleteCommand = new Command(OnDeleteCommandExecute, OnDeleteCommandCanExecute);
 
             DeleteVertexCommand = new Command(OnDeleteVertexCommandExecute, OnDeleteVertexCommandCanExecute);
-
-            
         }
 
         protected override void Initialize()
@@ -243,7 +241,6 @@ namespace Orc.GraphExplorer.ViewModels
             get
             {
                 return ParentViewModel as GraphAreaViewModel;
-
             }
         }
 

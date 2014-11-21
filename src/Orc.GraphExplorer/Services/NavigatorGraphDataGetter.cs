@@ -10,6 +10,9 @@ namespace Orc.GraphExplorer.Services
     using System.Collections.Generic;
     using System.Linq;
     using Behaviors;
+
+    using Catel;
+
     using GraphX.GraphSharp;
     using Models;
     using Models.Data;
@@ -25,6 +28,8 @@ namespace Orc.GraphExplorer.Services
 
         public NavigatorGraphDataGetter(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+
             _graph = graph;
         }
 
@@ -43,6 +48,8 @@ namespace Orc.GraphExplorer.Services
 
         public void NavigateTo(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             IEnumerable<DataEdge> inEdges;
             IEnumerable<DataEdge> outEdges;
 

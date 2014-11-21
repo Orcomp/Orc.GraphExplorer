@@ -7,6 +7,7 @@
 #endregion
 namespace Orc.GraphExplorer.Operations
 {
+    using Catel;
     using Catel.Memento;
     using Models;
 
@@ -19,6 +20,9 @@ namespace Orc.GraphExplorer.Operations
 
         public RemoveEdgeOperation(GraphArea graphArea, DataEdge edge)
         {
+            Argument.IsNotNull(() => graphArea);
+            Argument.IsNotNull(() => edge);
+
             _graphArea = graphArea;
             _edge = edge;
 

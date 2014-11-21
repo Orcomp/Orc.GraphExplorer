@@ -2,6 +2,7 @@
 {
     using System;
 
+    using Catel;
 
     using QuickGraph;
     using Services;
@@ -17,6 +18,8 @@
 
         public Graph(IGraphDataGetter graphDataGetter)
         {
+            Argument.IsNotNull(() => graphDataGetter);
+
             _graphDataGetter = graphDataGetter;
         }
 

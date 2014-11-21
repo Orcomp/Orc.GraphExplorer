@@ -10,6 +10,8 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System;
     using System.Windows;
+
+    using Catel;
     using Catel.Data;
     using Catel.Fody;
     using Catel.IoC;

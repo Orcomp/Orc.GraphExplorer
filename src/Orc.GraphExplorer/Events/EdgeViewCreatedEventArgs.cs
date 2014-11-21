@@ -14,11 +14,14 @@ namespace Orc.GraphExplorer
     using Orc.GraphExplorer.Views;
     using Views.Base;
 
+    using Catel;
+
     public class EdgeViewCreatedEventArgs : EventArgs
     {
         #region Constructors
         public EdgeViewCreatedEventArgs(EdgeViewBase edgeViewBase)
         {
+            Argument.IsNotNull(() => edgeViewBase); 
             EdgeViewBase = edgeViewBase;
         }
         #endregion

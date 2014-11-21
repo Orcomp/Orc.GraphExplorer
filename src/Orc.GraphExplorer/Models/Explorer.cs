@@ -10,6 +10,8 @@ namespace Orc.GraphExplorer.Models
     using System;
     using System.Linq;
     using Behaviors;
+
+    using Catel;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -94,6 +96,8 @@ namespace Orc.GraphExplorer.Models
 
         public void NavigateTo(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             var navigatorArea = NavigatorToolset.Area;
             ((IGraphNavigator)navigatorArea.GraphDataGetter).NavigateTo(dataVertex);
 

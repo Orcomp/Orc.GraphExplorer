@@ -7,6 +7,7 @@
 #endregion
 namespace Orc.GraphExplorer.ViewModels
 {
+    using Catel;
     using Catel.Data;
     using Catel.MVVM;
 

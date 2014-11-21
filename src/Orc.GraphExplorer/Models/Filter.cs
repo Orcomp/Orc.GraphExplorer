@@ -14,6 +14,8 @@ namespace Orc.GraphExplorer.Models
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Catel;
     using Catel.Collections;
     using Catel.Data;
     using Messages;
@@ -26,6 +28,8 @@ namespace Orc.GraphExplorer.Models
 
         public Filter(GraphLogic logic)
         {
+            Argument.IsNotNull(() => logic);
+
             _logic = logic;
 
             var graph = _logic.Graph;
@@ -68,6 +72,8 @@ namespace Orc.GraphExplorer.Models
 
         private void ApplyFilterForEntity(FilterableEntity entity, bool filtered)
         {
+            Argument.IsNotNull(() => entity);
+
             var vertex = entity.Vertex;
 
             vertex.IsFiltered = filtered;
@@ -131,11 +137,15 @@ namespace Orc.GraphExplorer.Models
         
         void OnVertexAdded(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             FilterableEntities.Add(new FilterableEntity(vertex));
         }
 
         void OnVertexRemoved(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             var filterableEntities = FilterableEntities;
 
             var filterableEntity = filterableEntities.FirstOrDefault(x => x.ID == vertex.ID);

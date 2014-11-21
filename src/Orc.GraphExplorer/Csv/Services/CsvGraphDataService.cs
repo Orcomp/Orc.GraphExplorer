@@ -11,6 +11,9 @@ namespace Orc.GraphExplorer.Csv.Services
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+
+    using Catel;
+
     using Config;
     using CsvHelper;
     using Data;
@@ -98,6 +101,8 @@ namespace Orc.GraphExplorer.Csv.Services
         #region IGraphDataSaver Members
         public void SaveChanges(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+
             using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Truncate))
             {
                 using (var writer = new CsvWriter(new StreamWriter(fs)))

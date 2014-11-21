@@ -82,7 +82,7 @@ namespace Orc.GraphExplorer.Behaviors
             _edge.SetEdgePathManually(_pathGeometry);
         }
 
-        private void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeViewCreatedAventArgs e)
+        private void AssociatedObject_TemporaryEdgeCreated(object sender, EdgeViewCreatedEventArgs e)
         {
             _edge = e.EdgeViewBase as EdgeView;
             if (_edge != null)
@@ -145,7 +145,10 @@ namespace Orc.GraphExplorer.Behaviors
         {
             Point pos = ZoomControl.TranslatePoint(point, AssociatedObject);
             var lastseg = _pathGeometry.Figures[0].Segments[_pathGeometry.Figures[0].Segments.Count - 1] as PolyLineSegment;
-            lastseg.Points[lastseg.Points.Count - 1] = pos;
+            if (lastseg != null)
+            {
+                lastseg.Points[lastseg.Points.Count - 1] = pos;
+            }
         }
         #endregion
     }

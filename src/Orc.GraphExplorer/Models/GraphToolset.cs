@@ -12,6 +12,7 @@ namespace Orc.GraphExplorer.Models
     using System.Threading.Tasks;
     using System.Windows;
 
+    using Catel;
     using Catel.Data;
     using Catel.Memento;
     using Catel.Services;
@@ -33,6 +34,8 @@ namespace Orc.GraphExplorer.Models
 
         public GraphToolset(string toolsetName, bool isFilterEnabled, IMementoService mementoService, IMessageService messageService)
         {
+            Argument.IsNotNullOrEmpty(() => toolsetName);
+
             _mementoService = mementoService;
             _messageService = messageService;
             ToolsetName = toolsetName;

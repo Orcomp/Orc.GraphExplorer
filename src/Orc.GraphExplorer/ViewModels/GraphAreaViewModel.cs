@@ -12,6 +12,8 @@ namespace Orc.GraphExplorer.ViewModels
     using System.Linq;
     using System.Windows;
     using Behaviors;
+
+    using Catel;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -155,6 +157,8 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void Drop(IDataObject dataObject, Point position)
         {            
+            Argument.IsNotNull(() => dataObject);
+
             Area.AddVertex((DataVertex)dataObject.GetData(typeof(DataVertex)), position);
         }
 
@@ -168,16 +172,22 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void RemoveEdge(DataEdge dataEdge)
         {
+            Argument.IsNotNull(() => dataEdge);
+
             Area.RemoveEdge(dataEdge);
         }
 
         public void RemoveVertex(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             Area.RemoveVertex(dataVertex);
         }
 
         public void NavigateTo(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             ToolSetViewModel.NavigateTo(dataVertex);
         }
 

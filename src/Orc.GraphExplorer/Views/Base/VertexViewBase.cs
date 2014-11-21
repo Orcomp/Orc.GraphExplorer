@@ -34,6 +34,8 @@ namespace Orc.GraphExplorer.Views.Base
         public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
+            Argument.IsNotNull(() => vertexData);
+
             _logic = new UserControlLogic(this);
 
             _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);

@@ -14,6 +14,7 @@ namespace Orc.GraphExplorer.Models
     using System.Threading.Tasks;
     using System.Windows;
 
+    using Catel;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -33,6 +34,8 @@ namespace Orc.GraphExplorer.Models
 
         public GraphArea(string toolsetName, IMementoService mementoService, IMessageService messageService)
         {
+            Argument.IsNotNullOrEmpty(() => toolsetName);
+
             _mementoService = mementoService;
             _messageService = messageService;
             ToolsetName = toolsetName;
@@ -223,6 +226,8 @@ namespace Orc.GraphExplorer.Models
 
         public void AddVertex(DataVertex dataVertex, Point point)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             var operation = new AddVertexOperation(this, dataVertex, point);
             _mementoService.Do(operation);
             GraphChangedMessage.SendWith(_mementoService.CanUndo);
@@ -230,6 +235,9 @@ namespace Orc.GraphExplorer.Models
 
         public void AddEdge(DataVertex startVertex, DataVertex endVertex)
         {
+            Argument.IsNotNull(() => startVertex);
+            Argument.IsNotNull(() => endVertex);
+
             var edge = new DataEdge(startVertex, endVertex);
             var operation = new AddEdgeOperation(this, edge);
             _mementoService.Do(operation);
@@ -249,6 +257,8 @@ namespace Orc.GraphExplorer.Models
 
         public void RemoveEdge(DataEdge edge)
         {
+            Argument.IsNotNull(() => edge);
+
             var operation = new RemoveEdgeOperation(this, edge);
             _mementoService.Do(operation);
             GraphChangedMessage.SendWith(_mementoService.CanUndo);
@@ -256,6 +266,8 @@ namespace Orc.GraphExplorer.Models
 
         public void RemoveVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             _mementoService.ClearRedoBatches();
             var operations = new OperationsBatch {Description = "remove vertex"};
             var graph = Logic.Graph;

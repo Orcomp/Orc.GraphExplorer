@@ -43,14 +43,6 @@ namespace Orc.GraphExplorer.Views.Base
             base.BeginInit();
         }
 
-        protected virtual void InvokeEvent(EventHandler<EventArgs> handler)
-        {
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
-        }
-
         public IViewModel ViewModel
         {
             get

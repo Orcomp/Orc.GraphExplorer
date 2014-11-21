@@ -9,6 +9,8 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System;
     using Behaviors;
+
+    using Catel;
     using Catel.Data;
     using Catel.IoC;
     using Catel.Memento;
@@ -199,6 +201,8 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void NavigateTo(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => dataVertex);
+
             IsNavTabVisible = true;
             IsNavTabSelected = true;
             Explorer.NavigateTo(dataVertex);

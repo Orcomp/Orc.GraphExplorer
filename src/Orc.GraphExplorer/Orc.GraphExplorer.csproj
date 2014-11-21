@@ -128,7 +128,7 @@
     <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
     <Compile Include="Config\GraphExplorerConfiguration.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
-    <Compile Include="Events\EdgeViewCreatedAventArgs.cs" />
+    <Compile Include="Events\EdgeViewCreatedEventArgs.cs" />
     <Compile Include="Events\GraphEventArgs.cs" />
     <Compile Include="Events\SettingAppliedRoutedEventArgs.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />

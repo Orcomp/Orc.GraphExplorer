@@ -8,6 +8,9 @@
 namespace Orc.GraphExplorer
 {
     using System;
+
+    using Catel;
+
     using Models.Data;
 
     public class GraphEventArgs : EventArgs
@@ -16,6 +19,8 @@ namespace Orc.GraphExplorer
 
         public GraphEventArgs(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+ 
             Graph = graph;
         }
     }
