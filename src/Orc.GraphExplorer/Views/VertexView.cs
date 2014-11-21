@@ -31,13 +31,14 @@ namespace Orc.GraphExplorer.Views
 
         private void VertexView_Loaded(object sender, RoutedEventArgs e)
         {
-            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var viewModel = ViewModel;
+
+            var relationalViewModel = viewModel as IRelationalViewModel;
             var graphAreaView = this.FindFirstParentOfType<GraphAreaView>();
-            if (graphAreaView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            if (graphAreaView != null && relationalViewModel != null && viewModel.ParentViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
             }
-            //DataContext = ViewModel;
         }
 
 
@@ -78,7 +79,7 @@ namespace Orc.GraphExplorer.Views
 
         public new VertexViewModel ViewModel
         {
-            get { return base.ViewModel as VertexViewModel; }
+            get { return base.ViewModel; }
         } 
     }
 }

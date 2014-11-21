@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Events
+namespace Orc.GraphExplorer
 {
     using System;
     using GraphX;

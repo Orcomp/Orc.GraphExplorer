@@ -20,7 +20,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Orc.GraphExplorer.Models.Data;
 
-    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable/*, IEdgeDrwingCanvas*/
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable, IGraphLogicProvider/*, IEdgeDrwingCanvas*/
     {
         private readonly IViewModelManager _viewModelManager;
 

@@ -47,7 +47,10 @@ namespace Orc.GraphExplorer.Models
         {
             get
             {
-                return Source != null && Target != null && (Source.IsFiltered && Target.IsFiltered);                 
+                var source = Source;
+                var target = Target;
+
+                return source != null && target != null && (source.IsFiltered && target.IsFiltered);
             }
         }
 

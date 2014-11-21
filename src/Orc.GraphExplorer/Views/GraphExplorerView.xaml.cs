@@ -20,7 +20,6 @@
             {
                 return;
             }
-            //ViewModel.ResetGraphService(); 
         }
 
         protected override void OnViewModelChanged()

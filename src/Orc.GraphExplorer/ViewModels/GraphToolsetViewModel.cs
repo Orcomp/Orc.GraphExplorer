@@ -364,10 +364,11 @@ namespace Orc.GraphExplorer.ViewModels
 
         public void NavigateTo(DataVertex dataVertex)
         {
-            if(GraphExplorer != null)
+            var graphExplorer = GraphExplorer;
+            if(graphExplorer != null)
             {
-                GraphExplorer.NavigateTo(dataVertex); 
-              } 
+                graphExplorer.NavigateTo(dataVertex); 
+            }
         }
 
         public GraphExplorerViewModel GraphExplorer {

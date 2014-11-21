@@ -34,16 +34,18 @@ namespace Orc.GraphExplorer.Models
 
         private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
         {
-            if (message.Data == "Editor" && EditorToolset.Area.GraphDataGetter == null)
+            var editorArea = EditorToolset.Area;
+            if (message.Data == "Editor" && editorArea.GraphDataGetter == null)
             {
                 var graphDataService = new CsvGraphDataService();
-                EditorToolset.Area.GraphDataGetter = graphDataService;
-                EditorToolset.Area.GraphDataSaver = graphDataService;
+                editorArea.GraphDataGetter = graphDataService;
+                editorArea.GraphDataSaver = graphDataService;
             }
 
-            if (message.Data == "Navigator" && NavigatorToolset.Area.GraphDataGetter == null)
+            var navigatorArea = NavigatorToolset.Area;
+            if (message.Data == "Navigator" && navigatorArea.GraphDataGetter == null)
             {
-                NavigatorToolset.Area.GraphDataGetter = new NavigatorGraphDataGetter(EditorToolset.Area.Logic.Graph);
+                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter(editorArea.Logic.Graph);
             }
             
         }
@@ -92,9 +94,10 @@ namespace Orc.GraphExplorer.Models
 
         public void NavigateTo(DataVertex dataVertex)
         {
-            ((IGraphNavigator)NavigatorToolset.Area.GraphDataGetter).NavigateTo(dataVertex);
+            var navigatorArea = NavigatorToolset.Area;
+            ((IGraphNavigator)navigatorArea.GraphDataGetter).NavigateTo(dataVertex);
 
-            NavigatorToolset.Area.ReloadGraphArea(0);
+            navigatorArea.ReloadGraphArea(0);
 
             NavigatorToolset.Refresh();
         }

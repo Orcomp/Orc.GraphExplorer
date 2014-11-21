@@ -46,9 +46,12 @@ namespace Orc.GraphExplorer.Views
 
         void GraphAreaView_Loaded(object sender, RoutedEventArgs e)
         {
-            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var viewModel = ViewModel;
+
+            var relationalViewModel = viewModel as IRelationalViewModel;
+
             var toolset = this.FindFirstParentOfType<GraphToolsetView>();
-            if (toolset != null && relationalViewModel != null && ViewModel.ToolSetViewModel == null)
+            if (toolset != null && relationalViewModel != null && viewModel.ToolSetViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(toolset.ViewModel);
             }

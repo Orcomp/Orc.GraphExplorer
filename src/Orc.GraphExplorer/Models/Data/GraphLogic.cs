@@ -10,7 +10,6 @@ namespace Orc.GraphExplorer.Models.Data
 {
     using System;
     using Catel;
-    using Events;
     using GraphX.Logic;
 
     public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>

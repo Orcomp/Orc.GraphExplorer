@@ -45,8 +45,10 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void ShowAllEdgesLabels(bool show)
         {
-            AssociatedObject.ShowAllEdgesLabels(show);
-            AssociatedObject.InvalidateVisual();
+            var graphAreaViewBase = AssociatedObject;
+
+            graphAreaViewBase.ShowAllEdgesLabels(show);
+            graphAreaViewBase.InvalidateVisual();
         }
 
         private void FitToBounds()

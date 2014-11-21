@@ -34,9 +34,11 @@ namespace Orc.GraphExplorer.Views
             InitializeComponent();
             Loaded += FilterView_Loaded;
             CloseViewModelOnUnloaded = false;
-            
-            FilterBuilderControl.CloseViewModelOnUnloaded = false;
-            FilterBuilderControl.ViewModelChanged += FilterBuilderControl_ViewModelChanged;
+
+            var filterBuilderControl = FilterBuilderControl;
+
+            filterBuilderControl.CloseViewModelOnUnloaded = false;
+            filterBuilderControl.ViewModelChanged += FilterBuilderControl_ViewModelChanged;
         }
 
 
@@ -51,22 +53,24 @@ namespace Orc.GraphExplorer.Views
         }
 
         void FilterView_Loaded(object sender, RoutedEventArgs e)
-        {                                     
-            if (ViewModel.ParentViewModel != null)
+        {
+            var viewModel = ViewModel;
+            if (viewModel == null)
             {
                 return;
             }
 
-            var relationalViewModel = ViewModel as IRelationalViewModel;
-            var parentView = this.FindFirstParentOfType<GraphToolsetView>();
-            if (parentView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            var parentViewModel = viewModel.ParentViewModel;
+            if (parentViewModel != null)
             {
-                relationalViewModel.SetParentViewModel(parentView.ViewModel);
+                return;
             }
 
-            if (IsVisible)
+            var relationalViewModel = viewModel as IRelationalViewModel;
+            var parentView = this.FindFirstParentOfType<GraphToolsetView>();
+            if (parentView != null && relationalViewModel != null && parentViewModel == null)
             {
-                
+                relationalViewModel.SetParentViewModel(parentView.ViewModel);
             }
         }
 

@@ -46,14 +46,16 @@ namespace Orc.GraphExplorer.Models
             {
                 return;
             }
-            Logic.PrepareGraphReloading();
+            var logic = Logic;
+
+            logic.PrepareGraphReloading();
 
             var graph = new Graph(GraphDataGetter);
 
             graph.ReloadGraph();
-            Logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
+            logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
 
-            Logic.ResumeGraphReloading(graph);
+            logic.ResumeGraphReloading(graph);
         }
 
         /// <summary>
@@ -256,7 +258,8 @@ namespace Orc.GraphExplorer.Models
         {
             _mementoService.ClearRedoBatches();
             var operations = new OperationsBatch {Description = "remove vertex"};
-            foreach (var edge in Logic.Graph.InEdges(vertex).Concat(Logic.Graph.OutEdges(vertex)).ToArray())
+            var graph = Logic.Graph;
+            foreach (var edge in graph.InEdges(vertex).Concat(graph.OutEdges(vertex)).ToArray())
             {
                 operations.AddOperation(new RemoveEdgeOperation(this, edge));
             }

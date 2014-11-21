@@ -34,11 +34,12 @@ namespace Orc.GraphExplorer.ViewModels
 
         private void SyncWithAreaProperties()
         {
-            if (AreaViewModel == null)
+            var areaViewModel = AreaViewModel;
+            if (areaViewModel == null)
             {
                 return;
             }
-            IsInEditing = AreaViewModel.IsInEditing;
+            IsInEditing = areaViewModel.IsInEditing;
         }
 
         /// <summary>
@@ -60,9 +61,10 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnDeleteEdgeCommandExecute()
         {
-            if (AreaViewModel != null)
+            var areaViewModel = AreaViewModel;
+            if (areaViewModel != null)
             {
-                AreaViewModel.RemoveEdge(DataEdge);
+                areaViewModel.RemoveEdge(DataEdge);
             }
         }
 

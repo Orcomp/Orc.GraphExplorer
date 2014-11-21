@@ -1,22 +1,16 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphEventArgs.cs" company="Orcomp development team">
+// <copyright file="IGraphLogicProvider.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 namespace Orc.GraphExplorer
 {
-    using System;
-    using Models.Data;
+    using Orc.GraphExplorer.Models.Data;
 
-    public class GraphEventArgs : EventArgs
+    public interface IGraphLogicProvider
     {
-        public Graph Graph { get; set; }
-
-        public GraphEventArgs(Graph graph)
-        {
-            Graph = graph;
-        }
+        GraphLogic Logic { get; }
     }
 }

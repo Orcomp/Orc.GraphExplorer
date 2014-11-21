@@ -36,7 +36,7 @@ namespace Orc.GraphExplorer.Models
             _mementoService = mementoService;
             _messageService = messageService;
             ToolsetName = toolsetName;
-            Area = new GraphArea(ToolsetName, mementoService, messageService);
+            Area = new GraphArea(toolsetName, mementoService, messageService);
             Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};
 
             SettingsChangedMessage.Register(this, OnSettingsChangedMessage);
@@ -123,21 +123,23 @@ namespace Orc.GraphExplorer.Models
 
         public async Task Refresh()
         {
-            if (Area.IsInEditing && _mementoService.CanUndo)
+            var area = Area;
+
+            if (area.IsInEditing && _mementoService.CanUndo)
             {
                 var messageResult = await _messageService.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageButton.YesNo);
                 if (messageResult == MessageResult.Yes)
                 {
                     _mementoService.Clear();
-                    Area.IsInEditing = false;
-                    Area.IsDragEnabled = false;
-                    Area.ReloadGraphArea(600);
+                    area.IsInEditing = false;
+                    area.IsDragEnabled = false;
+                    area.ReloadGraphArea(600);
                     StatusMessage.SendWith("Graph Refreshed");
                 }
             }
             else
             {
-                Area.ReloadGraphArea(600);
+                area.ReloadGraphArea(600);
             }
         }
 

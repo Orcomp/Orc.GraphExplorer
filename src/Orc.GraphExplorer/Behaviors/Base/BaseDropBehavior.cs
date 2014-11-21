@@ -43,17 +43,29 @@ namespace Orc.GraphExplorer.Behaviors.Base
             }
         }
 
+        private IDropable _dropableViewModel;
+        private IDropable DropableViewModel {
+            get
+            {
+                if (DropableContent == null)
+                {
+                    return null;
+                }
+
+                if (_dropableViewModel == null)
+                {
+                    _dropableViewModel = DropableContent.ViewModel as IDropable;
+                }
+                
+                return _dropableViewModel;
+            }
+        }
+
         protected abstract IUserControl GetDropableContent();        
 
         private void AssociatedObject_DragEnter(object sender, DragEventArgs e)
         {
-            if (DropableContent == null)
-            {
-                return;
-            }
-
-            var dropable = DropableContent.ViewModel as IDropable;
-
+            var dropable = DropableViewModel;
             if (dropable == null || !e.Data.GetDataPresent(dropable.DataTypeFormat))
             {
                 return;
@@ -64,12 +76,7 @@ namespace Orc.GraphExplorer.Behaviors.Base
 
         private void AssociatedObject_PreviewDrop(object sender, DragEventArgs e)
         {
-            if (DropableContent == null)
-            {
-                return;
-            }
-
-            var dropable = DropableContent.ViewModel as IDropable;
+            var dropable = DropableViewModel;
             if (dropable == null)
             {
                 return;

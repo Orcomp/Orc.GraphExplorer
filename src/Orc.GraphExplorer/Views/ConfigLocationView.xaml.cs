@@ -14,7 +14,6 @@ using System.Windows.Shapes;
 
 namespace Orc.GraphExplorer.Views
 {
-    using Events;
 
     /// <summary>
     /// Interaction logic for FilePickerView.xaml

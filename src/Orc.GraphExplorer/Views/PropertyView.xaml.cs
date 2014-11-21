@@ -39,9 +39,11 @@ namespace Orc.GraphExplorer.Views
 
         void PropertyView_Loaded(object sender, RoutedEventArgs e)
         {
-            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var viewModel = ViewModel;
+
+            var relationalViewModel = viewModel as IRelationalViewModel;
             var parentView = this.FindFirstParentOfType<VertexView>();
-            if (parentView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            if (parentView != null && relationalViewModel != null && viewModel.ParentViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(parentView.ViewModel);
             }

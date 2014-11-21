@@ -48,9 +48,6 @@
     <Reference Include="CsvHelper">
       <HintPath>..\..\lib\CsvHelper.2.7.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Fasterflect">
-      <HintPath>..\..\lib\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-    </Reference>
     <Reference Include="GraphX.Common">
       <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Common.dll</HintPath>
     </Reference>
@@ -136,6 +133,7 @@
     <Compile Include="Events\SettingAppliedRoutedEventArgs.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\MementoServiceExtensions.cs" />
+    <Compile Include="Interfaces\IGraphLogicProvider.cs" />
     <Compile Include="Messages\GraphChangedMessage.cs" />
     <Compile Include="Messages\EditingStartStopMessage.cs" />
     <Compile Include="Messages\LoadFromXmlMessage.cs" />

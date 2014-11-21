@@ -18,12 +18,12 @@ namespace Orc.GraphExplorer.Behaviors
     using Catel.MVVM.Views;
     using Catel.Services;
     using Catel.Windows.Interactivity;
-    using Events;
     using GraphX.Controls;
     using GraphX.Models;
     using Models;
 
     using Orc.GraphExplorer.Messages;
+    using Orc.GraphExplorer.ViewModels;
 
     using Views;
     using Views.Base;
@@ -58,6 +58,7 @@ namespace Orc.GraphExplorer.Behaviors
                 return _zoomControl;
             }
         }
+
         #endregion
 
         #region Methods
@@ -66,17 +67,13 @@ namespace Orc.GraphExplorer.Behaviors
             base.OnAssociatedObjectLoaded();
             AssociatedObject.VertexSelected += AssociatedObject_VertexSelected;
             AssociatedObject.TemporaryEdgeCreated += AssociatedObject_TemporaryEdgeCreated;
-            AssociatedObject.ViewModelChanged += AssociatedObject_ViewModelChanged;
-        }
-
-        private void AssociatedObject_ViewModelChanged(object sender, System.EventArgs e)
-        {
             ZoomControl.PreviewMouseMove += ZoomControl_PreviewMouseMove;
         }
 
         private void ZoomControl_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (AssociatedObject.ViewModel == null || !AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _fakeEndVertex == null || _edge == null)
+            var viewModel = AssociatedObject.ViewModel;
+            if (viewModel == null || !viewModel.ToolSetViewModel.IsAddingNewEdge || _pathGeometry == null || _startVertex == null || _fakeEndVertex == null || _edge == null)
             {
                 return;
             }
@@ -98,8 +95,10 @@ namespace Orc.GraphExplorer.Behaviors
         {
             if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
             {
-                if (AssociatedObject.ViewModel.IsInEditing && AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge)
+                var viewModel = AssociatedObject.ViewModel;
+                if (viewModel.IsInEditing && viewModel.ToolSetViewModel.IsAddingNewEdge)
                 {
+                    var graph = viewModel.Logic.Graph;
                     if (_startVertex == null) //select starting vertex
                     {
                         _startVertex = (VertexView) args.VertexControl;
@@ -119,16 +118,16 @@ namespace Orc.GraphExplorer.Behaviors
                         SetLastPoint(args.VertexControl.GetPosition());
 
                         var dedge = new DataEdge(_startVertex.ViewModel.DataVertex, _fakeEndVertex);
-                        AssociatedObject.ViewModel.Logic.Graph.AddVertex(_fakeEndVertex);
-                        AssociatedObject.ViewModel.Logic.Graph.AddEdge(dedge);
+                        graph.AddVertex(_fakeEndVertex);
+                        graph.AddEdge(dedge);
 
                         StatusMessage.SendWith("Select Target Node");
                     }
 
                     else if (!Equals(_startVertex, args.VertexControl)) //finish draw
                     {
-                        AssociatedObject.ViewModel.Area.AddEdge(_startVertex.ViewModel.DataVertex, (DataVertex) args.VertexControl.Vertex);
-                        AssociatedObject.ViewModel.Logic.Graph.RemoveVertex(_fakeEndVertex);
+                        viewModel.Area.AddEdge(_startVertex.ViewModel.DataVertex, (DataVertex) args.VertexControl.Vertex);
+                        graph.RemoveVertex(_fakeEndVertex);
 
                         _startVertex = null;
                         _fakeEndVertex = null;
@@ -136,7 +135,7 @@ namespace Orc.GraphExplorer.Behaviors
                         _pathGeometry.Clear();
                         _pathGeometry = null;
 
-                        AssociatedObject.ViewModel.ToolSetViewModel.IsAddingNewEdge = false;
+                        viewModel.ToolSetViewModel.IsAddingNewEdge = false;
                     }
                 }
             }

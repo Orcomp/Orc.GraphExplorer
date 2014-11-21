@@ -42,12 +42,13 @@ namespace Orc.GraphExplorer.ViewModels
 
         private void SyncWithAreaProperties()
         {
-            if (GraphAreaViewModel == null)
+            var graphAreaViewModel = GraphAreaViewModel;
+            if (graphAreaViewModel == null)
             {
                 return;
             }
-            IsInEditing = GraphAreaViewModel.IsInEditing;
-            IsDragEnabled = GraphAreaViewModel.IsDragEnabled;
+            IsInEditing = graphAreaViewModel.IsInEditing;
+            IsDragEnabled = graphAreaViewModel.IsDragEnabled;
         }
 
         public new GraphAreaViewModel GraphAreaViewModel
@@ -229,9 +230,11 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnDeleteVertexCommandExecute()
         {
-            if (AreaViewModel != null)
+            var areaViewModel = AreaViewModel;
+
+            if (areaViewModel != null)
             {
-                AreaViewModel.RemoveVertex(DataVertex);
+                areaViewModel.RemoveVertex(DataVertex);
             }
         }
 

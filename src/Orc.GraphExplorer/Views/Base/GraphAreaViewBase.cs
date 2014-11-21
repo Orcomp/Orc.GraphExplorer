@@ -23,8 +23,6 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
-    using Events;
-    using Fasterflect;
     using GraphX;
     using GraphX.Controls;
     using GraphX.Controls.Models;
@@ -170,10 +168,14 @@ namespace Orc.GraphExplorer.Views.Base
         {
             if (ViewModel != null)
             {
-                var logic = (GraphLogic)ViewModel.GetPropertyValue("Logic");
+                var logicProvider = ViewModel as IGraphLogicProvider;
+                if (logicProvider != null)
+                {
+                    var logic = logicProvider.Logic;
 
-                logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
-                logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
+                    logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
+                    logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
+                }
             }
         }
 
@@ -205,10 +207,12 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 return;
             }
-            LogicCore.Graph.VertexAdded += GraphVertexAdded;
-            LogicCore.Graph.VertexRemoved += GraphVertexRemoved;
-            LogicCore.Graph.EdgeAdded += GraphEdgeAdded;
-            LogicCore.Graph.EdgeRemoved += GraphEdgeRemoved;
+            var graph = LogicCore.Graph;
+
+            graph.VertexAdded += GraphVertexAdded;
+            graph.VertexRemoved += GraphVertexRemoved;
+            graph.EdgeAdded += GraphEdgeAdded;
+            graph.EdgeRemoved += GraphEdgeRemoved;
         }
 
         private void UnSubscribeOnGraphEvents(GraphLogic logic = null)
@@ -223,10 +227,12 @@ namespace Orc.GraphExplorer.Views.Base
                 return;
             }
 
-            logic.Graph.VertexAdded -= GraphVertexAdded;
-            logic.Graph.VertexRemoved -= GraphVertexRemoved;
-            logic.Graph.EdgeAdded -= GraphEdgeAdded;
-            logic.Graph.EdgeRemoved -= GraphEdgeRemoved;
+            var graph = logic.Graph;
+
+            graph.VertexAdded -= GraphVertexAdded;
+            graph.VertexRemoved -= GraphVertexRemoved;
+            graph.EdgeAdded -= GraphEdgeAdded;
+            graph.EdgeRemoved -= GraphEdgeRemoved;
         }
 
         private void GraphEdgeRemoved(DataEdge edge)

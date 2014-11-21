@@ -28,8 +28,9 @@ namespace Orc.GraphExplorer.Models
         {
             _logic = logic;
 
-            _logic.Graph.VertexAdded += OnVertexAdded;
-            _logic.Graph.VertexRemoved += OnVertexRemoved;
+            var graph = _logic.Graph;
+            graph.VertexAdded += OnVertexAdded;
+            graph.VertexRemoved += OnVertexRemoved;
 
             _logic.GraphReloaded += _logic_GraphReloaded;
 
@@ -39,10 +40,12 @@ namespace Orc.GraphExplorer.Models
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
         }
 
-        void _logic_GraphReloaded(object sender, Events.GraphEventArgs e)
+        void _logic_GraphReloaded(object sender, GraphEventArgs e)
         {
-            FilterableEntities.Clear();
-            FilterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(e.Graph.Vertices));
+            var filterableEntities = FilterableEntities;
+
+            filterableEntities.Clear();
+            filterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(e.Graph.Vertices));
         }
 
         public void FilterEntities()
@@ -65,8 +68,10 @@ namespace Orc.GraphExplorer.Models
 
         private void ApplyFilterForEntity(FilterableEntity entity, bool filtered)
         {
-            entity.Vertex.IsFiltered = filtered;
-            entity.Vertex.IsVisible = !IsHideVertexes || filtered;
+            var vertex = entity.Vertex;
+
+            vertex.IsFiltered = filtered;
+            vertex.IsVisible = !IsHideVertexes || filtered;
             FilterEdges();
         }
 
@@ -90,16 +95,19 @@ namespace Orc.GraphExplorer.Models
                 case NotifyCollectionChangedAction.Add:
                     if (IsFilterEnabled)
                     {
-                        if (IsFilterApplied && FilteredEntities.Count == FilterableEntities.Count)
+                        var filteredEntities = FilteredEntities;
+                        var filterableEntities = FilterableEntities;
+
+                        if (IsFilterApplied && filteredEntities.Count == filterableEntities.Count)
                         {
                             IsFilterApplied = false;
                         }
-                        else if (!IsFilterApplied && FilteredEntities.Count != FilterableEntities.Count)
+                        else if (!IsFilterApplied && filteredEntities.Count != filterableEntities.Count)
                         {
                             IsFilterApplied = true;
                         }
 
-                        if (IsFilterApplied && IsFilterEnabled)
+                        if (IsFilterApplied)
                         {
                             foreach (var item in e.NewItems.OfType<FilterableEntity>())
                             {       
@@ -128,8 +136,10 @@ namespace Orc.GraphExplorer.Models
 
         void OnVertexRemoved(DataVertex vertex)
         {
-            var filterableEntity = FilterableEntities.FirstOrDefault(x => x.ID == vertex.ID);
-            FilterableEntities.Remove(filterableEntity);
+            var filterableEntities = FilterableEntities;
+
+            var filterableEntity = filterableEntities.FirstOrDefault(x => x.ID == vertex.ID);
+            filterableEntities.Remove(filterableEntity);
         }
 
         /// <summary>
@@ -238,8 +248,10 @@ namespace Orc.GraphExplorer.Models
 
         public void UpdateFilterSource()
         {
-            FilterableEntities.Clear();
-            FilterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(_logic.Graph.Vertices));
+            var filterableEntities = FilterableEntities;
+
+            filterableEntities.Clear();
+            filterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(_logic.Graph.Vertices));
         }
     }
 }
