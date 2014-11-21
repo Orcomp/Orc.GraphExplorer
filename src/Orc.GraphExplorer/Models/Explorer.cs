@@ -55,44 +55,17 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public Settings Settings
-        {
-            get { return GetValue<Settings>(SettingsProperty); }
-            set { SetValue(SettingsProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Settings property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData SettingsProperty = RegisterProperty("Settings", typeof(Settings)   );
+        public Settings Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public GraphToolset EditorToolset
-        {
-            get { return GetValue<GraphToolset>(EditorToolsetProperty); }
-            set { SetValue(EditorToolsetProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the EditorToolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EditorToolsetProperty = RegisterProperty("EditorToolset", typeof(GraphToolset), null);
+        public GraphToolset EditorToolset { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public GraphToolset NavigatorToolset
-        {
-            get { return GetValue<GraphToolset>(NavigatorToolsetProperty); }
-            set { SetValue(NavigatorToolsetProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the NavigatorToolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData NavigatorToolsetProperty = RegisterProperty("NavigatorToolset", typeof(GraphToolset), null);
+        public GraphToolset NavigatorToolset { get; set; }
 
         public void NavigateTo(DataVertex dataVertex)
         {

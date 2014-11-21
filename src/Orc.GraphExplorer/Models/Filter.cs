@@ -5,27 +5,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
-    using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
+    using System.ComponentModel;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     using Catel;
     using Catel.Collections;
     using Catel.Data;
-    using Messages;
+
     using Orc.GraphExplorer.Models.Data;
-    using QuickGraph;
 
     public class Filter : ModelBase
     {
+        #region Fields
         private readonly GraphLogic _logic;
+        #endregion
 
+        #region Constructors
         public Filter(GraphLogic logic)
         {
             Argument.IsNotNull(() => logic);
@@ -43,8 +43,39 @@ namespace Orc.GraphExplorer.Models
 
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
         }
+        #endregion
 
-        void _logic_GraphReloaded(object sender, GraphEventArgs e)
+        #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsFilterEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsHideVertexes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public bool IsFilterApplied { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ObservableCollection<FilterableEntity> FilterableEntities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ObservableCollection<FilterableEntity> FilteredEntities { get; set; }
+        #endregion
+
+        #region Methods
+        private void _logic_GraphReloaded(object sender, GraphEventArgs e)
         {
             var filterableEntities = FilterableEntities;
 
@@ -90,11 +121,11 @@ namespace Orc.GraphExplorer.Models
 
             foreach (var dataEdge in _logic.Graph.Edges)
             {
-                dataEdge.IsVisible = dataEdge.IsFiltered;
+                dataEdge.IsVisible = !IsHideVertexes || dataEdge.IsFiltered;
             }
         }
 
-        void FilteredEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void FilteredEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -116,8 +147,8 @@ namespace Orc.GraphExplorer.Models
                         if (IsFilterApplied)
                         {
                             foreach (var item in e.NewItems.OfType<FilterableEntity>())
-                            {       
-                                ApplyFilterForEntity(item, true);                            
+                            {
+                                ApplyFilterForEntity(item, true);
                             }
                         }
                     }
@@ -132,17 +163,17 @@ namespace Orc.GraphExplorer.Models
                         IsFilterApplied = false;
                     }
                     break;
-            }         
+            }
         }
-        
-        void OnVertexAdded(DataVertex vertex)
+
+        private void OnVertexAdded(DataVertex vertex)
         {
             Argument.IsNotNull(() => vertex);
 
             FilterableEntities.Add(new FilterableEntity(vertex));
         }
 
-        void OnVertexRemoved(DataVertex vertex)
+        private void OnVertexRemoved(DataVertex vertex)
         {
             Argument.IsNotNull(() => vertex);
 
@@ -153,34 +184,6 @@ namespace Orc.GraphExplorer.Models
         }
 
         /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsFilterEnabled
-        {
-            get { return GetValue<bool>(IsFilterEnabledProperty); }
-            set { SetValue(IsFilterEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsFilterEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsFilterEnabledProperty = RegisterProperty("IsFilterEnabled", typeof(bool), () => false);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsHideVertexes
-        {
-            get { return GetValue<bool>(IsHideVertexesProperty); }
-            set { SetValue(IsHideVertexesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsHideVertexes property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsHideVertexesProperty = RegisterProperty("IsHideVertexes", typeof(bool), true, (sender, e) => ((Filter)sender).OnIsHideVertexesChanged());
-
-        /// <summary>
         /// Called when the IsHideVertexes property has changed.
         /// </summary>
         private void OnIsHideVertexesChanged()
@@ -189,22 +192,8 @@ namespace Orc.GraphExplorer.Models
             {
                 FilterEntities();
                 FilterEdges();
-            }                            
+            }
         }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsFilterApplied
-        {
-            get { return GetValue<bool>(IsFilterAppliedProperty); }
-            set { SetValue(IsFilterAppliedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsFilterApplied property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsFilterAppliedProperty = RegisterProperty("IsFilterApplied", typeof(bool), null, (sender, args) => ((Filter)sender).OnIsFilterAppliedChanged());
 
         private void OnIsFilterAppliedChanged()
         {
@@ -228,34 +217,6 @@ namespace Orc.GraphExplorer.Models
             }
         }
 
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ObservableCollection<FilterableEntity> FilterableEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilterableEntitiesProperty); }
-            set { SetValue(FilterableEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilterableEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilterableEntitiesProperty = RegisterProperty("FilterableEntities", typeof(ObservableCollection<FilterableEntity>), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ObservableCollection<FilterableEntity> FilteredEntities
-        {
-            get { return GetValue<ObservableCollection<FilterableEntity>>(FilteredEntitiesProperty); }
-            set { SetValue(FilteredEntitiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the FilteredEntities property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilteredEntitiesProperty = RegisterProperty("FilteredEntities", typeof(ObservableCollection<FilterableEntity>), null);
-
         public void UpdateFilterSource()
         {
             var filterableEntities = FilterableEntities;
@@ -263,5 +224,6 @@ namespace Orc.GraphExplorer.Models
             filterableEntities.Clear();
             filterableEntities.AddRange(FilterableEntity.GenerateFilterableEntities(_logic.Graph.Vertices));
         }
+        #endregion
     }
 }

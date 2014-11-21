@@ -62,44 +62,17 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsChanged
-        {
-            get { return GetValue<bool>(IsChangedProperty); }
-            set { SetValue(IsChangedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsChanged property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
+        public bool IsChanged { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public GraphArea Area
-        {
-            get { return GetValue<GraphArea>(EditorAreaProperty); }
-            set { SetValue(EditorAreaProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Area property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EditorAreaProperty = RegisterProperty("Area", typeof(GraphArea), null);
+        public GraphArea Area { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public Filter Filter
-        {
-            get { return GetValue<Filter>(FilterProperty); }
-            set { SetValue(FilterProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Filter property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData FilterProperty = RegisterProperty("Filter", typeof(Filter), null);
+        public Filter Filter { get; set; }
 
         public void SaveToXml()
         {

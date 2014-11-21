@@ -26,44 +26,17 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public string RelationshipsFile
-        {
-            get { return GetValue<string>(RelationshipsFileProperty); }
-            set { SetValue(RelationshipsFileProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the RelationshipsFile property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData RelationshipsFileProperty = RegisterProperty("RelationshipsFile", typeof(string), null);
+        public string RelationshipsFile { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public string PropertiesFile
-        {
-            get { return GetValue<string>(PropertiesFileProperty); }
-            set { SetValue(PropertiesFileProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the PropertiesFile property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PropertiesFileProperty = RegisterProperty("PropertiesFile", typeof(string), null);
+        public string PropertiesFile { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool? EnableProperty
-        {
-            get { return GetValue<bool?>(EnablePropertyProperty); }
-            set { SetValue(EnablePropertyProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the EnableProperty property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EnablePropertyProperty = RegisterProperty("EnableProperty", typeof(bool?), null);
+        public bool? EnableProperty { get; set; }
 
         public void Save()
         {

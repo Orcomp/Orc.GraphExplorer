@@ -10,6 +10,7 @@ namespace Orc.GraphExplorer.Models
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Globalization;
     using System.Runtime.Serialization;
     using System.Windows.Media;
@@ -99,16 +100,8 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsFiltered
-        {
-            get { return GetValue<bool>(IsFilteredProperty); }
-            set { SetValue(IsFilteredProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsFiltered property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsFilteredProperty = RegisterProperty("IsFiltered", typeof(bool), () => true);
+        [DefaultValue(true)]
+        public bool IsFiltered { get; set; }
 
         public object Tag { get; set; }
 
@@ -116,31 +109,13 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         [YAXSerializableField]
-        public ImageSource Icon
-        {
-            get { return GetValue<ImageSource>(IconProperty); }
-            set { SetValue(IconProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Icon property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IconProperty = RegisterProperty("Icon", typeof(ImageSource), null);
+        public ImageSource Icon { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [YAXSerializableField]
-        public string Title
-        {
-            get { return GetValue<string>(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Title property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof(string), null);
+        public string Title { get; set; }
 
         [YAXSerializableField]
         public ObservableCollection<Property> Properties
@@ -157,58 +132,26 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public double X
-        {
-            get { return GetValue<double>(XProperty); }
-            set { SetValue(XProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the X property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData XProperty = RegisterProperty("X", typeof(double), () => double.NaN);
+        [DefaultValue(double.NaN)]
+        public double X { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public double Y
-        {
-            get { return GetValue<double>(YProperty); }
-            set { SetValue(YProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Y property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof(double), () => double.NaN);
+        [DefaultValue(double.NaN)]
+        public double Y { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsVisible
-        {
-            get { return GetValue<bool>(IsVisibleProperty); }
-            set { SetValue(IsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
+        [DefaultValue(true)]
+        public bool IsVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsEnabled
-        {
-            get { return GetValue<bool>(IsEnabledProperty); }
-            set { SetValue(IsEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsEnabledProperty = RegisterProperty("IsEnabled", typeof(bool), () => true);
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
         #endregion // Properties
 
         public static bool IsFakeVertex(DataVertex vertex)

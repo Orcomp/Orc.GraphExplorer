@@ -64,16 +64,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public IGraphDataGetter GraphDataGetter
-        {
-            get { return GetValue<IGraphDataGetter>(GraphDataGetterProperty); }
-            set { SetValue(GraphDataGetterProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the GraphDataGetter property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData GraphDataGetterProperty = RegisterProperty("GraphDataGetter", typeof(IGraphDataGetter), null, (sender, e) => ((GraphArea)sender).OnGraphDataGetterChanged());
+        public IGraphDataGetter GraphDataGetter { get; set; }
 
         /// <summary>
         /// Called when the GraphDataGetter property has changed.
@@ -90,16 +81,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public IGraphDataSaver GraphDataSaver
-        {
-            get { return GetValue<IGraphDataSaver>(GraphDataSaverProperty); }
-            set { SetValue(GraphDataSaverProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the GraphDataSaver property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData GraphDataSaverProperty = RegisterProperty("GraphDataSaver", typeof(IGraphDataSaver), null, (sender, e) => ((GraphArea)sender).OnGraphDataSaverChanged());
+        public IGraphDataSaver GraphDataSaver { get; set; }
 
         private void OnGraphDataSaverChanged()
         {
@@ -109,16 +91,8 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool CanEdit
-        {
-            get { return GetValue<bool>(CanEditProperty); }
-            set { SetValue(CanEditProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the CanEdit property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData CanEditProperty = RegisterProperty("CanEdit", typeof(bool), () => false);
+        [DefaultValue(false)]
+        public bool CanEdit { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -145,44 +119,19 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public string ToolsetName
-        {
-            get { return GetValue<string>(ToolsetNameProperty); }
-            set { SetValue(ToolsetNameProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the ToolsetName property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetNameProperty = RegisterProperty("ToolsetName", typeof(string), null);
+        public string ToolsetName { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsDragEnabled
-        {
-            get { return GetValue<bool>(IsDragEnabledProperty); }
-            set { SetValue(IsDragEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsDragEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool), () => false);
+        [DefaultValue(false)]
+        public bool IsDragEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsInEditing
-        {
-            get { return GetValue<bool>(IsInEditingProperty); }
-            set { SetValue(IsInEditingProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), () => false, (sender, e) => ((GraphArea)sender).OnIsInEditingChanged());
+        [DefaultValue(false)]
+        public bool IsInEditing { get; set; }
 
         /// <summary>
         /// Called when the IsInEditing property has changed.
