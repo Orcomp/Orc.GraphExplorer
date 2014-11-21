@@ -37,7 +37,7 @@ namespace Orc.GraphExplorer.Models
         private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
         {
             var editorArea = EditorToolset.Area;
-            if (message.Data == "Editor" && editorArea.GraphDataGetter == null)
+            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
             {
                 var graphDataService = new CsvGraphDataService();
                 editorArea.GraphDataGetter = graphDataService;
@@ -45,7 +45,7 @@ namespace Orc.GraphExplorer.Models
             }
 
             var navigatorArea = NavigatorToolset.Area;
-            if (message.Data == "Navigator" && navigatorArea.GraphDataGetter == null)
+            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
             {
                 navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter(editorArea.Logic.Graph);
             }

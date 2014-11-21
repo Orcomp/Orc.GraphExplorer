@@ -25,7 +25,7 @@ namespace Orc.GraphExplorer.Views.Base
         private event EventHandler<EventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public ButtonBaseView()
+        protected ButtonBaseView()
         {            
             _logic = new UserControlLogic(this);      
         }

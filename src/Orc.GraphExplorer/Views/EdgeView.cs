@@ -63,14 +63,5 @@ namespace Orc.GraphExplorer.Views
             get { return base.IsEnabled; }
             set { base.IsEnabled = value; }
         }
-
-        public EdgeViewModel ViewModel {
-            get
-            {
-                return base.ViewModel as EdgeViewModel;
-            }
-        }
-
-
     }
 }

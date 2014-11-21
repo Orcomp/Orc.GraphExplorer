@@ -15,7 +15,7 @@ namespace Orc.GraphExplorer
 
     public class GraphEventArgs : EventArgs
     {
-        public Graph Graph { get; set; }
+        public Graph Graph { get; private set; }
 
         public GraphEventArgs(Graph graph)
         {

@@ -63,7 +63,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets the Save command.
         /// </summary>
-        public Command Save { get; private set; }
+        public new Command Save { get; private set; }
 
         /// <summary>
         /// Method to invoke when the Save command is executed.

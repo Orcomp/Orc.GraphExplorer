@@ -23,7 +23,7 @@ namespace Orc.GraphExplorer.Models
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataVertex : ModelBase, IGraphXVertex
     {
-        public const int FakeVertexId = -666;
+        private const int FakeVertexId = -666;
         #region Constructors
         /// <summary>
         /// Default constructor for this class

@@ -4,7 +4,7 @@
 
     public class SettingAppliedRoutedEventArgs : RoutedEventArgs
     {
-        bool _needRefresh;
+        readonly bool _needRefresh;
 
         public bool NeedRefresh
         {

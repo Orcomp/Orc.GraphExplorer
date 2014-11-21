@@ -31,7 +31,7 @@ namespace Orc.GraphExplorer.Views.Base
         private event EventHandler<EventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
+        protected VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
             Argument.IsNotNull(() => vertexData);

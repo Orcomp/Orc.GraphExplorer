@@ -16,9 +16,10 @@
         where TEdge : IEdge<TVertex>
         where TGraph : IVertexAndEdgeListGraph<TVertex, TEdge>
     {
-        TGraph _graph;
+        readonly TGraph _graph;
         double _rate;
-        double _offsetX;
+
+        readonly double _offsetX;
         double _offsetY;
         public TopologicalLayoutAlgorithm(TGraph graph,double rate,double offsetX = 0,double offsetY = 600)
         {
@@ -67,17 +68,6 @@
             get { return vertexPositions; }
         }
 
-        IDictionary<TVertex, Size> vertexSizes;
-        public IDictionary<TVertex, Size> VertexSizes
-        {
-            get
-            {
-                return vertexSizes;
-            }
-            set
-            {
-                vertexSizes = value;
-            }
-        }
+        public IDictionary<TVertex, Size> VertexSizes { get; set; }
     }
 }

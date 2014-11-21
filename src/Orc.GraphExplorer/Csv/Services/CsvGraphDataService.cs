@@ -32,7 +32,6 @@ namespace Orc.GraphExplorer.Csv.Services
 
         private List<DataEdge> _edges;
 
-        private IList<RelationDataRecord> _loadedRelations;
         #endregion
 
         #region Constructors
@@ -139,7 +138,7 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region Methods
-        public IEnumerable<DataVertex> InitializeVertexProperties()
+        private IEnumerable<DataVertex> InitializeVertexProperties()
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
@@ -153,7 +152,7 @@ namespace Orc.GraphExplorer.Csv.Services
             });
         }
 
-        public IEnumerable<DataEdge> InitializeEdges()
+        private IEnumerable<DataEdge> InitializeEdges()
         {
             return from relation in LoadRelations()
                 let @from = GetOrCreateVertex(relation.From)

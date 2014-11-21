@@ -74,7 +74,7 @@ namespace Orc.GraphExplorer.Views
             }
         }
 
-        public FilterViewModel ViewModel
+        public new FilterViewModel ViewModel
         {
             get
             {

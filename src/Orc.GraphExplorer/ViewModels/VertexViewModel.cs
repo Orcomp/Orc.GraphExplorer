@@ -49,7 +49,7 @@ namespace Orc.GraphExplorer.ViewModels
             IsDragEnabled = graphAreaViewModel.IsDragEnabled;
         }
 
-        public new GraphAreaViewModel GraphAreaViewModel
+        public GraphAreaViewModel GraphAreaViewModel
         {
             get { return base.ParentViewModel as GraphAreaViewModel; }
         }

@@ -27,7 +27,7 @@ namespace Orc.GraphExplorer.Views.Base
         private event EventHandler<EventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
+        protected EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
             : base(source, target, edge, showLabels, showArrows)
         {
             Argument.IsNotNull(() => source);

@@ -49,7 +49,7 @@ namespace Orc.GraphExplorer.Views
             }
         }
 
-        public PropertyViewModel ViewModel {
+        public new PropertyViewModel ViewModel {
             get
             {
                 return base.ViewModel as PropertyViewModel;

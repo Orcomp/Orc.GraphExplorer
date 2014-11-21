@@ -15,9 +15,9 @@
 
             ID = vertex.ID;
             Title = vertex.Title;
-            FirstName = vertex.Properties.Any(p => p.Key == "FirstName") ? vertex.Properties.First(p => p.Key == "FirstName").Value : string.Empty;
-            LastName = vertex.Properties.Any(p => p.Key == "LastName") ? vertex.Properties.First(p => p.Key == "LastName").Value : string.Empty;
-            Age = vertex.Properties.Any(p => p.Key == "Age" && IsInt(p.Value)) ? int.Parse((vertex.Properties.First(p => p.Key == "Age").Value)) : 0;
+            FirstName = vertex.Properties.Any(p => string.Equals(p.Key,"FirstName")) ? vertex.Properties.First(p => string.Equals(p.Key, "FirstName")).Value : string.Empty;
+            LastName = vertex.Properties.Any(p => string.Equals(p.Key, "LastName")) ? vertex.Properties.First(p => string.Equals(p.Key, "LastName")).Value : string.Empty;
+            Age = vertex.Properties.Any(p => string.Equals(p.Key, "Age") && IsInt(p.Value)) ? int.Parse((vertex.Properties.First(p => string.Equals(p.Key, "Age")).Value)) : 0;
             Vertex = vertex;
         }
 

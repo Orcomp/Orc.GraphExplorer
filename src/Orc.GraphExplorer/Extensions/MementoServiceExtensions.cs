@@ -8,6 +8,8 @@
 namespace Orc.GraphExplorer
 {
     using System.Linq;
+
+    using Catel;
     using Catel.Memento;
     using Operations;
     using Orc.GraphExplorer.Messages;
@@ -31,6 +33,8 @@ namespace Orc.GraphExplorer
 
         public static void Do(this IMementoService mementoService, IOperation operation)
         {
+            Argument.IsNotNull(() => operation);
+
             operation.Do();
             mementoService.ClearRedoBatches();
             mementoService.Add(operation);

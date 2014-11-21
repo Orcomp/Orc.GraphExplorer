@@ -353,16 +353,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnIsAddingNewEdgeChanged()
         {
-            if (IsAddingNewEdge)
-            {
-                StatusMessage.SendWith("Select Source Node");
-            }
-            else
-            {
-                StatusMessage.SendWith("Exit Create Link");
-            }
-        }        
-
+            StatusMessage.SendWith(IsAddingNewEdge ? "Select Source Node" : "Exit Create Link");
+        }
 
         public void NavigateTo(DataVertex dataVertex)
         {

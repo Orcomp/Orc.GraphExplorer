@@ -40,11 +40,11 @@ namespace Orc.GraphExplorer.Views.Base
         #endregion
 
         #region Fields
-        private UserControlLogic _logic;
+        private readonly UserControlLogic _logic;
         #endregion
 
         #region Constructors
-        public GraphAreaViewBase()
+        protected GraphAreaViewBase()
         {
             // TODO: try to inject IGraphControlFactory
             IServiceLocator serviceLocator = this.GetServiceLocator();
@@ -315,7 +315,7 @@ namespace Orc.GraphExplorer.Views.Base
             //dataVertex.Tag = null;
         }
 
-        public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
+        private static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
         {
             if (action == null)
                 return;

@@ -23,7 +23,7 @@ namespace Orc.GraphExplorer.Views
         // TODO: Replace this SettingApplied event
         // Create a custom routed event by first registering a RoutedEventID 
         // This event uses the bubbling routing strategy 
-        public static readonly RoutedEvent SettingAppliedEvent = EventManager.RegisterRoutedEvent(
+        private static readonly RoutedEvent SettingAppliedEvent = EventManager.RegisterRoutedEvent(
             "SettingApplied", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ConfigLocationView));
 
         // Provide CLR accessors for the event 
