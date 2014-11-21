@@ -13,16 +13,11 @@
 
     public class MainViewModel : ViewModelBase
     {
-        private IStatusService _statusService;
-        public MainViewModel()
+        private readonly IStatusService _statusService;
+        public MainViewModel(IStatusService statusService)
         {
+            _statusService = statusService;
             StatusMessage.Register(this, OnStatusMessage);
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-            _statusService = ServiceLocator.Default.ResolveType<IStatusService>();            
         }
 
         private void OnStatusMessage(StatusMessage message)

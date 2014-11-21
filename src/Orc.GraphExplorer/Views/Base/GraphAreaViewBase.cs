@@ -49,7 +49,7 @@ namespace Orc.GraphExplorer.Views.Base
         public GraphAreaViewBase()
         {
             // TODO: try to inject IGraphControlFactory
-            IServiceLocator serviceLocator = ServiceLocator.Default;
+            IServiceLocator serviceLocator = this.GetServiceLocator();
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
 

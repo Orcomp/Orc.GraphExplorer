@@ -22,18 +22,20 @@ namespace Orc.GraphExplorer.ViewModels
 
     public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable/*, IEdgeDrwingCanvas*/
     {
+        private readonly IViewModelManager _viewModelManager;
+
         public GraphAreaViewModel()
         {
             
         }
 
 
-        public GraphAreaViewModel(GraphArea area)
+        public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager)
         {
+            _viewModelManager = viewModelManager;
             Area = area;
         }
 
-        
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -99,7 +101,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnIsDragEnabledChanged()
         {
-            var vertexViewModels = ServiceLocator.Default.ResolveType<IViewModelManager>().GetChildViewModels(this).OfType<VertexViewModel>();
+            var vertexViewModels = _viewModelManager.GetChildViewModels(this).OfType<VertexViewModel>();
             foreach (var vertex in vertexViewModels)
             {
                 vertex.IsDragEnabled = IsDragEnabled;
@@ -125,14 +127,14 @@ namespace Orc.GraphExplorer.ViewModels
         /// Called when the IsInEditing property has changed.
         /// </summary>
         private void OnIsInEditingChanged()
-        {            
-            var vertexViewModels = ServiceLocator.Default.ResolveType<IViewModelManager>().GetChildViewModels(this).OfType<VertexViewModel>();
+        {
+            var vertexViewModels = _viewModelManager.GetChildViewModels(this).OfType<VertexViewModel>();
             foreach (var vertex in vertexViewModels)
             {
                 vertex.IsInEditing = IsInEditing;
             }
 
-            var edgeViewModels = ServiceLocator.Default.ResolveType<IViewModelManager>().GetChildViewModels(this).OfType<EdgeViewModel>();
+            var edgeViewModels = _viewModelManager.GetChildViewModels(this).OfType<EdgeViewModel>();
             foreach (var edge in edgeViewModels)
             {
                 edge.IsInEditing = IsInEditing;
