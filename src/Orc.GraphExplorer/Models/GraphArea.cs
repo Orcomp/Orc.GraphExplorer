@@ -29,20 +29,16 @@ namespace Orc.GraphExplorer.Models
 
     public class GraphArea : ModelBase
     {
-        private readonly IMementoService _mementoService;
-        private readonly IMessageService _messageService;
-
-        public GraphArea(string toolsetName, IMementoService mementoService, IMessageService messageService)
+        public GraphArea(string toolsetName)
         {
             Argument.IsNotNullOrEmpty(() => toolsetName);
 
-            _mementoService = mementoService;
-            _messageService = messageService;
             ToolsetName = toolsetName;
 
             Logic = new GraphLogic();   
         }
 
+        // TODO: move is to specific service
         public void ReloadGraphArea(double offsetY)
         {
             if (GraphDataGetter == null)
@@ -97,24 +93,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public GraphLogic Logic
-        {
-            get { return GetValue<GraphLogic>(LogicProperty); }
-            set { SetValue(LogicProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Logic property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic), () => new GraphLogic(), (sender, e) => ((GraphArea)sender).OnLogicChanged());
-
-        /// <summary>
-        /// Called when the Logic property has changed.
-        /// </summary>
-        private void OnLogicChanged()
-        {
-            //Logic.GraphReloaded += Logic_GraphReloaded;
-        }
+        public GraphLogic Logic { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -131,103 +110,6 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         [DefaultValue(false)]
-        public bool IsInEditing { get; set; }
-
-        /// <summary>
-        /// Called when the IsInEditing property has changed.
-        /// </summary>
-        private async Task OnIsInEditingChanged()
-        {
-            if (IsInEditing)
-            {
-                StatusMessage.SendWith("Edit Mode");
-            }
-            else
-            {
-                if (_mementoService.CanUndo)
-                {
-                    var messageResult = await _messageService.Show("Do you want to save changes?", "Confirmation", MessageButton.YesNoCancel, MessageImage.Question);
-                    if (messageResult == MessageResult.Yes)
-                    {
-                        SaveChanges();
-                    }
-                    else if (messageResult == MessageResult.Cancel)
-                    {
-                        IsInEditing = true;
-                        return;
-                    }
-                    else
-                    {
-                        while (_mementoService.CanUndo)
-                        {
-                            _mementoService.Undo();
-                        }
-                    }
-                }
-                _mementoService.Clear();
-
-                GraphChangedMessage.SendWith(_mementoService.CanUndo);
-
-                StatusMessage.SendWith("Exit Edit Mode");
-            }
-            EditingStartStopMessage.SendWith(IsInEditing, ToolsetName);
-        }
-
-        public void AddVertex(DataVertex dataVertex, Point point)
-        {
-            Argument.IsNotNull(() => dataVertex);
-
-            var operation = new AddVertexOperation(this, dataVertex, point);
-            _mementoService.Do(operation);
-            GraphChangedMessage.SendWith(_mementoService.CanUndo);
-        }
-
-        public void AddEdge(DataVertex startVertex, DataVertex endVertex)
-        {
-            Argument.IsNotNull(() => startVertex);
-            Argument.IsNotNull(() => endVertex);
-
-            var edge = new DataEdge(startVertex, endVertex);
-            var operation = new AddEdgeOperation(this, edge);
-            _mementoService.Do(operation);
-        }
-
-        public void SaveChanges()
-        {
-            if (GraphDataSaver == null)
-            {
-                return;
-            }
-
-            GraphDataSaver.SaveChanges(Logic.Graph);
-
-            IsInEditing = false;
-        }
-
-        public void RemoveEdge(DataEdge edge)
-        {
-            Argument.IsNotNull(() => edge);
-
-            var operation = new RemoveEdgeOperation(this, edge);
-            _mementoService.Do(operation);
-            GraphChangedMessage.SendWith(_mementoService.CanUndo);
-        }
-
-        public void RemoveVertex(DataVertex vertex)
-        {
-            Argument.IsNotNull(() => vertex);
-
-            _mementoService.ClearRedoBatches();
-            var operations = new OperationsBatch {Description = "remove vertex"};
-            var graph = Logic.Graph;
-            foreach (var edge in graph.InEdges(vertex).Concat(graph.OutEdges(vertex)).ToArray())
-            {
-                operations.AddOperation(new RemoveEdgeOperation(this, edge));
-            }
-
-            operations.AddOperation(new RemoveVertexOperation(this, vertex));
-            _mementoService.Do(operations);
-            GraphChangedMessage.SendWith(_mementoService.CanUndo);
-        }
+        public bool IsInEditing { get; set; }       
     }
 }

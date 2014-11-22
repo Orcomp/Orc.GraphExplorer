@@ -21,7 +21,7 @@
 
             var config = section.CsvGraphDataServiceConfig;
 
-            return new ConfigLocation(this)
+            return new ConfigLocation()
                    {
                        RelationshipsFile = config.EdgesFilePath, 
                        PropertiesFile = config.VertexesFilePath, 
@@ -44,14 +44,36 @@
             GraphExplorerSection.Current.Save();
         }
 
-        public string OpenRelationshipsFile()
+        private string OpenRelationshipsFile()
         {
             return OpenFile("Select Relationship File");
         }
 
-        public string OpenPropertiesFile()
+        private string OpenPropertiesFile()
         {
             return OpenFile("Select Properties File");
+        }
+
+        public void ChangeRelationshipsFileLocation(ConfigLocation configLocation)
+        {
+            var rellationshipsFile = OpenRelationshipsFile();
+            if (string.IsNullOrEmpty(rellationshipsFile))
+            {
+                return;
+            }
+
+            configLocation.RelationshipsFile = rellationshipsFile;
+        }
+
+        public void ChangePropertiesFileLocation(ConfigLocation configLocation)
+        {
+            var propertiesFile = OpenPropertiesFile();
+            if (string.IsNullOrEmpty(propertiesFile))
+            {
+                return;
+            }
+
+            configLocation.PropertiesFile = propertiesFile;    
         }
 
         private string OpenFile(string title)

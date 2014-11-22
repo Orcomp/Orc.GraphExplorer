@@ -9,22 +9,28 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Windows.Media;
 
     using Catel.Data;
+    using Catel.Fody;
     using Catel.MVVM;
 
     using Orc.GraphExplorer.Models;
+    using Services;
 
     public class VertexViewModel : ViewModelBase
     {
+        private readonly IGraphAreaEditorService _graphAreaEditorService;
+
         public VertexViewModel()
         {
             
         }
 
-        public VertexViewModel(DataVertex dataVertex)
+        public VertexViewModel(DataVertex dataVertex, IGraphAreaEditorService graphAreaEditorService)
         {
+            _graphAreaEditorService = graphAreaEditorService;
             DataVertex = dataVertex;
             AddCommand = new Command(OnAddCommandExecute);
             DeleteCommand = new Command(OnDeleteCommandExecute, OnDeleteCommandCanExecute);
@@ -58,120 +64,30 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public DataVertex DataVertex
-        {
-            get { return GetValue<DataVertex>(DataProperty); }
-            set { SetValue(DataProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the DataVertex property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData DataProperty = RegisterProperty("DataVertex", typeof (DataVertex));
+        [Expose("Icon")]
+        [Expose("Title")]
+        [Expose("X")]
+        [Expose("Y")]
+        [Expose("IsVisible")]
+        public DataVertex DataVertex { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("DataVertex")]
-        public ImageSource Icon
-        {
-            get { return GetValue<ImageSource>(IconProperty); }
-            set { SetValue(IconProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Icon property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IconProperty = RegisterProperty("Icon", typeof (ImageSource));
+        public ObservableCollection<Property> Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("DataVertex")]
-        public new string Title
-        {
-            get { return GetValue<string>(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Title property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData TitleProperty = RegisterProperty("Title", typeof (string));
+        [DefaultValue(false)]
+        public bool IsExpanded { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("DataVertex")]
-        public ObservableCollection<Property> Properties
-        {
-            get { return GetValue<ObservableCollection<Property>>(PropertiesProperty); }
-            set { SetValue(PropertiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Properties property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof (ObservableCollection<Property>));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("DataVertex")]
-        public double X
-        {
-            get { return GetValue<double>(XProperty); }
-            set { SetValue(XProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the X property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData XProperty = RegisterProperty("X", typeof (double));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("DataVertex")]
-        public double Y
-        {
-            get { return GetValue<double>(YProperty); }
-            set { SetValue(YProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Y property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData YProperty = RegisterProperty("Y", typeof (double));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsExpanded
-        {
-            get { return GetValue<bool>(IsExpandedProperty); }
-            set { SetValue(IsExpandedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsExpanded property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsExpandedProperty = RegisterProperty("IsExpanded", typeof (bool), () => false);
-
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsDragging
-        {
-            get { return GetValue<bool>(IsDraggingProperty); }
-            set { SetValue(IsDraggingProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsDragging property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDraggingProperty = RegisterProperty("IsDragging", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsDragging { get; set; }
 
         /// <summary>
         /// Gets the AddCommand command.
@@ -232,7 +148,7 @@ namespace Orc.GraphExplorer.ViewModels
 
             if (areaViewModel != null)
             {
-                areaViewModel.RemoveVertex(DataVertex);
+                _graphAreaEditorService.RemoveVertex(areaViewModel.Area, DataVertex);
             }
         }
 
@@ -247,58 +163,26 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsHighlightEnabled
-        {
-            get { return GetValue<bool>(IsHighlightEnabledProperty); }
-            set { SetValue(IsHighlightEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsHighlightEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsHighlightEnabledProperty = RegisterProperty("IsHighlightEnabled", typeof (bool), () => true);
+        [DefaultValue(true)]
+        public bool IsHighlightEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsHighlighted
-        {
-            get { return GetValue<bool>(IsHighlightedProperty); }
-            set { SetValue(IsHighlightedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsHighlighted property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsHighlightedProperty = RegisterProperty("IsHighlighted", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsHighlighted { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsDragEnabled
-        {
-            get { return GetValue<bool>(IsDragEnabledProperty); }
-            set { SetValue(IsDragEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsDragEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsDragEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsInEditing
-        {
-            get { return GetValue<bool>(IsInEditingProperty); }
-            set { SetValue(IsInEditingProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof (bool), () => false, (sender, args) => ((VertexViewModel) sender).OnIsInEditingChanged());
+        [DefaultValue(false)]
+        public bool IsInEditing { get; set; }
 
         private void OnIsInEditingChanged()
         {
@@ -311,30 +195,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("DataVertex")]
-        public bool IsVisible
-        {
-            get { return GetValue<bool>(IsVisibleProperty); }
-            set { SetValue(IsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof (bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsEnabled
-        {
-            get { return GetValue<bool>(IsEnabledProperty); }
-            set { SetValue(IsEnabledProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsEnabledProperty = RegisterProperty("IsEnabled", typeof (bool), () => true);
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
     }
 }

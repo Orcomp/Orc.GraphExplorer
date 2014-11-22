@@ -22,5 +22,7 @@ public static class ModuleInitializer
         serviceLocator.RegisterType<IGraphControlFactory, CustomGraphControlFactory>();
         serviceLocator.RegisterType(typeof(IGraphDataGetter), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv);
         serviceLocator.RegisterType<IMementoService, MementoService>();
+        serviceLocator.RegisterType<IGraphAreaEditorService, GraphAreaEditorService>();
+        serviceLocator.RegisterType<IEdgeDrawingService, EdgeDrawingService>();
     }
 }

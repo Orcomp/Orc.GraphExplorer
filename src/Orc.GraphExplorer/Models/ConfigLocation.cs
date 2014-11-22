@@ -16,13 +16,6 @@ namespace Orc.GraphExplorer.Models
 
     public class ConfigLocation : ModelBase
     {
-        private readonly IConfigLocationService _configLocationService;
-
-        public ConfigLocation(IConfigLocationService configLocationService)
-        {
-            _configLocationService = configLocationService;
-        }
-
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -37,33 +30,5 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         public bool? EnableProperty { get; set; }
-
-        public void Save()
-        {
-            _configLocationService.Save(this);
-            SettingsChangedMessage.SendWith(true);
-        }
-
-        public void ChangeRelationshipsFileLocation()
-        {
-            var rellationshipsFile = _configLocationService.OpenRelationshipsFile();
-            if (string.IsNullOrEmpty(rellationshipsFile))
-            {
-                return;
-            }
-
-            RelationshipsFile = rellationshipsFile;
-        }
-
-        public void ChangePropertiesFileLocation()
-        {
-            var propertiesFile = _configLocationService.OpenPropertiesFile();
-            if (string.IsNullOrEmpty(propertiesFile))
-            {
-                return;
-            }
-
-            PropertiesFile = propertiesFile;           
-        }
     }
 }

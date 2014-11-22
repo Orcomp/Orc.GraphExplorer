@@ -8,7 +8,9 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using Catel.Data;
+    using Catel.Fody;
     using Catel.MVVM;
     using Models;
 
@@ -27,74 +29,15 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public Property Property
-        {
-            get { return GetValue<Property>(PropertyProperty); }
-            private set { SetValue(PropertyProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Property property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PropertyProperty = RegisterProperty("Property", typeof(Property));
+        [Expose("Key")]
+        [Expose("Value")]
+        [Expose("IsInEditing")]
+        public Property Property { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("Property")]
-        public string Key
-        {
-            get { return GetValue<string>(KeyProperty); }
-            set { SetValue(KeyProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Key property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData KeyProperty = RegisterProperty("Key", typeof(string));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Property")]
-        public string Value
-        {
-            get { return GetValue<string>(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Value property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ValueProperty = RegisterProperty("Value", typeof(string));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Property")]
-        public bool IsInEditing
-        {
-            get { return GetValue<bool>(IsInEditingProperty); }
-            set { SetValue(IsInEditingProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsSelected
-        {
-            get { return GetValue<bool>(IsSelectedProperty); }
-            set { SetValue(IsSelectedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsSelected property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsSelectedProperty = RegisterProperty("IsSelected", typeof(bool), () => false);
+        [DefaultValue(false)]
+        public bool IsSelected { get; set; }
     }
 }

@@ -37,31 +37,13 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public Settings Settings
-        {
-            get { return GetValue<Settings>(SettingsProperty); }
-            private set { SetValue(SettingsProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Settings property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData SettingsProperty = RegisterProperty("Settings", typeof(Settings));
+        public Settings Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Settings")]
-        public bool IsSettingsVisible
-        {
-            get { return GetValue<bool>(IsSettingsVisibleProperty); }
-            set { SetValue(IsSettingsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsSettingsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsSettingsVisibleProperty = RegisterProperty("IsSettingsVisible", typeof(bool));
+        public bool IsSettingsVisible { get; set; }
 
     }
 }

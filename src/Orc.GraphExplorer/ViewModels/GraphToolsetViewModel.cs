@@ -23,16 +23,19 @@ namespace Orc.GraphExplorer.ViewModels
     using Models.Data;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;
+    using Services;
 
     public class GraphToolsetViewModel : ViewModelBase, IGraphNavigator
     {
         private readonly IMementoService _mementoService;
         private readonly IMessageService _messageService;
+        private readonly IGraphAreaEditorService _graphAreaEditorService;
 
-        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService)
+        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService, IGraphAreaEditorService graphAreaEditorService)
         {
             _mementoService = mementoService;
             _messageService = messageService;
+            _graphAreaEditorService = graphAreaEditorService;
             Toolset = toolset;
 
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -127,7 +130,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveChangesCommandExecute()
         {
-            Area.SaveChanges();                        
+            _graphAreaEditorService.SaveChanges(Area);                       
         }
 
         /// <summary>

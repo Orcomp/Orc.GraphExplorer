@@ -16,15 +16,19 @@ namespace Orc.GraphExplorer.ViewModels
     using Catel.Fody;
     using Catel.IoC;
     using Catel.MVVM;
+    using Messages;
     using Microsoft.Win32;
     using Models;
+    using Services;
 
     public class ConfigLocationViewModel : ViewModelBase
     {
-    
+        private readonly IConfigLocationService _configLocationService;
+
         #region Constructors
-        public ConfigLocationViewModel(ConfigLocation configLocation)
+        public ConfigLocationViewModel(ConfigLocation configLocation, IConfigLocationService configLocationService)
         {
+            _configLocationService = configLocationService;
             ConfigLocation = configLocation;
             ChangeRelationships = new Command(OnChangeRelationshipsExecute);
             ChangeProperties = new Command(OnChangePropertiesExecute, () => EnableProperty ?? false);
@@ -43,7 +47,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnChangeRelationshipsExecute()
         {
-            ConfigLocation.ChangeRelationshipsFileLocation();
+            _configLocationService.ChangeRelationshipsFileLocation(ConfigLocation);
         }
 
 
@@ -57,7 +61,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnChangePropertiesExecute()
         {
-            ConfigLocation.ChangePropertiesFileLocation();            
+            _configLocationService.ChangePropertiesFileLocation(ConfigLocation);           
         }
 
         /// <summary>
@@ -70,7 +74,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveExecute()
         {
-            ConfigLocation.Save();
+            _configLocationService.Save(ConfigLocation);
+            SettingsChangedMessage.SendWith(true);
         }
 
         #endregion // Commands

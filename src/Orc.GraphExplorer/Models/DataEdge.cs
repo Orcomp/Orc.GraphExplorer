@@ -86,5 +86,29 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         [DefaultValue(true)]
         public bool IsVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsHighlightEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsHighlighted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsInEditing { get; set; }
     }
 }

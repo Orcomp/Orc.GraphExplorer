@@ -5,99 +5,180 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
     using System;
-    using System.ComponentModel;
     using System.Linq;
     using System.Windows;
+    using System.Windows.Media;
     using Behaviors;
-
     using Catel;
-    using Catel.Data;
-    using Catel.IoC;
-    using Catel.Memento;
+    using Catel.Fody;
     using Catel.MVVM;
+    using Messages;
+    using Models;
+    using Models.Data;
+    using Services;
 
-    using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Models.Data;
-
-    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable, IGraphLogicProvider/*, IEdgeDrwingCanvas*/
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable, IGraphLogicProvider, IEdgeDrawer
     {
+        #region Fields
         private readonly IViewModelManager _viewModelManager;
+        private readonly IGraphAreaEditorService _graphAreaEditorService;
+        private readonly IEdgeDrawingService _edgeDrawingService;
+        #endregion
 
+        #region Constructors
         public GraphAreaViewModel()
         {
-            
         }
 
-
-        public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager)
+        public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager, IGraphAreaEditorService graphAreaEditorService, IEdgeDrawingService edgeDrawingService)
         {
             _viewModelManager = viewModelManager;
+            _graphAreaEditorService = graphAreaEditorService;
+            _edgeDrawingService = edgeDrawingService;
             Area = area;
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public GraphArea Area
-        {
-            get { return GetValue<GraphArea>(EditorProperty); }
-            private set { SetValue(EditorProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Area property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EditorProperty = RegisterProperty("Area", typeof(GraphArea));
+        [Expose("GraphDataGetter")]
+        [Expose("GraphDataSaver")]
+        public GraphArea Area { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Area")]
-        public GraphLogic Logic
-        {
-            get { return GetValue<GraphLogic>(LogicProperty); }
-            set { SetValue(LogicProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Logic property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData LogicProperty = RegisterProperty("Logic", typeof(GraphLogic));
+        public string ToolsetName { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Area")]
-        public string ToolsetName
-        {
-            get { return GetValue<string>(ToolsetNameProperty); }
-            set { SetValue(ToolsetNameProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the ToolsetName property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetNameProperty = RegisterProperty("ToolsetName", typeof(string));
+        public bool IsDragEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Area")]
-        public bool IsDragEnabled
+        public bool IsInEditing { get; set; }
+
+        public GraphToolsetViewModel ToolSetViewModel
         {
-            get { return GetValue<bool>(IsDragEnabledProperty); }
-            set { SetValue(IsDragEnabledProperty, value); }
+            get { return ParentViewModel as GraphToolsetViewModel; }
+        }
+        #endregion
+
+        #region IDropable Members
+        public Type DataTypeFormat
+        {
+            get { return typeof (DataVertex); }
         }
 
-        /// <summary>
-        /// Register the IsDragEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool), null, (sender, e) => ((GraphAreaViewModel)sender).OnIsDragEnabledChanged());
+        public DragDropEffects GetDropEffects(IDataObject dataObject)
+        {
+            return DragDropEffects.None;
+        }
 
+        public void Drop(IDataObject dataObject, Point position)
+        {
+            Argument.IsNotNull(() => dataObject);
+
+            _graphAreaEditorService.AddVertex(Area, (DataVertex) dataObject.GetData(typeof (DataVertex)), position);
+        }
+        #endregion
+
+        #region IEdgeDrawer Members
+        public bool TryStartEdgeDrawing(DataVertex startVertex, Point startPoint, Point lastPoint)
+        {
+            Argument.IsNotNull(() => startVertex);
+
+            if (!IsInEditing || !ToolSetViewModel.IsAddingNewEdge || _edgeDrawingService.IsInDrawing())
+            {
+                return false;
+            }
+
+            _edgeDrawingService.StartEdgeDrawing(Logic.Graph, startVertex, startPoint, lastPoint);
+            return true;
+        }
+
+        public bool TryFinishEdgeDrawing(DataVertex endVertex)
+        {
+            Argument.IsNotNull(() => endVertex);
+
+            if (!_edgeDrawingService.IsInDrawing() || _edgeDrawingService.IsStartVertex(endVertex))
+            {
+                return false;
+            }
+
+            var startVertex = _edgeDrawingService.GetStartVertex();
+            _graphAreaEditorService.AddEdge(Area, startVertex, endVertex);
+
+            _edgeDrawingService.FinishEdgeDrawing(endVertex);
+
+            ToolSetViewModel.IsAddingNewEdge = false;
+
+            return true;
+        }
+
+        public void MoveBrush(Point point)
+        {
+            if (!ToolSetViewModel.IsAddingNewEdge)
+            {
+                return;
+            }
+
+            _edgeDrawingService.MoveBrush(point);
+        }
+
+        public PathGeometry GetEdgeGeometry()
+        {
+            return _edgeDrawingService.GetEdgeGeometry();
+        }
+        #endregion
+
+        #region IFilterable Members
+        public void UpdateFilterSource()
+        {
+            if (ToolSetViewModel != null)
+            {
+                ToolSetViewModel.Toolset.Filter.UpdateFilterSource();
+            }
+        }
+        #endregion
+
+        #region IGraphLogicProvider Members
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Area")]
+        public GraphLogic Logic { get; set; }
+        #endregion
+
+        #region IGraphNavigationController Members
+        public bool CanNavigate
+        {
+            get { return !IsInEditing; }
+        }
+        #endregion
+
+        #region IGraphNavigator Members
+        public void NavigateTo(DataVertex dataVertex)
+        {
+            Argument.IsNotNull(() => dataVertex);
+
+            ToolSetViewModel.NavigateTo(dataVertex);
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// Called when the IsDragEnabled property has changed.
         /// </summary>
@@ -111,24 +192,25 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool IsInEditing
-        {
-            get { return GetValue<bool>(IsInEditingProperty); }
-            set { SetValue(IsInEditingProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool), null, (sender, e) => ((GraphAreaViewModel)sender).OnIsInEditingChanged());
-
-        /// <summary>
         /// Called when the IsInEditing property has changed.
         /// </summary>
-        private void OnIsInEditingChanged()
+        private async void OnIsInEditingChanged()
+        {
+            UpdateGraphItemsEditingState();
+
+            if (IsInEditing)
+            {
+                StatusMessage.SendWith("Edit Mode");
+            }
+            else if (!await _graphAreaEditorService.TryExitEditMode(Area))
+            {
+                return;
+            }
+
+            EditingStartStopMessage.SendWith(IsInEditing, ToolsetName);
+        }
+
+        private void UpdateGraphItemsEditingState()
         {
             var vertexViewModels = _viewModelManager.GetChildViewModels(this).OfType<VertexViewModel>();
             foreach (var vertex in vertexViewModels)
@@ -142,63 +224,6 @@ namespace Orc.GraphExplorer.ViewModels
                 edge.IsInEditing = IsInEditing;
             }
         }
-
-        public Type DataTypeFormat {
-            get
-            {
-                return typeof(DataVertex);
-            }
-        }
-
-        public DragDropEffects GetDropEffects(IDataObject dataObject)
-        {
-            return DragDropEffects.None;
-        }
-
-        public void Drop(IDataObject dataObject, Point position)
-        {            
-            Argument.IsNotNull(() => dataObject);
-
-            Area.AddVertex((DataVertex)dataObject.GetData(typeof(DataVertex)), position);
-        }
-
-        public GraphToolsetViewModel ToolSetViewModel
-        {
-            get
-            {
-                return ParentViewModel as GraphToolsetViewModel;
-            }
-        }
-
-        public void RemoveEdge(DataEdge dataEdge)
-        {
-            Argument.IsNotNull(() => dataEdge);
-
-            Area.RemoveEdge(dataEdge);
-        }
-
-        public void RemoveVertex(DataVertex dataVertex)
-        {
-            Argument.IsNotNull(() => dataVertex);
-
-            Area.RemoveVertex(dataVertex);
-        }
-
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            Argument.IsNotNull(() => dataVertex);
-
-            ToolSetViewModel.NavigateTo(dataVertex);
-        }
-
-        public bool CanNavigate { get { return !IsInEditing; } }
-
-        public void UpdateFilterSource()
-        {
-            if (ToolSetViewModel != null)
-            {
-                ToolSetViewModel.Toolset.Filter.UpdateFilterSource();
-            }
-        }
+        #endregion
     }
 }

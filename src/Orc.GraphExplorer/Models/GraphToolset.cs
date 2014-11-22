@@ -39,7 +39,7 @@ namespace Orc.GraphExplorer.Models
             _mementoService = mementoService;
             _messageService = messageService;
             ToolsetName = toolsetName;
-            Area = new GraphArea(toolsetName, mementoService, messageService);
+            Area = new GraphArea(toolsetName);
             Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};
 
             SettingsChangedMessage.Register(this, OnSettingsChangedMessage);
