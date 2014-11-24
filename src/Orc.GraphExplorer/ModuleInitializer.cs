@@ -23,6 +23,10 @@ public static class ModuleInitializer
         serviceLocator.RegisterType(typeof(IGraphDataGetter), typeof(CsvGraphDataService), GraphDataServiceEnum.Csv);
         serviceLocator.RegisterType<IMementoService, MementoService>();
         serviceLocator.RegisterType<IGraphAreaEditorService, GraphAreaEditorService>();
+        serviceLocator.RegisterType<IGraphAreaLoadingService, GraphAreaLoadingService>();
         serviceLocator.RegisterType<IEdgeDrawingService, EdgeDrawingService>();
+        serviceLocator.RegisterType<IDataVertexFactory, DataVertexFactory>();
+        serviceLocator.RegisterType<IGraphDataService, CsvGraphDataService>();
+        serviceLocator.RegisterType<IGraphExplorerFactory, GraphExplorerFactory>();       
     }
 }

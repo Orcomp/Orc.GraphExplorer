@@ -21,8 +21,10 @@ namespace Orc.GraphExplorer.Csv.Services
     using Models;
     using Models.Data;
 
-    public class CsvGraphDataService : IGraphDataGetter, IGraphDataSaver
+    public class CsvGraphDataService : IGraphDataService
     {
+        private readonly IDataVertexFactory _dataVertexFactory;
+
         #region Fields
         private readonly CsvGraphDataServiceConfig _config;
 
@@ -35,8 +37,9 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region Constructors
-        public CsvGraphDataService()
+        public CsvGraphDataService(IDataVertexFactory dataVertexFactory)
         {
+            _dataVertexFactory = dataVertexFactory;
             _config = CsvGraphDataServiceConfig.Current;
         }
         #endregion
@@ -142,7 +145,7 @@ namespace Orc.GraphExplorer.Csv.Services
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
-                var vertex = DataVertex.Create(x.Key);
+                var vertex = _dataVertexFactory.CreateVertex(x.Key);
                 foreach (var record in x)
                 {
                     vertex.Properties.Add(new Property() {Key = record.Property, Value = record.Value});
@@ -166,7 +169,7 @@ namespace Orc.GraphExplorer.Csv.Services
 
             if (vertex == null)
             {
-                vertex = DataVertex.Create(id);
+                vertex = _dataVertexFactory.CreateVertex(id);
                 VertecesWithoutProperties.Add(vertex);
             }
 

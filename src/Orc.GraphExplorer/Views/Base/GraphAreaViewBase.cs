@@ -41,15 +41,17 @@ namespace Orc.GraphExplorer.Views.Base
 
         #region Fields
         private readonly UserControlLogic _logic;
+        private readonly IDataVertexFactory _dataVertexFactory;
         #endregion
 
         #region Constructors
         protected GraphAreaViewBase()
         {
-            // TODO: try to inject IGraphControlFactory
             IServiceLocator serviceLocator = this.GetServiceLocator();
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
+
+            _dataVertexFactory = serviceLocator.ResolveType<IDataVertexFactory>();
 
             _logic = new UserControlLogic(this);
         }
@@ -248,7 +250,7 @@ namespace Orc.GraphExplorer.Views.Base
         private void AddEdge(DataEdge edge)
         {
             VertexControl source = VertexList[edge.Source];
-            VertexControl target = DataVertex.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
+            VertexControl target = _dataVertexFactory.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
 
             var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, edge);
             AddEdge(edge, edgeView);
@@ -273,7 +275,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void GraphVertexAdded(DataVertex vertex)
         {
-            if (DataVertex.IsFakeVertex(vertex))
+            if (_dataVertexFactory.IsFakeVertex(vertex))
             {
                 return;
             }

@@ -31,11 +31,18 @@ namespace Orc.GraphExplorer.ViewModels
         private readonly IMessageService _messageService;
         private readonly IGraphAreaEditorService _graphAreaEditorService;
 
-        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService, IGraphAreaEditorService graphAreaEditorService)
+        private readonly IGraphAreaLoadingService _graphAreaLoadingService;
+
+        public GraphToolsetViewModel()
+        {
+            
+        }
+        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService, IGraphAreaEditorService graphAreaEditorService, IGraphAreaLoadingService graphAreaLoadingService)
         {
             _mementoService = mementoService;
             _messageService = messageService;
             _graphAreaEditorService = graphAreaEditorService;
+            _graphAreaLoadingService = graphAreaLoadingService;
             Toolset = toolset;
 
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -108,7 +115,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnRefreshCommandExecute()
         {
-            Toolset.Refresh();
+            _graphAreaLoadingService.TryRefresh(Area);
         }
 
         /// <summary>

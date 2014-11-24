@@ -8,6 +8,8 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System;
+    using System.ComponentModel;
+
     using Behaviors;
 
     using Catel;
@@ -25,17 +27,38 @@ namespace Orc.GraphExplorer.ViewModels
     {
 
         private readonly IMementoService _mementoService;
+        private readonly IGraphDataService _graphDataService;
+        private readonly IGraphExplorerFactory _graphExplorerFactory;
 
-        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService)
+        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService, IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory)
         {
             _mementoService = mementoService;
-            Explorer = new Explorer(_mementoService, configLocationService, messageService);
+            _graphDataService = graphDataService;
+            _graphExplorerFactory = graphExplorerFactory;
+            Explorer = _graphExplorerFactory.CreateExplorer();
 
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
 
             OpenSettingsCommand = new Command(OnOpenSettingsCommandExecute);
 
             EditingStartStopMessage.Register(this, OnEditingStartStopMessage, Explorer.EditorToolset.ToolsetName);
+            ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
+        }
+
+        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
+        {
+            var editorArea = Explorer.EditorToolset.Area;
+            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
+            {
+                editorArea.GraphDataGetter = _graphDataService;
+                editorArea.GraphDataSaver = _graphDataService;
+            }
+
+            var navigatorArea = Explorer.NavigatorToolset.Area;
+            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
+            {
+                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter(editorArea.Logic.Graph);
+            }
         }
 
         private void OnEditingStartStopMessage(EditingStartStopMessage message)
@@ -84,120 +107,51 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        public Explorer Explorer
-        {
-            get { return GetValue<Explorer>(ExplorerProperty); }
-            private set { SetValue(ExplorerProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Explorer property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ExplorerProperty = RegisterProperty("Explorer", typeof (Explorer));
+        public Explorer Explorer { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [Model]
         [ViewModelToModel("Explorer")]
-        public Settings Settings
-        {
-            get { return GetValue<Settings>(SettingsProperty); }
-            set { SetValue(SettingsProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Settings property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData SettingsProperty = RegisterProperty("Settings", typeof(Settings));
+        public Settings Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Settings")]
-        public bool IsSettingsVisible
-        {
-            get { return GetValue<bool>(IsSettingsVisibleProperty); }
-            set { SetValue(IsSettingsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsSettingsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsSettingsVisibleProperty = RegisterProperty("IsSettingsVisible", typeof(bool));
+        public bool IsSettingsVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [Model]
         [ViewModelToModel("Explorer")]
-        public GraphToolset EditorToolset
-        {
-            get { return GetValue<GraphToolset>(EditorToolsetProperty); }
-            set { SetValue(EditorToolsetProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the EditoToolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EditorToolsetProperty = RegisterProperty("EditorToolset", typeof(GraphToolset));
+        public GraphToolset EditorToolset { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("EditorToolset")]
-        public bool IsChanged
-        {
-            get { return GetValue<bool>(IsChangedProperty); }
-            set { SetValue(IsChangedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsChanged property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
+        public bool IsChanged { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsNavTabVisible
-        {
-            get { return GetValue<bool>(IsNavTabVisibleProperty); }
-            set { SetValue(IsNavTabVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsNavTabVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsNavTabVisibleProperty = RegisterProperty("IsNavTabVisible", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsNavTabVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsNavTabSelected
-        {
-            get { return GetValue<bool>(IsNavTabSelectedProperty); }
-            set { SetValue(IsNavTabSelectedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsNavTabSelected property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsNavTabSelectedProperty = RegisterProperty("IsNavTabSelected", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsNavTabSelected { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsEditorTabSelected
-        {
-            get { return GetValue<bool>(IsEditorTabSelectedProperty); }
-            set { SetValue(IsEditorTabSelectedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsEditorTabSelected property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsEditorTabSelectedProperty = RegisterProperty("IsEditorTabSelected", typeof (bool), () => false);
+        [DefaultValue(false)]
+        public bool IsEditorTabSelected { get; set; }
 
         public void NavigateTo(DataVertex dataVertex)
         {

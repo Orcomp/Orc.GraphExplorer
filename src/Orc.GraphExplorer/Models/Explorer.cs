@@ -24,33 +24,6 @@ namespace Orc.GraphExplorer.Models
 
     public class Explorer : ModelBase, IGraphNavigator
     {
-        public Explorer(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService)
-        {
-            EditorToolset = new GraphToolset("Editor", true, mementoService, messageService);
-            NavigatorToolset = new GraphToolset("Navigator", false, mementoService, messageService);
-
-            Settings = new Settings(configLocationService);
-
-            ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
-        }
-
-        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
-        {
-            var editorArea = EditorToolset.Area;
-            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
-            {
-                var graphDataService = new CsvGraphDataService();
-                editorArea.GraphDataGetter = graphDataService;
-                editorArea.GraphDataSaver = graphDataService;
-            }
-
-            var navigatorArea = NavigatorToolset.Area;
-            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
-            {
-                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter(editorArea.Logic.Graph);
-            }
-            
-        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -71,12 +44,14 @@ namespace Orc.GraphExplorer.Models
         {
             Argument.IsNotNull(() => dataVertex);
 
+            var loadingService = this.GetServiceLocator().ResolveType<IGraphAreaLoadingService>();
+
             var navigatorArea = NavigatorToolset.Area;
             ((IGraphNavigator)navigatorArea.GraphDataGetter).NavigateTo(dataVertex);
 
-            navigatorArea.ReloadGraphArea(0);
+            loadingService.ReloadGraphArea(navigatorArea, 0);
 
-            NavigatorToolset.Refresh();
+            loadingService.TryRefresh(navigatorArea);
         }
 
     }

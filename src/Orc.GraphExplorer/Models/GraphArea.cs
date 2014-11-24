@@ -38,41 +38,10 @@ namespace Orc.GraphExplorer.Models
             Logic = new GraphLogic();   
         }
 
-        // TODO: move is to specific service
-        public void ReloadGraphArea(double offsetY)
-        {
-            if (GraphDataGetter == null)
-            {
-                return;
-            }
-            var logic = Logic;
-
-            logic.PrepareGraphReloading();
-
-            var graph = new Graph(GraphDataGetter);
-
-            graph.ReloadGraph();
-            logic.ExternalLayoutAlgorithm = new TopologicalLayoutAlgorithm<DataVertex, DataEdge, Graph>(graph, 1.5, offsetY: offsetY);
-
-            logic.ResumeGraphReloading(graph);
-        }
-
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public IGraphDataGetter GraphDataGetter { get; set; }
-
-        /// <summary>
-        /// Called when the GraphDataGetter property has changed.
-        /// </summary>
-        private void OnGraphDataGetterChanged()
-        {            
-            if (GraphDataGetter == null)
-            {
-                return;
-            }
-            ReloadGraphArea(600);
-        }
+        public IGraphDataGetter GraphDataGetter { get; set; }        
 
         /// <summary>
         /// Gets or sets the property value.

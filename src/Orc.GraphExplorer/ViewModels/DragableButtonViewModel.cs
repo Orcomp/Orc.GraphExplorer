@@ -14,9 +14,17 @@ namespace Orc.GraphExplorer.ViewModels
     using Catel.MVVM;
     using Models;
     using Orc.GraphExplorer.Behaviors;
+    using Services;
 
     public class DragableButtonViewModel : ViewModelBase, IDragable
     {
+        private readonly IDataVertexFactory _dataVertexFactory;
+
+        public DragableButtonViewModel(IDataVertexFactory dataVertexFactory)
+        {
+            _dataVertexFactory = dataVertexFactory;
+        }
+
         public DragDropEffects GetDragEffects()
         {
             return DragDropEffects.Copy;
@@ -24,7 +32,7 @@ namespace Orc.GraphExplorer.ViewModels
 
         public object GetData()
         {
-            return DataVertex.Create();
+            return _dataVertexFactory.CreateVertex();
         }
 
         public Type DataType {

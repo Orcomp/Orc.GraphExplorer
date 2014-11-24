@@ -17,12 +17,19 @@ namespace Orc.GraphExplorer.Services
 
     public class EdgeDrawingService : IEdgeDrawingService
     {
+        private readonly IDataVertexFactory _dataVertexFactory;
+
         #region Fields
         private DataVertex _startVertex;
         private DataVertex _fakeEndVertex;
         private PathGeometry _pathGeometry;
         private Graph _graph;
         #endregion
+
+        public EdgeDrawingService(IDataVertexFactory dataVertexFactory)
+        {
+            _dataVertexFactory = dataVertexFactory;
+        }
 
         #region IEdgeDrawingService Members
         public bool IsInDrawing()
@@ -34,7 +41,8 @@ namespace Orc.GraphExplorer.Services
         {
             _graph = graph;
             _startVertex = startVertex;
-            _fakeEndVertex = DataVertex.CreateFakeVertex();
+            _fakeEndVertex = _dataVertexFactory.CreateFakeVertex();
+            //_fakeEndVertex = DataVertex.CreateFakeVertex();
             var pathFigureCollection = new PathFigureCollection
             {
                 new PathFigure

@@ -24,45 +24,23 @@ namespace Orc.GraphExplorer.Models
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataVertex : ModelBase, IGraphXVertex
     {
-        private const int FakeVertexId = -666;
+        
         #region Constructors
         /// <summary>
         /// Default constructor for this class
         /// (required for serialization).
         /// </summary>
-        private DataVertex()
-            : this(FakeVertexId)
+        public DataVertex()
         {
         }
 
-        private DataVertex(int id)
+        public DataVertex(int id)
         {
             ID = id;
             Title = ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
-
-        private static int _maxId = 0;
-        public static DataVertex CreateFakeVertex()
-        {
-            return new DataVertex(FakeVertexId);
-        }
-
-        public static DataVertex Create()
-        {
-            return new DataVertex(++_maxId);
-        }
-
-        public static DataVertex Create(int id)
-        {
-            if (id > _maxId)
-            {
-                _maxId = id + 1;
-            }
-
-            return new DataVertex(id);
-        }
-
+          
         #region IGraphXVertex Members
         /// <summary>
         /// Unique vertex ID
@@ -153,10 +131,5 @@ namespace Orc.GraphExplorer.Models
         [DefaultValue(true)]
         public bool IsEnabled { get; set; }
         #endregion // Properties
-
-        public static bool IsFakeVertex(DataVertex vertex)
-        {
-            return vertex.ID == FakeVertexId;
-        }
     }
 }

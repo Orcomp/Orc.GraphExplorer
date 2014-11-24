@@ -12,21 +12,28 @@ namespace Orc.GraphExplorer.ViewModels
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
-    using Behaviors;
+
     using Catel;
     using Catel.Fody;
     using Catel.MVVM;
-    using Messages;
-    using Models;
-    using Models.Data;
-    using Services;
+
+    using Orc.GraphExplorer.Behaviors;
+    using Orc.GraphExplorer.Messages;
+    using Orc.GraphExplorer.Models;
+    using Orc.GraphExplorer.Models.Data;
+    using Orc.GraphExplorer.Services;
 
     public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable, IGraphLogicProvider, IEdgeDrawer
     {
         #region Fields
         private readonly IViewModelManager _viewModelManager;
+
         private readonly IGraphAreaEditorService _graphAreaEditorService;
+
         private readonly IEdgeDrawingService _edgeDrawingService;
+
+        private readonly IGraphAreaLoadingService _graphAreaLoadingService;
+
         #endregion
 
         #region Constructors
@@ -34,12 +41,15 @@ namespace Orc.GraphExplorer.ViewModels
         {
         }
 
-        public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager, IGraphAreaEditorService graphAreaEditorService, IEdgeDrawingService edgeDrawingService)
+        public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager, IGraphAreaEditorService graphAreaEditorService, IEdgeDrawingService edgeDrawingService, IGraphAreaLoadingService graphAreaLoadingService)
         {
             _viewModelManager = viewModelManager;
             _graphAreaEditorService = graphAreaEditorService;
             _edgeDrawingService = edgeDrawingService;
+            _graphAreaLoadingService = graphAreaLoadingService;
             Area = area;
+
+            SettingsChangedMessage.Register(this, OnSettingsChangedMessage);
         }
         #endregion
 
@@ -48,9 +58,14 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        [Expose("GraphDataGetter")]
         [Expose("GraphDataSaver")]
         public GraphArea Area { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Area")]
+        public IGraphDataGetter GraphDataGetter { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -72,14 +87,20 @@ namespace Orc.GraphExplorer.ViewModels
 
         public GraphToolsetViewModel ToolSetViewModel
         {
-            get { return ParentViewModel as GraphToolsetViewModel; }
+            get
+            {
+                return ParentViewModel as GraphToolsetViewModel;
+            }
         }
         #endregion
 
         #region IDropable Members
         public Type DataTypeFormat
         {
-            get { return typeof (DataVertex); }
+            get
+            {
+                return typeof(DataVertex);
+            }
         }
 
         public DragDropEffects GetDropEffects(IDataObject dataObject)
@@ -91,7 +112,7 @@ namespace Orc.GraphExplorer.ViewModels
         {
             Argument.IsNotNull(() => dataObject);
 
-            _graphAreaEditorService.AddVertex(Area, (DataVertex) dataObject.GetData(typeof (DataVertex)), position);
+            _graphAreaEditorService.AddVertex(Area, (DataVertex)dataObject.GetData(typeof(DataVertex)), position);
         }
         #endregion
 
@@ -149,7 +170,8 @@ namespace Orc.GraphExplorer.ViewModels
         {
             if (ToolSetViewModel != null)
             {
-                ToolSetViewModel.Toolset.Filter.UpdateFilterSource();
+                var filter = ToolSetViewModel.Toolset.Filter;
+                filter.ChangeFilterSource(filter.GraphLogic.Graph.Vertices);
             }
         }
         #endregion
@@ -165,7 +187,10 @@ namespace Orc.GraphExplorer.ViewModels
         #region IGraphNavigationController Members
         public bool CanNavigate
         {
-            get { return !IsInEditing; }
+            get
+            {
+                return !IsInEditing;
+            }
         }
         #endregion
 
@@ -179,6 +204,23 @@ namespace Orc.GraphExplorer.ViewModels
         #endregion
 
         #region Methods
+        private void OnSettingsChangedMessage(SettingsChangedMessage settingsChangedMessage)
+        {
+            _graphAreaLoadingService.TryRefresh(Area);
+        }
+
+        /// <summary>
+        /// Called when the GraphDataGetter property has changed.
+        /// </summary>
+        private void OnGraphDataGetterChanged()
+        {
+            if (GraphDataGetter == null)
+            {
+                return;
+            }
+            _graphAreaLoadingService.ReloadGraphArea(Area, 600);
+        }
+
         /// <summary>
         /// Called when the IsDragEnabled property has changed.
         /// </summary>

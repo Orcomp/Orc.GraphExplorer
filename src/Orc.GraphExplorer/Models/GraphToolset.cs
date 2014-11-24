@@ -40,15 +40,8 @@ namespace Orc.GraphExplorer.Models
             _messageService = messageService;
             ToolsetName = toolsetName;
             Area = new GraphArea(toolsetName);
-            Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};
-
-            SettingsChangedMessage.Register(this, OnSettingsChangedMessage);
-        }
-
-        private void OnSettingsChangedMessage(SettingsChangedMessage settingsChangedMessage)
-        {
-            Refresh();
-        }
+            Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};            
+        }        
 
         /// <summary>
         /// Gets or sets the property value.
@@ -97,28 +90,7 @@ namespace Orc.GraphExplorer.Models
             SaveToImageMessage.SendWith(ImageType.PNG, ToolsetName);
         }
 
-        public async Task Refresh()
-        {
-            var area = Area;
-
-            if (area.IsInEditing && _mementoService.CanUndo)
-            {
-                var messageResult = await _messageService.Show("Refresh view in edit mode will discard changes you made, will you want to continue?", "Confirmation", MessageButton.YesNo);
-                if (messageResult == MessageResult.Yes)
-                {
-                    _mementoService.Clear();
-                    area.IsInEditing = false;
-                    area.IsDragEnabled = false;
-                    area.ReloadGraphArea(600);
-                    StatusMessage.SendWith("Graph Refreshed");
-                }
-            }
-            else
-            {
-                area.ReloadGraphArea(600);
-            }
-        }
-
+        
         public void Undo()
         {
             _mementoService.Undo();
