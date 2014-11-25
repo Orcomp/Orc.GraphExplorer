@@ -27,6 +27,7 @@ public static class ModuleInitializer
         serviceLocator.RegisterType<IEdgeDrawingService, EdgeDrawingService>();
         serviceLocator.RegisterType<IDataVertexFactory, DataVertexFactory>();
         serviceLocator.RegisterType<IGraphDataService, CsvGraphDataService>();
-        serviceLocator.RegisterType<IGraphExplorerFactory, GraphExplorerFactory>();       
+        serviceLocator.RegisterType<IGraphExplorerFactory, GraphExplorerFactory>();
+        serviceLocator.RegisterType<INavigationService, NavigationService>();       
     }
 }

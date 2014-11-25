@@ -96,15 +96,5 @@ namespace Orc.GraphExplorer.Models
 
         public double Weight { get; set; }
         #endregion
-
-        #region Methods
-        public bool IsFiltered()
-        {
-            var source = Source;
-            var target = Target;
-
-            return source != null && target != null && (source.IsFiltered && target.IsFiltered);
-        }
-        #endregion
     }
 }

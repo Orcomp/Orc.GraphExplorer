@@ -5,17 +5,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer
 {
     using System.Collections.Generic;
     using System.Linq;
+
     using Catel;
     using Catel.Collections;
-    using Models;
-    using Models.Data;
+
+    using Orc.GraphExplorer.Models;
+    using Orc.GraphExplorer.Models.Data;
 
     public static class FilterExtensions
     {
+        #region Methods
         public static void ApplyFilter(this Filter filter)
         {
             ApplyForEntities(filter);
@@ -80,6 +84,8 @@ namespace Orc.GraphExplorer
 
         public static void ChangeFilterSource(this Filter filter, IEnumerable<DataVertex> vertices)
         {
+            Argument.IsNotNull(() => vertices);
+
             var filterableEntities = filter.FilterableEntities;
 
             filterableEntities.Clear();
@@ -88,15 +94,20 @@ namespace Orc.GraphExplorer
 
         public static void AddVertexToSource(this Filter filter, DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             filter.FilterableEntities.Add(new FilterableEntity(vertex));
         }
 
         public static void RemoveVertexFromSource(this Filter filter, DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             var filterableEntities = filter.FilterableEntities;
 
             var filterableEntity = filterableEntities.FirstOrDefault(x => x.ID == vertex.ID);
             filterableEntities.Remove(filterableEntity);
         }
+        #endregion
     }
 }

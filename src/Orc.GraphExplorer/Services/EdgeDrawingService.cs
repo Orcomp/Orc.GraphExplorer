@@ -42,7 +42,7 @@ namespace Orc.GraphExplorer.Services
             _graph = graph;
             _startVertex = startVertex;
             _fakeEndVertex = _dataVertexFactory.CreateFakeVertex();
-            //_fakeEndVertex = DataVertex.CreateFakeVertex();
+
             var pathFigureCollection = new PathFigureCollection
             {
                 new PathFigure

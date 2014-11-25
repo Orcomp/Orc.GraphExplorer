@@ -67,6 +67,7 @@ namespace Orc.GraphExplorer.ViewModels
         [ViewModelToModel("Area")]
         public IGraphDataGetter GraphDataGetter { get; set; }
 
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -199,11 +200,16 @@ namespace Orc.GraphExplorer.ViewModels
         {
             Argument.IsNotNull(() => dataVertex);
 
-            ToolSetViewModel.NavigateTo(dataVertex);
+            NavigationMessage.SendWith(dataVertex);            
         }
         #endregion
 
         #region Methods
+        private void OnGraphDataSaverChanged()
+        {
+            Area.CanEdit = Area.GraphDataSaver != null;
+        }
+
         private void OnSettingsChangedMessage(SettingsChangedMessage settingsChangedMessage)
         {
             _graphAreaLoadingService.TryRefresh(Area);

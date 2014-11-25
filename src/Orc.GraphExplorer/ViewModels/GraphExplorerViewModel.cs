@@ -23,18 +23,23 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Services;
 
-    public class GraphExplorerViewModel : ViewModelBase, IGraphNavigator
+    using INavigationService = Orc.GraphExplorer.Services.INavigationService;
+
+    public class GraphExplorerViewModel : ViewModelBase
     {
 
         private readonly IMementoService _mementoService;
         private readonly IGraphDataService _graphDataService;
         private readonly IGraphExplorerFactory _graphExplorerFactory;
 
-        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService, IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory)
+        private readonly INavigationService _navigationService;
+
+        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService, IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory, INavigationService navigationService)
         {
             _mementoService = mementoService;
             _graphDataService = graphDataService;
             _graphExplorerFactory = graphExplorerFactory;
+            _navigationService = navigationService;
             Explorer = _graphExplorerFactory.CreateExplorer();
 
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
@@ -43,6 +48,12 @@ namespace Orc.GraphExplorer.ViewModels
 
             EditingStartStopMessage.Register(this, OnEditingStartStopMessage, Explorer.EditorToolset.ToolsetName);
             ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
+            NavigationMessage.Register(this, OnNavigationMessage);
+        }
+
+        private void OnNavigationMessage(NavigationMessage message)
+        {
+            _navigationService.NavigateTo(Explorer, message.Data);
         }
 
         private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
@@ -138,13 +149,13 @@ namespace Orc.GraphExplorer.ViewModels
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [DefaultValue(false)]
+        [ViewModelToModel("Explorer")]
         public bool IsNavTabVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [DefaultValue(false)]
+        [ViewModelToModel("Explorer")]
         public bool IsNavTabSelected { get; set; }
 
         /// <summary>
@@ -152,15 +163,5 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         [DefaultValue(false)]
         public bool IsEditorTabSelected { get; set; }
-
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            Argument.IsNotNull(() => dataVertex);
-
-            IsNavTabVisible = true;
-            IsNavTabSelected = true;
-            Explorer.NavigateTo(dataVertex);
-        }
-
     }
 }

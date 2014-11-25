@@ -13,9 +13,12 @@ namespace Orc.GraphExplorer.Behaviors
     using GraphX.Controls;
     using GraphX.Models;
     using Models;
+
+    using Orc.GraphExplorer.Views.Base;
+
     using Views;
 
-    public class DrawEdgeBehavior : BehaviorBase<GraphAreaView>
+    public class DrawEdgeBehavior : BehaviorBase<GraphAreaViewBase>
     {
         #region Fields
         private EdgeView _edge;
@@ -45,7 +48,7 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.VertexSelected += AssociatedObject_VertexSelected;
             AssociatedObject.TemporaryEdgeCreated += AssociatedObject_TemporaryEdgeCreated;
             ZoomControl.PreviewMouseMove += ZoomControl_PreviewMouseMove;
-            _edgeDrawer = AssociatedObject.ViewModel;
+            _edgeDrawer = AssociatedObject.ViewModel as IEdgeDrawer;
         }
 
         private void ZoomControl_PreviewMouseMove(object sender, MouseEventArgs e)

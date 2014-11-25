@@ -5,53 +5,40 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
-    using System;
-    using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
 
     using Catel;
     using Catel.Data;
-    using Catel.IoC;
-    using Catel.Memento;
-    using Catel.Services;
-    using Csv.Services;
-    using Messages;
-    using Operations;
-    using Orc.GraphExplorer.Models.Data;
-    using Orc.GraphExplorer.Views;
 
-    using Services;
+    using Orc.GraphExplorer.Models.Data;
+    using Orc.GraphExplorer.Services;
 
     public class GraphArea : ModelBase
     {
+        #region Constructors
         public GraphArea(string toolsetName)
         {
             Argument.IsNotNullOrEmpty(() => toolsetName);
 
             ToolsetName = toolsetName;
 
-            Logic = new GraphLogic();   
+            Logic = new GraphLogic();
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public IGraphDataGetter GraphDataGetter { get; set; }        
+        public IGraphDataGetter GraphDataGetter { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         public IGraphDataSaver GraphDataSaver { get; set; }
-
-        private void OnGraphDataSaverChanged()
-        {
-            CanEdit = GraphDataSaver != null;
-        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -79,6 +66,7 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         [DefaultValue(false)]
-        public bool IsInEditing { get; set; }       
+        public bool IsInEditing { get; set; }
+        #endregion
     }
 }

@@ -8,6 +8,7 @@
 namespace Orc.GraphExplorer.Models
 {
     using System;
+    using System.ComponentModel;
     using System.Linq;
     using Behaviors;
 
@@ -22,7 +23,7 @@ namespace Orc.GraphExplorer.Models
     using Messages;
     using Services;
 
-    public class Explorer : ModelBase, IGraphNavigator
+    public class Explorer : ModelBase
     {
 
         /// <summary>
@@ -40,19 +41,16 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public GraphToolset NavigatorToolset { get; set; }
 
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            Argument.IsNotNull(() => dataVertex);
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsNavTabVisible { get; set; }
 
-            var loadingService = this.GetServiceLocator().ResolveType<IGraphAreaLoadingService>();
-
-            var navigatorArea = NavigatorToolset.Area;
-            ((IGraphNavigator)navigatorArea.GraphDataGetter).NavigateTo(dataVertex);
-
-            loadingService.ReloadGraphArea(navigatorArea, 0);
-
-            loadingService.TryRefresh(navigatorArea);
-        }
-
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsNavTabSelected { get; set; }
     }
 }

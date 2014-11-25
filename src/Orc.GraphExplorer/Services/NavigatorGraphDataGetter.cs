@@ -7,6 +7,7 @@
 #endregion
 namespace Orc.GraphExplorer.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Behaviors;
@@ -17,7 +18,7 @@ namespace Orc.GraphExplorer.Services
     using Models;
     using Models.Data;
 
-    public class NavigatorGraphDataGetter : IGraphDataGetter, IGraphNavigator
+    public class NavigatorGraphDataGetter : IGraphDataGetter, IOverridableGraphDataGetter
     {
         private readonly Graph _graph;
 
@@ -35,33 +36,25 @@ namespace Orc.GraphExplorer.Services
 
         public IEnumerable<DataVertex> GetVerteces()
         {
-            return _vertices;
+            return _vertecesGetter();
         }
 
         public IEnumerable<DataEdge> GetEdges()
         {
-            return _edges;
+            return _edgesGetter();
         }
 
-        private IEnumerable<DataEdge> _edges = Enumerable.Empty<DataEdge>();
-        private IEnumerable<DataVertex> _vertices = Enumerable.Empty<DataVertex>();
+        private Func<IEnumerable<DataVertex>> _vertecesGetter;
+        private Func<IEnumerable<DataEdge>> _edgesGetter;
 
-        public void NavigateTo(DataVertex dataVertex)
+        public void RedefineVertecesGetter(Func<IEnumerable<DataVertex>> getter)
         {
-            Argument.IsNotNull(() => dataVertex);
-
-            IEnumerable<DataEdge> inEdges;
-            IEnumerable<DataEdge> outEdges;
-
-            if (!_graph.TryGetInEdges(dataVertex, out inEdges) || !_graph.TryGetOutEdges(dataVertex, out outEdges))
-            {
-                return;
-            }
-
-            _edges = inEdges.Concat(outEdges);
-
-            _vertices = _graph.GetNeighbours(dataVertex).Concat(Enumerable.Repeat(dataVertex, 1));
+            _vertecesGetter = getter;
         }
-
+        
+        public void RedefineEdgesGetter(Func<IEnumerable<DataEdge>> getter)
+        {
+            _edgesGetter = getter;
+        }
     }
 }

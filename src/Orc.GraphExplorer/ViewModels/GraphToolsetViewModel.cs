@@ -16,6 +16,7 @@ namespace Orc.GraphExplorer.ViewModels
 
     using Catel;
     using Catel.Data;
+    using Catel.Fody;
     using Catel.Memento;
     using Catel.MVVM;
     using Catel.Services;
@@ -25,7 +26,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models;
     using Services;
 
-    public class GraphToolsetViewModel : ViewModelBase, IGraphNavigator
+    public class GraphToolsetViewModel : ViewModelBase
     {
         private readonly IMementoService _mementoService;
         private readonly IMessageService _messageService;
@@ -189,174 +190,35 @@ namespace Orc.GraphExplorer.ViewModels
         /// Gets or sets the property value.
         /// </summary>
         [Model]
-        // TODO: Rename it
-        public GraphToolset Toolset
-        {
-            get
-            {
-                return GetValue<GraphToolset>(ToolsetProperty);
-            }
-            set
-            {
-                SetValue(ToolsetProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the Toolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetProperty = RegisterProperty("Toolset", typeof(GraphToolset), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Toolset")]
-        public string ToolsetName
-        {
-            get
-            {
-                return GetValue<string>(ToolsetNameProperty);
-            }
-            set
-            {
-                SetValue(ToolsetNameProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the ToolsetName property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetNameProperty = RegisterProperty("ToolsetName", typeof(string));
-
+        [Expose("ToolsetName")]
+        public GraphToolset Toolset { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Toolset")]
         [Model]
-        public GraphArea Area
-        {
-            get
-            {                
-                return GetValue<GraphArea>(AreaProperty);
-            }
-            set
-            {
-                SetValue(AreaProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the Area property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData AreaProperty = RegisterProperty("Area", typeof(GraphArea));
+        [Expose("CanEdit")]
+        [Expose("IsDragEnabled")]
+        [Expose("IsInEditing")]
+        public GraphArea Area { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        [ViewModelToModel("Area")]
-        public bool CanEdit
-        {
-            get { return GetValue<bool>(CanEditProperty); }
-            set { SetValue(CanEditProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the CanEdit property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData CanEditProperty = RegisterProperty("CanEdit", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool IsDragEnabled
-        {
-            get
-            {
-                return GetValue<bool>(IsDragEnabledProperty);
-            }
-            set
-            {
-                SetValue(IsDragEnabledProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the IsDragEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool));
-
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ZoomControlModes ZoomMode
-        {
-            get
-            {
-                return GetValue<ZoomControlModes>(ZoomModeProperty);
-            }
-            set
-            {
-                SetValue(ZoomModeProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the ZoomMode property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ZoomModeProperty = RegisterProperty("ZoomMode", typeof(ZoomControlModes), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool IsInEditing
-        {
-            get
-            {
-                return GetValue<bool>(IsInEditingProperty);
-            }
-            set
-            {
-                SetValue(IsInEditingProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool));       
+        public ZoomControlModes ZoomMode { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
         [ViewModelToModel("Toolset")]
-        public bool IsChanged
-        {
-            get { return GetValue<bool>(IsChangedProperty); }
-            set { SetValue(IsChangedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsChanged property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
+        public bool IsChanged { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public bool IsAddingNewEdge
-        {
-            get { return GetValue<bool>(IsAddingNewEdgeProperty); }
-            set { SetValue(IsAddingNewEdgeProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsAddingNewEdge property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsAddingNewEdgeProperty = RegisterProperty("IsAddingNewEdge", typeof(bool), () => false, (sender, e) => ((GraphToolsetViewModel)sender).OnIsAddingNewEdgeChanged());
+        [DefaultValue(false)]
+        public bool IsAddingNewEdge { get; set; }
 
         /// <summary>
         /// Called when the IsAddingNewEdge property has changed.
@@ -364,17 +226,6 @@ namespace Orc.GraphExplorer.ViewModels
         private void OnIsAddingNewEdgeChanged()
         {
             StatusMessage.SendWith(IsAddingNewEdge ? "Select Source Node" : "Exit Create Link");
-        }
-
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            Argument.IsNotNull(() => dataVertex);
-
-            var graphExplorer = GraphExplorer;
-            if(graphExplorer != null)
-            {
-                graphExplorer.NavigateTo(dataVertex); 
-            }
         }
 
         public GraphExplorerViewModel GraphExplorer {
