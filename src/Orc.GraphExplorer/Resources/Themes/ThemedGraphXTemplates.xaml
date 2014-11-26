@@ -1300,7 +1300,7 @@
     <SolidColorBrush x:Key="NormalDropShadowBrush" Color="Black"/>
     <SolidColorBrush x:Key="HighlightDropShadowBrush" Color="{StaticResource AccentColor}"/>
 
-    <BitmapImage x:Key="ImageSource" UriSource="appbar.people.png" />
+    <BitmapImage x:Key="ImageSource" UriSource="../Images/appbar.people.png" />
     <LinearGradientBrush x:Key="MouseOverBrush">
         <GradientStop Color="#FFE9ED9F" Offset="0" />
         <GradientStop Color="#FFE8ED8E" Offset="1" />

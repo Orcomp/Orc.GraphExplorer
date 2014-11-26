@@ -1,34 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="FilterView.xaml.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace Orc.GraphExplorer.Views
 {
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Threading;
-    using Catel;
-    using Catel.Data;
+    using System.Windows;
     using Catel.MVVM;
-    using Models;
-    using Orc.FilterBuilder.ViewModels;
-    using Orc.GraphExplorer.ViewModels;
+    using ViewModels;
 
     /// <summary>
     /// Логика взаимодействия для FilterView.xaml
     /// </summary>
-    public partial class FilterView 
+    public partial class FilterView
     {
+        #region Constructors
         public FilterView()
         {
             InitializeComponent();
@@ -38,21 +27,18 @@ namespace Orc.GraphExplorer.Views
             var filterBuilderControl = FilterBuilderControl;
 
             filterBuilderControl.CloseViewModelOnUnloaded = false;
-            filterBuilderControl.ViewModelChanged += FilterBuilderControl_ViewModelChanged;
         }
+        #endregion
 
-
-        void FilterBuilderControl_ViewModelChanged(object sender, EventArgs e)
+        #region Properties
+        public new FilterViewModel ViewModel
         {
-            var filterBuilderViewModel = FilterBuilderControl.ViewModel as FilterBuilderViewModel;
-            if (filterBuilderViewModel == null)
-            {
-                return;
-            }
-
+            get { return base.ViewModel as FilterViewModel; }
         }
+        #endregion
 
-        void FilterView_Loaded(object sender, RoutedEventArgs e)
+        #region Methods
+        private void FilterView_Loaded(object sender, RoutedEventArgs e)
         {
             var viewModel = ViewModel;
             if (viewModel == null)
@@ -68,18 +54,11 @@ namespace Orc.GraphExplorer.Views
 
             var relationalViewModel = viewModel as IRelationalViewModel;
             var parentView = this.FindFirstParentOfType<GraphToolsetView>();
-            if (parentView != null && relationalViewModel != null && parentViewModel == null)
+            if (parentView != null)
             {
                 relationalViewModel.SetParentViewModel(parentView.ViewModel);
             }
         }
-
-        public new FilterViewModel ViewModel
-        {
-            get
-            {
-                return base.ViewModel as FilterViewModel;
-            }
-        }
+        #endregion
     }
 }

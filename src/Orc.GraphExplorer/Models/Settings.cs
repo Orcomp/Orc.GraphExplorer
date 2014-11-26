@@ -5,22 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
     using System.ComponentModel;
-
     using Catel.Data;
-    using Messages;
-    using Services;
 
     public class Settings : ModelBase
     {
-        public Settings(IConfigLocationService configLocationService)
-        {
-            ConfigLocation = configLocationService.Load();
-            SettingsChangedMessage.SendWith(true);
-        }
-
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -31,5 +24,6 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         public ConfigLocation ConfigLocation { get; set; }
+        #endregion
     }
 }

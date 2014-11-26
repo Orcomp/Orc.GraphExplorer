@@ -29,7 +29,7 @@
             {
                 return;
             }
-            var graph = navigatorArea.Logic.Graph;
+            var graph = explorer.EditorToolset.Area.Logic.Graph;
 
             if (!graph.TryGetInEdges(dataVertex, out inEdges) || !graph.TryGetOutEdges(dataVertex, out outEdges))
             {

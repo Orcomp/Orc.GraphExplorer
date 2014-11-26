@@ -5,27 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
-    using System;
     using System.ComponentModel;
-    using System.Linq;
-    using Behaviors;
 
-    using Catel;
     using Catel.Data;
-    using Catel.IoC;
-    using Catel.Memento;
-    using Catel.Services;
-    using Csv.Services;
-    using Data;
-    using GraphX.GraphSharp;
-    using Messages;
-    using Services;
 
     public class Explorer : ModelBase
     {
-
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -52,5 +41,6 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         [DefaultValue(false)]
         public bool IsNavTabSelected { get; set; }
+        #endregion
     }
 }

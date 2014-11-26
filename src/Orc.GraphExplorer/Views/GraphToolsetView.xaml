@@ -16,11 +16,11 @@
     <catel:UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources/VertexTemplate.xaml"/>
-                <ResourceDictionary Source="../Resources/EdgeTemplate.xaml"/>
-                <ResourceDictionary Source="../Resources/TabControlTemplate.xaml"/>
-                <ResourceDictionary Source="../Resources/TabItemTemplate.xaml"/>
-                <ResourceDictionary Source="../Resources/ThemedGraphXTemplates.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/VertexTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/EdgeTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/TabControlTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/TabItemTemplate.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/ThemedGraphXTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <catel:BooleanToHidingVisibilityConverter x:Key="BooleanToHidingVisibilityConverter"/>
             <catel:BooleanToCollapsingVisibilityConverter x:Key="BooleanToCollapsingVisibilityConverter"/>
@@ -50,11 +50,11 @@
 								Style="{StaticResource ExportButtonStyle}" Command="{Binding SaveToImage}"/>
                 <Rectangle DockPanel.Dock="Left" Fill="{StaticResource NormalBorderBrush}" Width="1" VerticalAlignment="Stretch" Margin="4"/>
                 <ToggleButton DockPanel.Dock="Left" Style="{StaticResource DragToggleButtonStyle}" IsChecked="{Binding IsDragEnabled, Mode=TwoWay}" Height="28" Width="28" ToolTip="Enable Drag" />
-                <ToggleButton DockPanel.Dock="Left" Visibility="{Binding CanEdit, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" Command="{Binding CanEditCommand}"/>
+                <ToggleButton DockPanel.Dock="Left" Visibility="{Binding CanEdit, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}" Style="{StaticResource EditToggleButtonStyle}" IsChecked="{Binding IsInEditing}" Height="28" Width="28" ToolTip="Enable Edit Mode" />
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"
 								Visibility="{Binding IsInEditing, Converter={StaticResource BooleanToCollapsingVisibilityConverter}}">
                     <ToggleButton Height="28" DockPanel.Dock="Left" ToolTip="Create Link"
-									IsChecked="{Binding IsAddingNewEdge}" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" Command="{Binding CreateLinkCommand}"/>
+									IsChecked="{Binding IsAddingNewEdge}" Width="28" Style="{StaticResource AddLinkToggleButtonStyle}" Command="{Binding CreateLinkCommand, RelativeSource={RelativeSource AncestorType=Grid}}"/>
                     <views:DragableButtonView Height="28" DockPanel.Dock="Left" ToolTip="Drag To Create Node"                                              
 									Width="28" Style="{StaticResource VertexButtonStyle}">
                         <i:Interaction.Behaviors>

@@ -5,14 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
     using System.ComponentModel;
 
     using Catel.Data;
 
-    public class Property :ModelBase
+    public class Property : ModelBase
     {
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -28,5 +30,6 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         [DefaultValue(false)]
         public bool IsInEditing { get; set; }
+        #endregion
     }
 }

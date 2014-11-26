@@ -11,7 +11,7 @@
     <catel:UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources/ThemedGraphXTemplates.xaml"/>
+                <ResourceDictionary Source="../Resources/Themes/ThemedGraphXTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush Color="White" x:Key="RootBackGround"/>
         </ResourceDictionary>

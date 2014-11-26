@@ -45,12 +45,6 @@ namespace Orc.GraphExplorer.Views
             }
         }
 
-        protected override void OnViewModelChanged()
-        {
-         //   DataContext = ViewModel;
-            base.OnViewModelChanged();
-        }
-
         public new GraphToolsetViewModel ViewModel {
             get
             {

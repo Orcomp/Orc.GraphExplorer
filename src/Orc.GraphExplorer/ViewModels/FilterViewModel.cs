@@ -31,8 +31,23 @@ namespace Orc.GraphExplorer.ViewModels
             graphLogic.GraphReloaded += _logic_GraphReloaded;
 
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
+
+            ClearFilterCommand = new Command(OnClearFilterCommandExecute);
         }
         #endregion
+
+/// <summary>
+/// Gets the ClearFilterCommand command.
+/// </summary>
+public Command ClearFilterCommand { get; private set; }
+
+/// <summary>
+/// Method to invoke when the ClearFilterCommand command is executed.
+/// </summary>
+private void OnClearFilterCommandExecute()
+{
+    // TODO: Handle command logic here
+}
 
         #region Properties
         /// <summary>

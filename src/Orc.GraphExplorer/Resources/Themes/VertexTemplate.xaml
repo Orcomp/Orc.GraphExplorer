@@ -109,8 +109,8 @@
                             </ScrollViewer>
                         </Expander>
                         <StackPanel Visibility="Collapsed" Margin="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource AddButtonStyle}" ToolTip="Add Property" Margin="2" Command="{Binding AddCommand}" Height="28" Width="28"/>
-                            <Button Style="{StaticResource DeleteButtonStyle}" ToolTip="Delete Selected Property" Margin="2" Command="{Binding DeleteCommand}" Height="28" Width="28"/>
+<!--                            <Button Style="{StaticResource AddButtonStyle}" ToolTip="Add Property" Margin="2" Command="{Binding AddCommand}" Height="28" Width="28"/>
+                            <Button Style="{StaticResource DeleteButtonStyle}" ToolTip="Delete Selected Property" Margin="2" Command="{Binding DeleteCommand}" Height="28" Width="28"/>-->
                         </StackPanel>
                     </Grid>
                     <ControlTemplate.Triggers>

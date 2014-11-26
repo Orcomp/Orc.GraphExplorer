@@ -69,6 +69,8 @@ namespace Orc.GraphExplorer.ViewModels
         [Expose("X")]
         [Expose("Y")]
         [Expose("IsVisible")]
+        [Expose("IsExpanded")]
+        [Expose("IsDragging")]
         public DataVertex DataVertex { get; set; }
 
         /// <summary>
@@ -78,22 +80,9 @@ namespace Orc.GraphExplorer.ViewModels
         public ObservableCollection<Property> Properties { get; set; }
 
         /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(false)]
-        public bool IsExpanded { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(false)]
-        public bool IsDragging { get; set; }
-
-        /// <summary>
         /// Gets the AddCommand command.
         /// </summary>
         public Command AddCommand { get; private set; }
-
 
         /// <summary>
         /// Method to invoke when the AddCommand command is executed.

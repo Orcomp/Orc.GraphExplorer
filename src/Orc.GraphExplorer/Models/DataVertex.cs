@@ -8,23 +8,20 @@
 
 namespace Orc.GraphExplorer.Models
 {
-    using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Globalization;
-    using System.Runtime.Serialization;
     using System.Windows.Media;
+
     using Catel.Data;
-    using Catel.Runtime.Serialization;
 
     using GraphX;
-    using GraphX.Models.XmlSerializer;
+
     using YAXLib;
 
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataVertex : ModelBase, IGraphXVertex
     {
-        
         #region Constructors
         /// <summary>
         /// Default constructor for this class
@@ -32,15 +29,78 @@ namespace Orc.GraphExplorer.Models
         /// </summary>
         public DataVertex()
         {
+            Properties = new ObservableCollection<Property>();
         }
 
         public DataVertex(int id)
+            : this()
         {
             ID = id;
             Title = ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
-          
+
+        #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsFiltered { get; set; }
+
+        public object Tag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [YAXSerializableField]
+        public ImageSource Icon { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [YAXSerializableField]
+        public string Title { get; set; }
+
+        [YAXSerializableField]
+        public ObservableCollection<Property> Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(double.NaN)]
+        public double X { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(double.NaN)]
+        public double Y { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsExpanded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsDragging { get; set; }
+        #endregion
+
         #region IGraphXVertex Members
         /// <summary>
         /// Unique vertex ID
@@ -73,63 +133,5 @@ namespace Orc.GraphExplorer.Models
             return ID.ToString(CultureInfo.InvariantCulture);
         }
         #endregion
-
-        #region Properties
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(true)]
-        public bool IsFiltered { get; set; }
-
-        public object Tag { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [YAXSerializableField]
-        public ImageSource Icon { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [YAXSerializableField]
-        public string Title { get; set; }
-
-        [YAXSerializableField]
-        public ObservableCollection<Property> Properties
-        {
-            get { return GetValue<ObservableCollection<Property>>(PropertiesProperty); }
-            set { SetValue(PropertiesProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Properties property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData PropertiesProperty = RegisterProperty("Properties", typeof(ObservableCollection<Property>), () => new ObservableCollection<Property>());
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(double.NaN)]
-        public double X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(double.NaN)]
-        public double Y { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(true)]
-        public bool IsVisible { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(true)]
-        public bool IsEnabled { get; set; }
-        #endregion // Properties
     }
 }

@@ -5,52 +5,30 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Models
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.Threading.Tasks;
-    using System.Windows;
-
     using Catel;
     using Catel.Data;
-    using Catel.Memento;
-    using Catel.Services;
-    using Data;
-    using GraphX;
-    using Microsoft.Win32;
-
-    using Orc.GraphExplorer.Messages;
 
     public class GraphToolset : ModelBase
     {
-        private readonly IMementoService _mementoService;
-        private readonly IMessageService _messageService;
+        #region Constructors
+        public GraphToolset(string toolsetName, bool isFilterEnabled)
+        {
+            Argument.IsNotNullOrEmpty(() => toolsetName);
 
+            ToolsetName = toolsetName;
+            Area = new GraphArea(toolsetName);
+            Filter = new Filter(Area.Logic) { IsFilterEnabled = isFilterEnabled };
+        }
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Gets or sets the name of toolset
         /// </summary>
         public string ToolsetName { get; set; }
-
-        public GraphToolset(string toolsetName, bool isFilterEnabled, IMementoService mementoService, IMessageService messageService)
-        {
-            Argument.IsNotNullOrEmpty(() => toolsetName);
-
-            _mementoService = mementoService;
-            _messageService = messageService;
-            ToolsetName = toolsetName;
-            Area = new GraphArea(toolsetName);
-            Filter = new Filter(Area.Logic) {IsFilterEnabled = isFilterEnabled};            
-        }        
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool CanRedo
-        {
-            get { return _mementoService.CanRedo; }
-
-        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -66,41 +44,6 @@ namespace Orc.GraphExplorer.Models
         /// Gets or sets the property value.
         /// </summary>
         public Filter Filter { get; set; }
-
-        public void SaveToXml()
-        {
-            var dlg = new SaveFileDialog { Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml" };
-            if (dlg.ShowDialog() == true)
-            {
-                SaveToXmlMessage.SendWith(dlg.FileName, ToolsetName);
-            }
-        }
-
-        public void LoadFromXml()
-        {
-            var dlg = new OpenFileDialog { Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml" };
-            if (dlg.ShowDialog() == true)
-            {
-                LoadFromXmlMessage.SendWith(dlg.FileName, ToolsetName);
-            }
-        }
-
-        public void SaveToImage()
-        {
-            SaveToImageMessage.SendWith(ImageType.PNG, ToolsetName);
-        }
-
-        
-        public void Undo()
-        {
-            _mementoService.Undo();
-            GraphChangedMessage.SendWith(_mementoService.CanUndo);
-        }
-
-        public void Redo()
-        {
-            _mementoService.Redo();
-            GraphChangedMessage.SendWith(_mementoService.CanUndo);
-        }
+        #endregion
     }
 }

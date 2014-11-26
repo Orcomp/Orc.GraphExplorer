@@ -5,56 +5,45 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Behaviors;
 
-    using Catel;
-
-    using GraphX.GraphSharp;
-    using Models;
-    using Models.Data;
+    using Orc.GraphExplorer.Models;
 
     public class NavigatorGraphDataGetter : IGraphDataGetter, IOverridableGraphDataGetter
     {
-        private readonly Graph _graph;
+        #region Fields
+        private Func<IEnumerable<DataVertex>> _vertecesGetter;
 
-        public NavigatorGraphDataGetter()
-        {
-            
-        }
+        private Func<IEnumerable<DataEdge>> _edgesGetter;
+        #endregion
 
-        public NavigatorGraphDataGetter(Graph graph)
-        {
-            Argument.IsNotNull(() => graph);
-
-            _graph = graph;
-        }
-
+        #region IGraphDataGetter Members
         public IEnumerable<DataVertex> GetVerteces()
         {
-            return _vertecesGetter();
+            return _vertecesGetter == null ? Enumerable.Empty<DataVertex>() : _vertecesGetter();
         }
 
         public IEnumerable<DataEdge> GetEdges()
         {
-            return _edgesGetter();
+            return _edgesGetter == null ? Enumerable.Empty<DataEdge>() : _edgesGetter();
         }
+        #endregion
 
-        private Func<IEnumerable<DataVertex>> _vertecesGetter;
-        private Func<IEnumerable<DataEdge>> _edgesGetter;
-
+        #region IOverridableGraphDataGetter Members
         public void RedefineVertecesGetter(Func<IEnumerable<DataVertex>> getter)
         {
             _vertecesGetter = getter;
         }
-        
+
         public void RedefineEdgesGetter(Func<IEnumerable<DataEdge>> getter)
         {
             _edgesGetter = getter;
         }
+        #endregion
     }
 }

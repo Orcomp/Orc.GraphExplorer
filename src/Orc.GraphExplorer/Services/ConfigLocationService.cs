@@ -1,32 +1,50 @@
-﻿namespace Orc.GraphExplorer.Services
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="ConfigLocationService.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Services
 {
     using System.Configuration;
-
+    using System.Linq;
     using Catel;
+    using Catel.Configuration;
+    using Catel.Services;
+    using Models;
 
-    using Microsoft.Win32;
-    using Orc.GraphExplorer.Models;
-
-    class ConfigLocationService : IConfigLocationService
+    internal class ConfigLocationService : IConfigLocationService
     {
-        public ConfigLocationService()
-        {
-        }
+        #region Fields
+        private readonly IOpenFileService _openFileService;
+        private readonly IConfigurationService _configurationService;
+        #endregion
 
+        #region Constructors
+        public ConfigLocationService(IOpenFileService openFileService, IConfigurationService configurationService)
+        {
+            _openFileService = openFileService;
+            _configurationService = configurationService;
+        }
+        #endregion
+
+        #region IConfigLocationService Members
         public ConfigLocation Load()
         {
             var exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            var section = (GraphExplorerSection)exeConfiguration.GetSection("graphExplorer");
+            var section = (GraphExplorerSection) exeConfiguration.GetSection("graphExplorer");
 
             var config = section.CsvGraphDataServiceConfig;
 
             return new ConfigLocation()
-                   {
-                       RelationshipsFile = config.EdgesFilePath, 
-                       PropertiesFile = config.VertexesFilePath, 
-                       EnableProperty = config.EnableProperty
-                   };
+            {
+                RelationshipsFile = config.EdgesFilePath,
+                PropertiesFile = config.VertexesFilePath,
+                EnableProperty = config.EnableProperty
+            };
         }
 
         public void Save(ConfigLocation configLocation)
@@ -42,16 +60,6 @@
             config.EnableProperty = configLocation.EnableProperty ?? false;
 
             GraphExplorerSection.Current.Save();
-        }
-
-        private string OpenRelationshipsFile()
-        {
-            return OpenFile("Select Relationship File");
-        }
-
-        private string OpenPropertiesFile()
-        {
-            return OpenFile("Select Properties File");
         }
 
         public void ChangeRelationshipsFileLocation(ConfigLocation configLocation)
@@ -73,20 +81,31 @@
                 return;
             }
 
-            configLocation.PropertiesFile = propertiesFile;    
+            configLocation.PropertiesFile = propertiesFile;
+        }
+        #endregion
+
+        #region Methods
+        private string OpenRelationshipsFile()
+        {
+            return OpenFile("Select Relationship File");
+        }
+
+        private string OpenPropertiesFile()
+        {
+            return OpenFile("Select Properties File");
         }
 
         private string OpenFile(string title)
         {
             Argument.IsNotNullOrEmpty(() => title);
 
-            var dlg = new OpenFileDialog { Filter = "All files|*.csv", Title = title };
-            if (dlg.ShowDialog() == true)
-            {
-                return dlg.FileName;
-            }
+            _openFileService.IsMultiSelect = false;
+            _openFileService.Filter = "All files|*.csv";
+            _openFileService.Title = title;
 
-            return string.Empty;
+            return _openFileService.DetermineFile() ? _openFileService.FileNames.Single() : null;
         }
+        #endregion
     }
 }

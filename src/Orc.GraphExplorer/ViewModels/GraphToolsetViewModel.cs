@@ -20,7 +20,12 @@ namespace Orc.GraphExplorer.ViewModels
     using Catel.Memento;
     using Catel.MVVM;
     using Catel.Services;
+
+    using GraphX;
     using GraphX.Controls;
+
+    using Microsoft.Win32;
+
     using Models.Data;
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;
@@ -77,7 +82,11 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveToXmlExecute()
         {
-            Toolset.SaveToXml();
+            var dlg = new SaveFileDialog { Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml" };
+            if (dlg.ShowDialog() == true)
+            {
+                SaveToXmlMessage.SendWith(dlg.FileName, Toolset.ToolsetName);
+            }
         }
 
         /// <summary>
@@ -90,7 +99,11 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnLoadFromXmlExecute()
         {
-            Toolset.LoadFromXml();
+            var dlg = new OpenFileDialog { Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml" };
+            if (dlg.ShowDialog() == true)
+            {
+                LoadFromXmlMessage.SendWith(dlg.FileName, Toolset.ToolsetName);
+            }
         }
 
         /// <summary>
@@ -103,7 +116,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveToImageExecute()
         {
-            Toolset.SaveToImage();
+            SaveToImageMessage.SendWith(ImageType.PNG, Toolset.ToolsetName);
         }
 
         /// <summary>
@@ -161,7 +174,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnUndoCommandExecute()
         {
-            Toolset.Undo();           
+            _mementoService.Undo();
+            GraphChangedMessage.SendWith(_mementoService.CanUndo);
         }
 
         /// <summary>
@@ -175,7 +189,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
         private bool OnRedoCommandCanExecute()
         {
-            return Toolset.CanRedo;
+            return _mementoService.CanRedo; 
         }
 
         /// <summary>
@@ -183,7 +197,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnRedoCommandExecute()
         {
-            Toolset.Redo();            
+            _mementoService.Redo();
+            GraphChangedMessage.SendWith(_mementoService.CanUndo);
         }
 
         /// <summary>

@@ -68,7 +68,7 @@ namespace Orc.GraphExplorer.ViewModels
             var navigatorArea = Explorer.NavigatorToolset.Area;
             if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
             {
-                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter(editorArea.Logic.Graph);
+                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter();
             }
         }
 

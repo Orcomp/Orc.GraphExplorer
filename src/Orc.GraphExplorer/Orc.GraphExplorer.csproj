@@ -231,29 +231,29 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Resources\appbar.redo.curve.disable.design" />
-    <None Include="Resources\appbar.undo.curve.disable.design" />
+    <None Include="Resources\Images\appbar.redo.curve.disable.design" />
+    <None Include="Resources\Images\appbar.undo.curve.disable.design" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
-    <Resource Include="Resources\appbar.add.png" />
-    <Resource Include="Resources\appbar.close.png" />
-    <Resource Include="Resources\appbar.cursor.hand.png" />
-    <Resource Include="Resources\appbar.edit.png" />
-    <Resource Include="Resources\appbar.folder.open.png" />
-    <Resource Include="Resources\appbar.image.export.png" />
-    <Resource Include="Resources\appbar.page.png.png" />
-    <Resource Include="Resources\appbar.people.png" />
-    <Resource Include="Resources\appbar.redo.curve.disable.png" />
-    <Resource Include="Resources\appbar.redo.curve.png" />
-    <Resource Include="Resources\appbar.refresh.png" />
-    <Resource Include="Resources\appbar.save.png" />
-    <Resource Include="Resources\appbar.settings.png" />
-    <Resource Include="Resources\appbar.undo.curve.disable.png" />
-    <Resource Include="Resources\appbar.undo.curve.png" />
-    <Resource Include="Resources\appbar.vector.line.curve.png" />
-    <Resource Include="Resources\appbar.vector.line.png" />
-    <Resource Include="Resources\appbar.vector.rectangle.png" />
+    <Resource Include="Resources\Images\appbar.add.png" />
+    <Resource Include="Resources\Images\appbar.close.png" />
+    <Resource Include="Resources\Images\appbar.cursor.hand.png" />
+    <Resource Include="Resources\Images\appbar.edit.png" />
+    <Resource Include="Resources\Images\appbar.folder.open.png" />
+    <Resource Include="Resources\Images\appbar.image.export.png" />
+    <Resource Include="Resources\Images\appbar.page.png.png" />
+    <Resource Include="Resources\Images\appbar.people.png" />
+    <Resource Include="Resources\Images\appbar.redo.curve.disable.png" />
+    <Resource Include="Resources\Images\appbar.redo.curve.png" />
+    <Resource Include="Resources\Images\appbar.refresh.png" />
+    <Resource Include="Resources\Images\appbar.save.png" />
+    <Resource Include="Resources\Images\appbar.settings.png" />
+    <Resource Include="Resources\Images\appbar.undo.curve.disable.png" />
+    <Resource Include="Resources\Images\appbar.undo.curve.png" />
+    <Resource Include="Resources\Images\appbar.vector.line.curve.png" />
+    <Resource Include="Resources\Images\appbar.vector.line.png" />
+    <Resource Include="Resources\Images\appbar.vector.rectangle.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -265,15 +265,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Resources\TabControlTemplate.xaml">
+    <Resource Include="Resources\Themes\TabControlTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\TabItemTemplate.xaml">
+    <Resource Include="Resources\Themes\TabItemTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\EdgeTemplate.xaml">
+    <Resource Include="Resources\Themes\EdgeTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
@@ -289,11 +289,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Resources\VertexTemplate.xaml">
+    <Resource Include="Resources\Themes\VertexTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ThemedGraphXTemplates.xaml">
+    <Resource Include="Resources\Themes\ThemedGraphXTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
