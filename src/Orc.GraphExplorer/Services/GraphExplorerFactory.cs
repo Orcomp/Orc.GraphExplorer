@@ -1,5 +1,6 @@
 ﻿namespace Orc.GraphExplorer.Services
 {
+    using Catel;
     using Catel.Memento;
     using Catel.Services;
     using Models;
@@ -8,11 +9,13 @@
 
     public class GraphExplorerFactory : IGraphExplorerFactory
     {
-        private readonly IConfigLocationService _configLocationService;
+        private readonly IDataLocationSettingsService _dataLocationSettingsService;
 
-        public GraphExplorerFactory(IConfigLocationService configLocationService)
+        public GraphExplorerFactory(IDataLocationSettingsService dataLocationSettingsService)
         {
-            _configLocationService = configLocationService;
+            Argument.IsNotNull(() => dataLocationSettingsService);
+
+            _dataLocationSettingsService = dataLocationSettingsService;
         }
 
         public Explorer CreateExplorer()
@@ -23,7 +26,7 @@
 
             explorer.Settings = new Settings();
 
-            explorer.Settings.ConfigLocation = _configLocationService.Load();
+            explorer.Settings.DataLocationSettings = _dataLocationSettingsService.Load();
             SettingsChangedMessage.SendWith(true);
 
             return explorer;

@@ -9,6 +9,7 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using Catel;
     using Catel.Data;
     using Catel.Fody;
     using Catel.MVVM;
@@ -22,6 +23,7 @@ namespace Orc.GraphExplorer.ViewModels
         }
         public PropertyViewModel(Property property)
         {
+            Argument.IsNotNull(() => property);
             Property = property;
         }
 

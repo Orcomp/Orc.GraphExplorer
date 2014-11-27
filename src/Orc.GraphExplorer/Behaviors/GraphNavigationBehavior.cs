@@ -20,9 +20,8 @@ namespace Orc.GraphExplorer.Behaviors
             base.OnAssociatedObjectLoaded();
 
             _navigator = AssociatedObject.ViewModel as IGraphNavigator;
-            _navigationController = AssociatedObject.ViewModel as IGraphNavigationController;
 
-            if (_navigator == null || _navigationController == null)
+            if (_navigator == null)
             {
                 return;
             }
@@ -31,7 +30,6 @@ namespace Orc.GraphExplorer.Behaviors
         }
 
         private IGraphNavigator _navigator;
-        private IGraphNavigationController _navigationController;
 
         void AssociatedObject_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
         {
@@ -40,10 +38,8 @@ namespace Orc.GraphExplorer.Behaviors
             {
                 return;
             }
-            if (_navigationController.CanNavigate)
-            {
-                _navigator.NavigateTo(vertexView.ViewModel.DataVertex);
-            }
+            
+            _navigator.NavigateTo(vertexView.ViewModel.DataVertex);            
         }
     }
 }

@@ -13,7 +13,10 @@ namespace Orc.GraphExplorer.Behaviors
 
     public interface IDropable
     {
+        #region Properties
         Type DataTypeFormat { get; }
+        #endregion
+
         #region Methods
         /// <summary>
         /// Gets the effects.

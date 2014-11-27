@@ -11,6 +11,7 @@ namespace Orc.GraphExplorer.Services
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Media;
+    using Catel;
     using Messages;
     using Models;
     using Models.Data;
@@ -28,6 +29,8 @@ namespace Orc.GraphExplorer.Services
 
         public EdgeDrawingService(IDataVertexFactory dataVertexFactory)
         {
+            Argument.IsNotNull(() => dataVertexFactory);
+
             _dataVertexFactory = dataVertexFactory;
         }
 
@@ -39,6 +42,9 @@ namespace Orc.GraphExplorer.Services
 
         public void StartEdgeDrawing(Graph graph, DataVertex startVertex, Point startPoint, Point lastPoint)
         {
+            Argument.IsNotNull(() => graph);
+            Argument.IsNotNull(() => startVertex);
+
             _graph = graph;
             _startVertex = startVertex;
             _fakeEndVertex = _dataVertexFactory.CreateFakeVertex();
@@ -67,11 +73,15 @@ namespace Orc.GraphExplorer.Services
 
         public bool IsStartVertex(DataVertex dataVertex)
         {
+            Argument.IsNotNull(() =>dataVertex);
+
             return Equals(_startVertex, dataVertex);
         }
 
         public void FinishEdgeDrawing(DataVertex endVertex)
         {
+            Argument.IsNotNull(() => endVertex);
+
             _graph.RemoveVertex(_fakeEndVertex);
 
             _startVertex = null;

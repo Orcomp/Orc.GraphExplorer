@@ -27,6 +27,9 @@ namespace Orc.GraphExplorer.ViewModels
 
         public EdgeViewModel(DataEdge dataEdge, IGraphAreaEditorService graphAreaEditorService)
         {
+            Argument.IsNotNull(() => dataEdge);
+            Argument.IsNotNull(() => graphAreaEditorService);
+
             _graphAreaEditorService = graphAreaEditorService;
             DataEdge = dataEdge;
 

@@ -9,6 +9,8 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows.Input;
+
+    using Catel.Windows;
     using Catel.Windows.Interactivity;
     using GraphX.Controls;
     using GraphX.Models;
@@ -33,7 +35,7 @@ namespace Orc.GraphExplorer.Behaviors
             {
                 if (_zoomControl == null)
                 {
-                    _zoomControl = AssociatedObject.FindFirstParentOfType<ZoomControl>();
+                    _zoomControl = AssociatedObject.FindLogicalOrVisualAncestorByType<ZoomControl>();
                 }
 
                 return _zoomControl;

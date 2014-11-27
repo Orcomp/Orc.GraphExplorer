@@ -1,29 +1,45 @@
-﻿namespace Orc.GraphExplorer.Services
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="GraphAreaLoadingService.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Services
 {
     using System.Threading.Tasks;
-
+    using Catel;
     using Catel.Memento;
     using Catel.Services;
+    using Messages;
+    using Models;
+    using Models.Data;
 
-    using Orc.GraphExplorer.Messages;
-    using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Models.Data;
-
-    public class GraphAreaLoadingService  : IGraphAreaLoadingService
+    public class GraphAreaLoadingService : IGraphAreaLoadingService
     {
+        #region Fields
         private readonly IMementoService _mementoService;
 
         private readonly IMessageService _messageService;
+        #endregion
 
-
+        #region Constructors
         public GraphAreaLoadingService(IMementoService mementoService, IMessageService messageService)
         {
+            Argument.IsNotNull(() => mementoService);
+            Argument.IsNotNull(() => messageService);
+
             _mementoService = mementoService;
             _messageService = messageService;
         }
+        #endregion
 
+        #region IGraphAreaLoadingService Members
         public void ReloadGraphArea(GraphArea graphArea, int offsetY)
         {
+            Argument.IsNotNull(() => graphArea);
+
             if (graphArea.GraphDataGetter == null)
             {
                 return;
@@ -63,5 +79,6 @@
 
             return true;
         }
+        #endregion
     }
 }

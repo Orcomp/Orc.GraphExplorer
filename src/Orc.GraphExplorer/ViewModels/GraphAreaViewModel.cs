@@ -23,7 +23,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Orc.GraphExplorer.Models.Data;
     using Orc.GraphExplorer.Services;
 
-    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IGraphNavigationController, IFilterable, IGraphLogicProvider, IEdgeDrawer
+    public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IFilterable, IGraphLogicProvider, IEdgeDrawer
     {
         #region Fields
         private readonly IViewModelManager _viewModelManager;
@@ -43,6 +43,12 @@ namespace Orc.GraphExplorer.ViewModels
 
         public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager, IGraphAreaEditorService graphAreaEditorService, IEdgeDrawingService edgeDrawingService, IGraphAreaLoadingService graphAreaLoadingService)
         {
+            Argument.IsNotNull(() =>area);
+            Argument.IsNotNull(() => viewModelManager);
+            Argument.IsNotNull(() => graphAreaEditorService);
+            Argument.IsNotNull(() => edgeDrawingService);
+            Argument.IsNotNull(() => graphAreaLoadingService);
+
             _viewModelManager = viewModelManager;
             _graphAreaEditorService = graphAreaEditorService;
             _edgeDrawingService = edgeDrawingService;
@@ -200,7 +206,10 @@ namespace Orc.GraphExplorer.ViewModels
         {
             Argument.IsNotNull(() => dataVertex);
 
-            NavigationMessage.SendWith(dataVertex);            
+            if (!IsInEditing)
+            {
+                NavigationMessage.SendWith(dataVertex);
+            }            
         }
         #endregion
 

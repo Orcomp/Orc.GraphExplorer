@@ -9,7 +9,7 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System;
     using System.Windows;
-
+    using Catel;
     using Catel.Data;
     using Catel.MVVM;
     using Models;
@@ -22,6 +22,8 @@ namespace Orc.GraphExplorer.ViewModels
 
         public DragableButtonViewModel(IDataVertexFactory dataVertexFactory)
         {
+            Argument.IsNotNull(() =>dataVertexFactory);
+
             _dataVertexFactory = dataVertexFactory;
         }
 

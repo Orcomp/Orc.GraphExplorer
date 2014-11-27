@@ -8,6 +8,7 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System.Windows;
+    using Catel;
     using Catel.Data;
     using Catel.MVVM;
     using Models;
@@ -16,6 +17,8 @@ namespace Orc.GraphExplorer.ViewModels
     {
         public SettingViewModel(Settings settings)
         {
+            Argument.IsNotNull(() => settings);
+
             Settings = settings;
             CloseSettingsCommand = new Command(OnCloseSettingsCommandExecute);
         }

@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer
+namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows;
     using System.Windows.Media;

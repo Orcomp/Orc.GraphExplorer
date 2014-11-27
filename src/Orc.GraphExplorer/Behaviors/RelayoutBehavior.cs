@@ -11,6 +11,8 @@ namespace Orc.GraphExplorer.Behaviors
     using System;
     using System.Threading;
     using System.Windows.Interactivity;
+
+    using Catel.Windows;
     using Catel.Windows.Interactivity;
     using GraphX.Controls;
 
@@ -53,7 +55,7 @@ namespace Orc.GraphExplorer.Behaviors
 
         private void FitToBounds()
         {
-            var zoom = AssociatedObject.FindFirstParentOfType<ZoomControl>();
+            var zoom = AssociatedObject.FindLogicalOrVisualAncestorByType<ZoomControl>();
             zoom.ZoomToFill();
             
             zoom.Mode = ZoomControlModes.Custom;

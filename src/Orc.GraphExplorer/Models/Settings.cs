@@ -23,7 +23,7 @@ namespace Orc.GraphExplorer.Models
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
-        public ConfigLocation ConfigLocation { get; set; }
+        public DataLocationSettings DataLocationSettings { get; set; }
         #endregion
     }
 }

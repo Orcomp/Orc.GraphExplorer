@@ -30,7 +30,7 @@
                         Command="{Binding CloseSettingsCommand}" Height="22" Width="22"/>
                 <TabControl Grid.Row="1">
                     <TabItem Header="Config File Location" FontWeight="Bold">
-                        <views:ConfigLocationView DataContext="{Binding Path=DataContext.Settings.ConfigLocation, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
+                        <views:DataLocationSettingsView DataContext="{Binding Path=DataContext.Settings.DataLocationSettings, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
                     </TabItem>
                 </TabControl>
             </Grid>

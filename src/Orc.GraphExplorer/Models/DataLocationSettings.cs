@@ -14,7 +14,7 @@ namespace Orc.GraphExplorer.Models
     using Microsoft.Win32;
     using Services;
 
-    public class ConfigLocation : ModelBase
+    public class DataLocationSettings : ModelBase
     {
         /// <summary>
         /// Gets or sets the property value.

@@ -16,6 +16,7 @@ namespace Orc.GraphExplorer.Views
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
+    using Catel.Windows;
 
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.ViewModels;
@@ -50,7 +51,7 @@ namespace Orc.GraphExplorer.Views
 
             var relationalViewModel = viewModel as IRelationalViewModel;
 
-            var toolset = this.FindFirstParentOfType<GraphToolsetView>();
+            var toolset = this.FindLogicalOrVisualAncestorByType<GraphToolsetView>();
             if (toolset != null && relationalViewModel != null && viewModel.ToolSetViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(toolset.ViewModel);

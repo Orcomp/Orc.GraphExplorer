@@ -10,6 +10,8 @@ namespace Orc.GraphExplorer.Views
 {
     using System.Windows;
     using Catel.MVVM;
+    using Catel.Windows;
+
     using ViewModels;
 
     /// <summary>
@@ -53,7 +55,7 @@ namespace Orc.GraphExplorer.Views
             }
 
             var relationalViewModel = viewModel as IRelationalViewModel;
-            var parentView = this.FindFirstParentOfType<GraphToolsetView>();
+            var parentView = this.FindLogicalOrVisualAncestorByType<GraphToolsetView>();
             if (parentView != null)
             {
                 relationalViewModel.SetParentViewModel(parentView.ViewModel);

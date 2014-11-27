@@ -5,38 +5,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System;
     using System.ComponentModel;
-
-    using Behaviors;
-
-    using Catel;
-    using Catel.Data;
-    using Catel.IoC;
-    using Catel.Memento;
     using Catel.MVVM;
-    using Catel.Services;
     using Messages;
-    using Models.Data;
-    using Orc.GraphExplorer.Models;
+    using Models;
     using Services;
-
-    using INavigationService = Orc.GraphExplorer.Services.INavigationService;
 
     public class GraphExplorerViewModel : ViewModelBase
     {
-
-        private readonly IMementoService _mementoService;
+        #region Fields
         private readonly IGraphDataService _graphDataService;
         private readonly IGraphExplorerFactory _graphExplorerFactory;
 
         private readonly INavigationService _navigationService;
+        #endregion
 
-        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService, IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory, INavigationService navigationService)
+        #region Constructors
+        public GraphExplorerViewModel(IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory, INavigationService navigationService)
         {
-            _mementoService = mementoService;
             _graphDataService = graphDataService;
             _graphExplorerFactory = graphExplorerFactory;
             _navigationService = navigationService;
@@ -50,69 +39,18 @@ namespace Orc.GraphExplorer.ViewModels
             ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
             NavigationMessage.Register(this, OnNavigationMessage);
         }
+        #endregion
 
-        private void OnNavigationMessage(NavigationMessage message)
-        {
-            _navigationService.NavigateTo(Explorer, message.Data);
-        }
-
-        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
-        {
-            var editorArea = Explorer.EditorToolset.Area;
-            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
-            {
-                editorArea.GraphDataGetter = _graphDataService;
-                editorArea.GraphDataSaver = _graphDataService;
-            }
-
-            var navigatorArea = Explorer.NavigatorToolset.Area;
-            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
-            {
-                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter();
-            }
-        }
-
-        private void OnEditingStartStopMessage(EditingStartStopMessage message)
-        {
-            if (message.Data)
-            {
-                IsNavTabVisible = false;
-            }
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-            IsEditorTabSelected = true;
-        }
-
+        #region Properties
         /// <summary>
         /// Gets the OpenSettingsCommand command.
         /// </summary>
         public Command OpenSettingsCommand { get; private set; }
 
         /// <summary>
-        /// Method to invoke when the OpenSettingsCommand command is executed.
-        /// </summary>
-        private void OnOpenSettingsCommandExecute()
-        {
-            IsSettingsVisible = !IsSettingsVisible;
-        }
-
-        /// <summary>
         /// Gets the CloseNavTabCommand command.
         /// </summary>
         public Command CloseNavTabCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the CloseNavTabCommand command is executed.
-        /// </summary>
-        private void OnCloseNavTabCommandExecute()
-        {
-            IsNavTabVisible = false;
-            IsNavTabSelected = false;
-            IsEditorTabSelected = true;
-        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -163,5 +101,61 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         [DefaultValue(false)]
         public bool IsEditorTabSelected { get; set; }
+        #endregion
+
+        #region Methods
+        private void OnNavigationMessage(NavigationMessage message)
+        {
+            _navigationService.NavigateTo(Explorer, message.Data);
+        }
+
+        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
+        {
+            var editorArea = Explorer.EditorToolset.Area;
+            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
+            {
+                editorArea.GraphDataGetter = _graphDataService;
+                editorArea.GraphDataSaver = _graphDataService;
+            }
+
+            var navigatorArea = Explorer.NavigatorToolset.Area;
+            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
+            {
+                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter();
+            }
+        }
+
+        private void OnEditingStartStopMessage(EditingStartStopMessage message)
+        {
+            if (message.Data)
+            {
+                IsNavTabVisible = false;
+            }
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            IsEditorTabSelected = true;
+        }
+
+        /// <summary>
+        /// Method to invoke when the OpenSettingsCommand command is executed.
+        /// </summary>
+        private void OnOpenSettingsCommandExecute()
+        {
+            IsSettingsVisible = !IsSettingsVisible;
+        }
+
+        /// <summary>
+        /// Method to invoke when the CloseNavTabCommand command is executed.
+        /// </summary>
+        private void OnCloseNavTabCommandExecute()
+        {
+            IsNavTabVisible = false;
+            IsNavTabSelected = false;
+            IsEditorTabSelected = true;
+        }
+        #endregion
     }
 }

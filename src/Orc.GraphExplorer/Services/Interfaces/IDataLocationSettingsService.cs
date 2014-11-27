@@ -1,20 +1,22 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="IFilePickerService.cs" company="Orcomp development team">
+// <copyright file="IDataLocationSettingsService.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Services
 {
-    using Orc.GraphExplorer.Models;
+    using Models;
 
-    public interface IConfigLocationService
+    public interface IDataLocationSettingsService
     {
-        ConfigLocation Load();
+        #region Methods
+        DataLocationSettings Load();
+        DataLocationSettings GetCurrentOrLoad();
 
-        void Save(ConfigLocation configLocation);
-        void ChangeRelationshipsFileLocation(ConfigLocation configLocation);
-        void ChangePropertiesFileLocation(ConfigLocation configLocation);
+        void Save(DataLocationSettings dataLocationSettings);
+        #endregion
     }
 }

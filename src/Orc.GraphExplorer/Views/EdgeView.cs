@@ -5,37 +5,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Views
 {
     using System.Windows;
     using Base;
-
     using Catel.MVVM;
-    using Catel.MVVM.Converters;
     using Catel.MVVM.Views;
+    using Catel.Windows;
     using GraphX;
-
-    using Orc.GraphExplorer.ViewModels;
 
     public class EdgeView : EdgeViewBase
     {
+        #region Constructors
         public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true) : base(source, target, edge, showLabels, showArrows)
         {
             Loaded += EdgeView_Loaded;
         }
+        #endregion
 
-        void EdgeView_Loaded(object sender, RoutedEventArgs e)
-        {
-            DataContext = ViewModel;
-
-            var relationalViewModel = ViewModel as IRelationalViewModel;
-            var graphAreaView = this.FindFirstParentOfType<GraphAreaView>();
-            if (graphAreaView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
-            {
-                relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
-            }
-        }
-
+        #region Properties
         [ViewToViewModel]
         public bool IsHighlightEnabled
         {
@@ -48,8 +37,8 @@ namespace Orc.GraphExplorer.Views
         {
             get { return HighlightBehaviour.GetHighlighted(this); }
             set { HighlightBehaviour.SetHighlighted(this, value); }
-        }        
-        
+        }
+
         [ViewToViewModel]
         public new bool IsVisible
         {
@@ -63,5 +52,20 @@ namespace Orc.GraphExplorer.Views
             get { return base.IsEnabled; }
             set { base.IsEnabled = value; }
         }
+        #endregion
+
+        #region Methods
+        private void EdgeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataContext = ViewModel;
+
+            var relationalViewModel = ViewModel as IRelationalViewModel;
+            var graphAreaView = this.FindLogicalOrVisualAncestorByType<GraphAreaView>();
+            if (graphAreaView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
+            {
+                relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
+            }
+        }
+        #endregion
     }
 }

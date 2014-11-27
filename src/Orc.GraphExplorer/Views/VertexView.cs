@@ -14,6 +14,7 @@ namespace Orc.GraphExplorer.Views
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
+    using Catel.Windows;
 
     using GraphX;
 
@@ -34,7 +35,7 @@ namespace Orc.GraphExplorer.Views
             var viewModel = ViewModel;
 
             var relationalViewModel = viewModel as IRelationalViewModel;
-            var graphAreaView = this.FindFirstParentOfType<GraphAreaView>();
+            var graphAreaView = this.FindLogicalOrVisualAncestorByType<GraphAreaView>();
             if (graphAreaView != null && relationalViewModel != null && viewModel.ParentViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);

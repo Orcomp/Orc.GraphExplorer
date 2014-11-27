@@ -11,8 +11,8 @@ namespace Orc.GraphExplorer.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using Orc.GraphExplorer.Models;
+    using Catel;
+    using Models;
 
     public class NavigatorGraphDataGetter : IGraphDataGetter, IOverridableGraphDataGetter
     {
@@ -37,11 +37,15 @@ namespace Orc.GraphExplorer.Services
         #region IOverridableGraphDataGetter Members
         public void RedefineVertecesGetter(Func<IEnumerable<DataVertex>> getter)
         {
+            Argument.IsNotNull(() => getter);
+
             _vertecesGetter = getter;
         }
 
         public void RedefineEdgesGetter(Func<IEnumerable<DataEdge>> getter)
         {
+            Argument.IsNotNull(() => getter);
+
             _edgesGetter = getter;
         }
         #endregion

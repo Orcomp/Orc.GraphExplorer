@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 namespace Orc.GraphExplorer.Views
 {
     using Catel.MVVM;
+    using Catel.Windows;
 
     using Orc.GraphExplorer.ViewModels;
 
@@ -42,7 +43,7 @@ namespace Orc.GraphExplorer.Views
             var viewModel = ViewModel;
 
             var relationalViewModel = viewModel as IRelationalViewModel;
-            var parentView = this.FindFirstParentOfType<VertexView>();
+            var parentView = this.FindLogicalOrVisualAncestorByType<VertexView>();
             if (parentView != null && relationalViewModel != null && viewModel.ParentViewModel == null)
             {
                 relationalViewModel.SetParentViewModel(parentView.ViewModel);

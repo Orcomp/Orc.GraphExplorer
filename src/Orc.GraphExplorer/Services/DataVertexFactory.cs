@@ -1,5 +1,6 @@
 ﻿namespace Orc.GraphExplorer.Services
 {
+    using Catel;
     using Models;
 
     public class DataVertexFactory : IDataVertexFactory
@@ -30,6 +31,8 @@
 
         public bool IsFakeVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             return vertex.ID == FakeVertexId;
         }
     }

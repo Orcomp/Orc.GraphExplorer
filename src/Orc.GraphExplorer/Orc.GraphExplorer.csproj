@@ -121,21 +121,18 @@
     <Compile Include="Behaviors\Interfaces\IDragable.cs" />
     <Compile Include="Behaviors\Interfaces\IDropable.cs" />
     <Compile Include="Behaviors\Interfaces\IFilterable.cs" />
-    <Compile Include="Behaviors\Interfaces\IGraphNavigationController.cs" />
     <Compile Include="Behaviors\Interfaces\IGraphNavigator.cs" />
     <Compile Include="Behaviors\RelayoutBehavior.cs" />
     <Compile Include="Behaviors\ZoomDropBehavior.cs" />
-    <Compile Include="Config\CsvGraphDataServiceConfig.cs" />
-    <Compile Include="Config\GraphExplorerConfiguration.cs" />
     <Compile Include="Enums\GraphDataServiceEnum.cs" />
     <Compile Include="Events\EdgeViewCreatedEventArgs.cs" />
     <Compile Include="Events\GraphEventArgs.cs" />
     <Compile Include="Events\SettingAppliedRoutedEventArgs.cs" />
     <Compile Include="Extensions\DataEdgeExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\FilterExtensions.cs" />
-    <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\MementoServiceExtensions.cs" />
-    <Compile Include="Interfaces\IEdgeDrawer.cs" />
+    <Compile Include="Behaviors\Interfaces\IEdgeDrawer.cs" />
     <Compile Include="Interfaces\IGraphLogicProvider.cs" />
     <Compile Include="Messages\GraphChangedMessage.cs" />
     <Compile Include="Messages\EditingStartStopMessage.cs" />
@@ -151,7 +148,7 @@
     <Compile Include="Models\Data\FilterableEntity.cs" />
     <Compile Include="Models\Data\Graph.cs" />
     <Compile Include="Models\Explorer.cs" />
-    <Compile Include="Models\ConfigLocation.cs" />
+    <Compile Include="Models\DataLocationSettings.cs" />
     <Compile Include="Models\Filter.cs" />
     <Compile Include="Models\GraphArea.cs" />
     <Compile Include="Models\Data\GraphLogic.cs" />
@@ -170,13 +167,13 @@
     <Compile Include="Csv\Services\CsvGraphDataService.cs" />
     <Compile Include="Services\CustomGraphControlFactory.cs" />
     <Compile Include="Csv\Data\RelationDataRecord.cs" />
-    <Compile Include="Services\ConfigLocationService.cs" />
+    <Compile Include="Services\DataLocationSettingsService.cs" />
     <Compile Include="Services\GraphAreaEditorService.cs" />
     <Compile Include="Services\EdgeDrawingService.cs" />
     <Compile Include="Services\GraphAreaLoadingService.cs" />
     <Compile Include="Services\DataVertexFactory.cs" />
     <Compile Include="Services\GraphExplorerFactory.cs" />
-    <Compile Include="Services\Interfaces\IConfigLocationService.cs" />
+    <Compile Include="Services\Interfaces\IDataLocationSettingsService.cs" />
     <Compile Include="Services\Interfaces\IEdgeDrawingService.cs" />
     <Compile Include="Services\Interfaces\IGraphAreaEditorService.cs" />
     <Compile Include="Services\Interfaces\IGraphAreaLoadingService.cs" />
@@ -186,14 +183,14 @@
     <Compile Include="Services\Interfaces\IGraphExplorerFactory.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
     <Compile Include="Services\Interfaces\IOverridableGraphDataGetter.cs" />
-    <Compile Include="Services\Interfaces\NavigationService.cs" />
+    <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\NavigatorGraphDataGetter.cs" />
     <Compile Include="Services\Interfaces\IGraphDataGetter.cs" />
     <Compile Include="Services\TopologicalLayoutAlgorithm.cs" />
     <Compile Include="Csv\Data\PropertyDataRecord.cs" />
     <Compile Include="ViewModels\DragableButtonViewModel.cs" />
     <Compile Include="ViewModels\EdgeViewModel.cs" />
-    <Compile Include="ViewModels\ConfigLocationViewModel.cs" />
+    <Compile Include="ViewModels\DataLocationSettingsViewModel.cs" />
     <Compile Include="ViewModels\FilterViewModel.cs" />
     <Compile Include="ViewModels\GraphAreaViewModel.cs" />
     <Compile Include="ViewModels\GraphExplorerViewModel.cs" />
@@ -206,8 +203,8 @@
     <Compile Include="Views\Base\EdgeViewBase.cs" />
     <Compile Include="Views\DragableButtonView.cs" />
     <Compile Include="Views\EdgeView.cs" />
-    <Compile Include="Views\ConfigLocationView.xaml.cs">
-      <DependentUpon>ConfigLocationView.xaml</DependentUpon>
+    <Compile Include="Views\DataLocationSettingsView.xaml.cs">
+      <DependentUpon>DataLocationSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FilterView.xaml.cs">
       <DependentUpon>FilterView.xaml</DependentUpon>
@@ -257,7 +254,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Page Include="Views\ConfigLocationView.xaml">
+    <Page Include="Views\DataLocationSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

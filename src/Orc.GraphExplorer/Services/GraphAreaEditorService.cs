@@ -28,6 +28,9 @@ namespace Orc.GraphExplorer.Services
         #region Constructors
         public GraphAreaEditorService(IMementoService mementoService, IMessageService messageService)
         {
+            Argument.IsNotNull(() => mementoService);
+            Argument.IsNotNull(() => messageService);
+
             _mementoService = mementoService;
             _messageService = messageService;
         }
@@ -47,7 +50,7 @@ namespace Orc.GraphExplorer.Services
 
             dataSaver.SaveChanges(area.Logic.Graph);
 
-            area.IsInEditing = false;
+            area.IsInEditing = false;           
         }
 
         public void AddVertex(GraphArea area, DataVertex dataVertex, Point point)

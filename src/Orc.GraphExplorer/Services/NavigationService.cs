@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-
+    using Catel;
     using Catel.IoC;
 
     using GraphX.GraphSharp;
@@ -14,6 +14,9 @@
     {
         public void NavigateTo(Explorer explorer, DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => explorer);
+            Argument.IsNotNull(() => dataVertex);
+
             explorer.IsNavTabVisible = true;
             explorer.IsNavTabSelected = true;
 
