@@ -8,6 +8,7 @@
 
 namespace Orc.GraphExplorer.ViewModels
 {
+    using System.Collections;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.Linq;
@@ -23,6 +24,8 @@ namespace Orc.GraphExplorer.ViewModels
         {
             Argument.IsNotNull(() => filter);
 
+            RawCollection = Enumerable.Empty<FilterableEntity>();
+
             Filter = filter;
 
             var graphLogic = filter.GraphLogic;
@@ -32,10 +35,18 @@ namespace Orc.GraphExplorer.ViewModels
 
             graphLogic.GraphReloaded += _logic_GraphReloaded;
 
+            FilterableEntities.CollectionChanged += FilterableEntities_CollectionChanged;
             FilteredEntities.CollectionChanged += FilteredEntities_CollectionChanged;
 
             ClearFilterCommand = new Command(OnClearFilterCommandExecute);
         }
+
+        void FilterableEntities_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RawCollection = Enumerable.Empty<FilterableEntity>();
+            RawCollection = FilterableEntities;
+        }
+
         #endregion
 
         /// <summary>
@@ -81,6 +92,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         [ViewModelToModel("Filter")]
         public ObservableCollection<FilterableEntity> FilterableEntities { get; set; }
+
+        public IEnumerable RawCollection { get; set; }
 
         /// <summary>
         /// Gets or sets the property value.
