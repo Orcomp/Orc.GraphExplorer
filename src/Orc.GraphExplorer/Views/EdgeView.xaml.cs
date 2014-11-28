@@ -1,24 +1,32 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
-// <copyright file="EdgeView.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-#endregion
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace Orc.GraphExplorer.Views
 {
-    using System.Windows;
-    using Base;
     using Catel.MVVM;
     using Catel.MVVM.Views;
     using Catel.Windows;
     using GraphX;
 
-    public class EdgeView : EdgeViewBase
+    /// <summary>
+    /// Логика взаимодействия для EdgeView.xaml
+    /// </summary>
+    public partial class EdgeView
     {
         #region Constructors
-        public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true) : base(source, target, edge, showLabels, showArrows)
+        public EdgeView(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
+            : base(source, target, edge, showLabels, showArrows)
         {
             Loaded += EdgeView_Loaded;
         }

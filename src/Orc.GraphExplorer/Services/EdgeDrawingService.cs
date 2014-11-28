@@ -18,21 +18,23 @@ namespace Orc.GraphExplorer.Services
 
     public class EdgeDrawingService : IEdgeDrawingService
     {
+        #region Fields
         private readonly IDataVertexFactory _dataVertexFactory;
 
-        #region Fields
         private DataVertex _startVertex;
         private DataVertex _fakeEndVertex;
         private PathGeometry _pathGeometry;
         private Graph _graph;
         #endregion
 
+        #region Constructors
         public EdgeDrawingService(IDataVertexFactory dataVertexFactory)
         {
             Argument.IsNotNull(() => dataVertexFactory);
 
             _dataVertexFactory = dataVertexFactory;
         }
+        #endregion
 
         #region IEdgeDrawingService Members
         public bool IsInDrawing()
@@ -73,7 +75,7 @@ namespace Orc.GraphExplorer.Services
 
         public bool IsStartVertex(DataVertex dataVertex)
         {
-            Argument.IsNotNull(() =>dataVertex);
+            Argument.IsNotNull(() => dataVertex);
 
             return Equals(_startVertex, dataVertex);
         }

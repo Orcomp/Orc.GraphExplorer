@@ -10,6 +10,7 @@ namespace Orc.GraphExplorer.ViewModels
 {
     using System.Linq;
     using Catel;
+    using Catel.Configuration;
     using Catel.Fody;
     using Catel.MVVM;
     using Catel.Services;
@@ -38,6 +39,7 @@ namespace Orc.GraphExplorer.ViewModels
             ChangeProperties = new Command(OnChangePropertiesExecute, () => EnableProperty ?? false);
             Save = new Command(OnSaveExecute);
         }
+
         #endregion
 
         #region Commands

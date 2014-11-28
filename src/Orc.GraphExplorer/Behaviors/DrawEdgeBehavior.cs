@@ -9,16 +9,13 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows.Input;
-
     using Catel.Windows;
     using Catel.Windows.Interactivity;
     using GraphX.Controls;
     using GraphX.Models;
     using Models;
-
-    using Orc.GraphExplorer.Views.Base;
-
     using Views;
+    using Views.Base;
 
     public class DrawEdgeBehavior : BehaviorBase<GraphAreaViewBase>
     {

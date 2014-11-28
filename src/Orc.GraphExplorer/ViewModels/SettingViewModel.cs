@@ -5,16 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System.Windows;
     using Catel;
-    using Catel.Data;
     using Catel.MVVM;
     using Models;
 
     public class SettingViewModel : ViewModelBase
     {
+        #region Constructors
         public SettingViewModel(Settings settings)
         {
             Argument.IsNotNull(() => settings);
@@ -22,19 +22,13 @@ namespace Orc.GraphExplorer.ViewModels
             Settings = settings;
             CloseSettingsCommand = new Command(OnCloseSettingsCommandExecute);
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets the CloseSettingsCommand command.
         /// </summary>
         public Command CloseSettingsCommand { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the CloseSettingsCommand command is executed.
-        /// </summary>
-        private void OnCloseSettingsCommandExecute()
-        {
-            IsSettingsVisible = false;
-        }
 
         /// <summary>
         /// Gets or sets the property value.
@@ -47,6 +41,16 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         [ViewModelToModel("Settings")]
         public bool IsSettingsVisible { get; set; }
+        #endregion
 
+        #region Methods
+        /// <summary>
+        /// Method to invoke when the CloseSettingsCommand command is executed.
+        /// </summary>
+        private void OnCloseSettingsCommandExecute()
+        {
+            IsSettingsVisible = false;
+        }
+        #endregion
     }
 }

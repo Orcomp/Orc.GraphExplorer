@@ -66,7 +66,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, new DataContextChangedEventArgs(e.OldValue, e.NewValue)));
 
             ViewModelChanged += GraphAreaViewBase_ViewModelChanged;
             CloseViewModelOnUnloaded = false;
@@ -122,7 +122,7 @@ namespace Orc.GraphExplorer.Views.Base
             remove { _viewUnloaded -= value; }
         }
 
-        event EventHandler<EventArgs> IView.DataContextChanged
+        event EventHandler<DataContextChangedEventArgs> IView.DataContextChanged
         {
             add { _viewDataContextChanged += value; }
             remove { _viewDataContextChanged -= value; }
@@ -342,7 +342,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event EventHandler<EventArgs> _viewUnloaded;
 
-        private event EventHandler<EventArgs> _viewDataContextChanged;
+        private event EventHandler<DataContextChangedEventArgs> _viewDataContextChanged;
 
         private event PropertyChangedEventHandler _propertyChanged;
 

@@ -13,7 +13,6 @@ namespace Orc.GraphExplorer.ViewModels
     using Catel.Fody;
     using Catel.Memento;
     using Catel.MVVM;
-    using Catel.Services;
     using GraphX;
     using GraphX.Controls;
     using Messages;

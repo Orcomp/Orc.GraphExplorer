@@ -37,16 +37,10 @@
                 <ControlTemplate TargetType="{x:Type views:VertexView}">
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="Highlight">
-<!--                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" />
-
-                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" />-->
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
                             <ColorAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Color" To="{StaticResource AccentColor}" />
                         </Storyboard>
                         <Storyboard x:Key="HighlightOff">
-<!--                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" />
-
-                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" />-->
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
 
                             <ColorAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Color" To="Black" />
@@ -54,15 +48,10 @@
                         <Storyboard x:Key="HoverOn">
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="1" />
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
-
-                            <!--<DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" />
-                            <DoubleAnimation Duration="00:00:00.2000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" />-->
                         </Storyboard>
                         <Storyboard x:Key="HoverOff">
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="0" />
                             <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="DropShadowEffect" Storyboard.TargetProperty="Opacity" To=".2" />
-                            <!--<DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" />
-                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" />-->
                         </Storyboard>
                     </ControlTemplate.Resources>
 

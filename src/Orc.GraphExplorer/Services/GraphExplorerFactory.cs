@@ -1,23 +1,33 @@
-﻿namespace Orc.GraphExplorer.Services
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="GraphExplorerFactory.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Services
 {
     using Catel;
-    using Catel.Memento;
-    using Catel.Services;
+    using Messages;
     using Models;
-
-    using Orc.GraphExplorer.Messages;
 
     public class GraphExplorerFactory : IGraphExplorerFactory
     {
+        #region Fields
         private readonly IDataLocationSettingsService _dataLocationSettingsService;
+        #endregion
 
+        #region Constructors
         public GraphExplorerFactory(IDataLocationSettingsService dataLocationSettingsService)
         {
             Argument.IsNotNull(() => dataLocationSettingsService);
 
             _dataLocationSettingsService = dataLocationSettingsService;
         }
+        #endregion
 
+        #region IGraphExplorerFactory Members
         public Explorer CreateExplorer()
         {
             var explorer = new Explorer();
@@ -31,5 +41,6 @@
 
             return explorer;
         }
+        #endregion
     }
 }

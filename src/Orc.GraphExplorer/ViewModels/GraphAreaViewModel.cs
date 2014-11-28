@@ -12,16 +12,14 @@ namespace Orc.GraphExplorer.ViewModels
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
-
+    using Behaviors;
     using Catel;
     using Catel.Fody;
     using Catel.MVVM;
-
-    using Orc.GraphExplorer.Behaviors;
-    using Orc.GraphExplorer.Messages;
-    using Orc.GraphExplorer.Models;
-    using Orc.GraphExplorer.Models.Data;
-    using Orc.GraphExplorer.Services;
+    using Messages;
+    using Models;
+    using Models.Data;
+    using Services;
 
     public class GraphAreaViewModel : ViewModelBase, IDropable, IGraphNavigator, IFilterable, IGraphLogicProvider, IEdgeDrawer
     {
@@ -33,7 +31,6 @@ namespace Orc.GraphExplorer.ViewModels
         private readonly IEdgeDrawingService _edgeDrawingService;
 
         private readonly IGraphAreaLoadingService _graphAreaLoadingService;
-
         #endregion
 
         #region Constructors
@@ -43,7 +40,7 @@ namespace Orc.GraphExplorer.ViewModels
 
         public GraphAreaViewModel(GraphArea area, IViewModelManager viewModelManager, IGraphAreaEditorService graphAreaEditorService, IEdgeDrawingService edgeDrawingService, IGraphAreaLoadingService graphAreaLoadingService)
         {
-            Argument.IsNotNull(() =>area);
+            Argument.IsNotNull(() => area);
             Argument.IsNotNull(() => viewModelManager);
             Argument.IsNotNull(() => graphAreaEditorService);
             Argument.IsNotNull(() => edgeDrawingService);
@@ -73,7 +70,6 @@ namespace Orc.GraphExplorer.ViewModels
         [ViewModelToModel("Area")]
         public IGraphDataGetter GraphDataGetter { get; set; }
 
-
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -94,20 +90,19 @@ namespace Orc.GraphExplorer.ViewModels
 
         public GraphToolsetViewModel ToolSetViewModel
         {
-            get
-            {
-                return ParentViewModel as GraphToolsetViewModel;
-            }
+            get { return ParentViewModel as GraphToolsetViewModel; }
+        }
+
+        public bool CanNavigate
+        {
+            get { return !IsInEditing; }
         }
         #endregion
 
         #region IDropable Members
         public Type DataTypeFormat
         {
-            get
-            {
-                return typeof(DataVertex);
-            }
+            get { return typeof (DataVertex); }
         }
 
         public DragDropEffects GetDropEffects(IDataObject dataObject)
@@ -119,7 +114,7 @@ namespace Orc.GraphExplorer.ViewModels
         {
             Argument.IsNotNull(() => dataObject);
 
-            _graphAreaEditorService.AddVertex(Area, (DataVertex)dataObject.GetData(typeof(DataVertex)), position);
+            _graphAreaEditorService.AddVertex(Area, (DataVertex) dataObject.GetData(typeof (DataVertex)), position);
         }
         #endregion
 
@@ -191,16 +186,6 @@ namespace Orc.GraphExplorer.ViewModels
         public GraphLogic Logic { get; set; }
         #endregion
 
-        #region IGraphNavigationController Members
-        public bool CanNavigate
-        {
-            get
-            {
-                return !IsInEditing;
-            }
-        }
-        #endregion
-
         #region IGraphNavigator Members
         public void NavigateTo(DataVertex dataVertex)
         {
@@ -209,7 +194,7 @@ namespace Orc.GraphExplorer.ViewModels
             if (!IsInEditing)
             {
                 NavigationMessage.SendWith(dataVertex);
-            }            
+            }
         }
         #endregion
 

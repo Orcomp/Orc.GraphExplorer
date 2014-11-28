@@ -30,23 +30,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core">
-      <HintPath>..\..\lib\Catel.Core.4.0.0-unstable0461\lib\net40\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Catel.Core.4.1.0-unstable0007\lib\net40\Catel.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.Extensions.Controls">
-      <HintPath>..\..\lib\Catel.Extensions.Controls.4.0.0-unstable0461\lib\net40\Catel.Extensions.Controls.dll</HintPath>
+    <Reference Include="Catel.Extensions.Controls, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Catel.Extensions.Controls.4.1.0-unstable0007\lib\net40\Catel.Extensions.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.Extensions.Memento">
-      <HintPath>..\..\lib\Catel.Extensions.Memento.4.0.0-unstable0461\lib\net40\Catel.Extensions.Memento.dll</HintPath>
+    <Reference Include="Catel.Extensions.Memento, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Catel.Extensions.Memento.4.1.0-unstable0007\lib\net40\Catel.Extensions.Memento.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.Fody.Attributes">
-      <HintPath>..\..\lib\Catel.Fody.2.3.0\lib\portable-net4+sl4+wp7+win8+wpa81+MonoAndroid14+MonoTouch40\Catel.Fody.Attributes.dll</HintPath>
+    <Reference Include="Catel.Fody.Attributes, Version=2.4.0.0, Culture=neutral, PublicKeyToken=1c8163524cbe02e6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Catel.Fody.2.4.0-unstable0001\lib\portable-net4+sl4+wp7+win8+wpa81+MonoAndroid14+MonoTouch40\Catel.Fody.Attributes.dll</HintPath>
     </Reference>
-    <Reference Include="Catel.MVVM">
-      <HintPath>..\..\lib\Catel.MVVM.4.0.0-unstable0461\lib\net40\Catel.MVVM.dll</HintPath>
+    <Reference Include="Catel.MVVM, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Catel.MVVM.4.1.0-unstable0007\lib\net40\Catel.MVVM.dll</HintPath>
     </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>..\..\lib\CsvHelper.2.7.0\lib\net40-client\CsvHelper.dll</HintPath>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\CsvHelper.2.8.4\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="GraphX.Common">
       <HintPath>..\..\lib\GraphX.2.0.2\lib\net40\GraphX.Common.dll</HintPath>
@@ -66,8 +72,9 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
       <HintPath>..\..\lib\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="Orc.FilterBuilder">
-      <HintPath>..\..\lib\Orc.FilterBuilder.1.4.0-unstable0019\lib\net40\Orc.FilterBuilder.dll</HintPath>
+    <Reference Include="Orc.FilterBuilder, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Orc.FilterBuilder.1.4.0-unstable0039\lib\net40\Orc.FilterBuilder.dll</HintPath>
     </Reference>
     <Reference Include="Orc.Toolkit">
       <HintPath>..\..\lib\Orc.Toolkit.1.0.9.0\lib\NET40\Orc.Toolkit.dll</HintPath>
@@ -100,7 +107,7 @@
       <HintPath>..\..\lib\Microsoft.Bcl.1.1.9\lib\net40\System.Threading.Tasks.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\Catel.MVVM.4.0.0-unstable0461\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\lib\Catel.MVVM.4.1.0-unstable0007\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -201,15 +208,21 @@
     <Compile Include="Views\Base\ButtonBaseView.cs" />
     <Compile Include="Views\Base\GraphAreaViewBase.cs" />
     <Compile Include="Views\Base\EdgeViewBase.cs" />
-    <Compile Include="Views\DragableButtonView.cs" />
-    <Compile Include="Views\EdgeView.cs" />
     <Compile Include="Views\DataLocationSettingsView.xaml.cs">
       <DependentUpon>DataLocationSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DragableButtonView.xaml.cs">
+      <DependentUpon>DragableButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EdgeView.xaml.cs">
+      <DependentUpon>EdgeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FilterView.xaml.cs">
       <DependentUpon>FilterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GraphAreaView.cs" />
+    <Compile Include="Views\GraphAreaView.xaml.cs">
+      <DependentUpon>GraphAreaView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GraphExplorerView.xaml.cs">
       <DependentUpon>GraphExplorerView.xaml</DependentUpon>
     </Compile>
@@ -223,7 +236,9 @@
     <Compile Include="Views\SettingView.xaml.cs">
       <DependentUpon>SettingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VertexView.cs" />
+    <Compile Include="Views\VertexView.xaml.cs">
+      <DependentUpon>VertexView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -252,13 +267,28 @@
     <Resource Include="Resources\Images\appbar.vector.line.png" />
     <Resource Include="Resources\Images\appbar.vector.rectangle.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Page Include="Views\DataLocationSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DragableButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EdgeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GraphAreaView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VertexView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -306,9 +336,9 @@
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Включите восстановление пакетов NuGet, чтобы загрузить их. Дополнительные сведения см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\lib\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\lib\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-    <Error Condition="!Exists('..\..\lib\Fody.1.24.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\lib\Fody.1.24.0\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\..\lib\Fody.1.26.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\lib\Fody.1.26.2\build\Fody.targets'))" />
   </Target>
-  <Import Project="..\..\lib\Fody.1.24.0\build\Fody.targets" Condition="Exists('..\..\lib\Fody.1.24.0\build\Fody.targets')" />
+  <Import Project="..\..\lib\Fody.1.26.2\build\Fody.targets" Condition="Exists('..\..\lib\Fody.1.26.2\build\Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

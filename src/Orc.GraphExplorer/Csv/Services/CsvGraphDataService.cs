@@ -12,6 +12,8 @@ namespace Orc.GraphExplorer.Csv.Services
     using System.IO;
     using System.Linq;
     using Catel;
+    using Catel.Configuration;
+
     using CsvHelper;
     using Data;
     using GraphExplorer.Services;
@@ -24,6 +26,8 @@ namespace Orc.GraphExplorer.Csv.Services
         private readonly IDataVertexFactory _dataVertexFactory;
         private readonly IDataLocationSettingsService _dataLocationSettingsService;
 
+        private readonly IConfigurationService _configurationService;
+
         private List<DataVertex> _verticesWithProperties;
 
         private IList<DataVertex> _verticesWithoutProperties;
@@ -32,10 +36,20 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region Constructors
-        public CsvGraphDataService(IDataVertexFactory dataVertexFactory, IDataLocationSettingsService dataLocationSettingsService)
+        public CsvGraphDataService(IDataVertexFactory dataVertexFactory, IDataLocationSettingsService dataLocationSettingsService, IConfigurationService configurationService)
         {
             _dataVertexFactory = dataVertexFactory;
             _dataLocationSettingsService = dataLocationSettingsService;
+            _configurationService = configurationService;
+
+            _configurationService.ConfigurationChanged += _configurationService_ConfigurationChanged;
+        }
+
+        void _configurationService_ConfigurationChanged(object sender, ConfigurationChangedEventArgs e)
+        {
+            _verticesWithProperties = null;
+            _verticesWithoutProperties = null;
+            _edges = null;
         }
         #endregion
 

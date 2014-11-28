@@ -9,14 +9,9 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System;
-    using System.Threading;
-    using System.Windows.Interactivity;
-
     using Catel.Windows;
     using Catel.Windows.Interactivity;
     using GraphX.Controls;
-
-    using Views;
     using Views.Base;
 
     public class RelayoutBehavior : BehaviorBase<GraphAreaViewBase>
@@ -57,7 +52,7 @@ namespace Orc.GraphExplorer.Behaviors
         {
             var zoom = AssociatedObject.FindLogicalOrVisualAncestorByType<ZoomControl>();
             zoom.ZoomToFill();
-            
+
             zoom.Mode = ZoomControlModes.Custom;
         }
         #endregion

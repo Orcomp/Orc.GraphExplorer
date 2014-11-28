@@ -90,7 +90,7 @@ namespace Orc.GraphExplorer.ViewModels
         #endregion
 
         #region Methods
-        private void FilteredEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void FilteredEntities_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {

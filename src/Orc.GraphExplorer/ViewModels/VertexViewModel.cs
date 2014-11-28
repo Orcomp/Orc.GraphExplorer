@@ -5,27 +5,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Windows.Media;
+    using System.Threading.Tasks;
     using Catel;
-    using Catel.Data;
     using Catel.Fody;
     using Catel.MVVM;
-
-    using Orc.GraphExplorer.Models;
+    using Models;
     using Services;
 
     public class VertexViewModel : ViewModelBase
     {
+        #region Fields
         private readonly IGraphAreaEditorService _graphAreaEditorService;
+        #endregion
 
+        #region Constructors
         public VertexViewModel()
         {
-            
         }
 
         public VertexViewModel(DataVertex dataVertex, IGraphAreaEditorService graphAreaEditorService)
@@ -40,24 +40,9 @@ namespace Orc.GraphExplorer.ViewModels
 
             DeleteVertexCommand = new Command(OnDeleteVertexCommandExecute, OnDeleteVertexCommandCanExecute);
         }
+        #endregion
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            SyncWithAreaProperties();
-        }
-
-        private void SyncWithAreaProperties()
-        {
-            var graphAreaViewModel = GraphAreaViewModel;
-            if (graphAreaViewModel == null)
-            {
-                return;
-            }
-            IsInEditing = graphAreaViewModel.IsInEditing;
-            IsDragEnabled = graphAreaViewModel.IsDragEnabled;
-        }
-
+        #region Properties
         public GraphAreaViewModel GraphAreaViewModel
         {
             get { return base.ParentViewModel as GraphAreaViewModel; }
@@ -88,68 +73,18 @@ namespace Orc.GraphExplorer.ViewModels
         public Command AddCommand { get; private set; }
 
         /// <summary>
-        /// Method to invoke when the AddCommand command is executed.
-        /// </summary>
-        private void OnAddCommandExecute()
-        {
-            // TODO: Handle command logic here
-        }
-
-        /// <summary>
         /// Gets the DeleteCommand command.
         /// </summary>
         public Command DeleteCommand { get; private set; }
-
-        /// <summary>
-        /// Method to check whether the DeleteCommand command can be executed.
-        /// </summary>
-        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
-        private bool OnDeleteCommandCanExecute()
-        {
-            return Properties != null && Properties.Count > 0;
-        }
-
-        /// <summary>
-        /// Method to invoke when the DeleteCommand command is executed.
-        /// </summary>
-        private void OnDeleteCommandExecute()
-        {
-            // TODO: Handle command logic here
-        }
 
         /// <summary>
         /// Gets the DeleteVertexCommand command.
         /// </summary>
         public Command DeleteVertexCommand { get; private set; }
 
-        /// <summary>
-        /// Method to check whether the DeleteVertexCommand command can be executed.
-        /// </summary>
-        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
-        private bool OnDeleteVertexCommandCanExecute()
-        {
-            return IsInEditing;
-        }
-
-        /// <summary>
-        /// Method to invoke when the DeleteVertexCommand command is executed.
-        /// </summary>
-        private void OnDeleteVertexCommandExecute()
-        {
-            var areaViewModel = AreaViewModel;
-
-            if (areaViewModel != null)
-            {
-                _graphAreaEditorService.RemoveVertex(areaViewModel.Area, DataVertex);
-            }
-        }
-
         public GraphAreaViewModel AreaViewModel
         {
-            get
-            {
-                return ParentViewModel as GraphAreaViewModel;
-            }
+            get { return ParentViewModel as GraphAreaViewModel; }
         }
 
         /// <summary>
@@ -176,6 +111,78 @@ namespace Orc.GraphExplorer.ViewModels
         [DefaultValue(false)]
         public bool IsInEditing { get; set; }
 
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
+        #endregion
+
+        #region Methods
+        protected override async Task Initialize()
+        {
+            await base.Initialize();
+            SyncWithAreaProperties();
+        }
+
+        private void SyncWithAreaProperties()
+        {
+            var graphAreaViewModel = GraphAreaViewModel;
+            if (graphAreaViewModel == null)
+            {
+                return;
+            }
+            IsInEditing = graphAreaViewModel.IsInEditing;
+            IsDragEnabled = graphAreaViewModel.IsDragEnabled;
+        }
+
+        /// <summary>
+        /// Method to invoke when the AddCommand command is executed.
+        /// </summary>
+        private void OnAddCommandExecute()
+        {
+            // TODO: Handle command logic here
+        }
+
+        /// <summary>
+        /// Method to check whether the DeleteCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnDeleteCommandCanExecute()
+        {
+            return Properties != null && Properties.Count > 0;
+        }
+
+        /// <summary>
+        /// Method to invoke when the DeleteCommand command is executed.
+        /// </summary>
+        private void OnDeleteCommandExecute()
+        {
+            // TODO: Handle command logic here
+        }
+
+        /// <summary>
+        /// Method to check whether the DeleteVertexCommand command can be executed.
+        /// </summary>
+        /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
+        private bool OnDeleteVertexCommandCanExecute()
+        {
+            return IsInEditing;
+        }
+
+        /// <summary>
+        /// Method to invoke when the DeleteVertexCommand command is executed.
+        /// </summary>
+        private void OnDeleteVertexCommandExecute()
+        {
+            var areaViewModel = AreaViewModel;
+
+            if (areaViewModel != null)
+            {
+                _graphAreaEditorService.RemoveVertex(areaViewModel.Area, DataVertex);
+            }
+        }
+
         private void OnIsInEditingChanged()
         {
             foreach (var property in Properties)
@@ -183,11 +190,6 @@ namespace Orc.GraphExplorer.ViewModels
                 property.IsInEditing = IsInEditing;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [DefaultValue(true)]
-        public bool IsEnabled { get; set; }
+        #endregion
     }
 }

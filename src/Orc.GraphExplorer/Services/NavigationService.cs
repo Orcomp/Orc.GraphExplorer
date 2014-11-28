@@ -1,17 +1,23 @@
-﻿namespace Orc.GraphExplorer.Services
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="NavigationService.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Services
 {
     using System.Collections.Generic;
     using System.Linq;
     using Catel;
     using Catel.IoC;
-
     using GraphX.GraphSharp;
-
-    using Orc.GraphExplorer.Behaviors;
-    using Orc.GraphExplorer.Models;
+    using Models;
 
     public class NavigationService : INavigationService
     {
+        #region INavigationService Members
         public void NavigateTo(Explorer explorer, DataVertex dataVertex)
         {
             Argument.IsNotNull(() => explorer);
@@ -23,7 +29,7 @@
             var loadingService = this.GetServiceLocator().ResolveType<IGraphAreaLoadingService>();
 
             var navigatorArea = explorer.NavigatorToolset.Area;
-            
+
             IEnumerable<DataEdge> inEdges;
             IEnumerable<DataEdge> outEdges;
 
@@ -42,7 +48,7 @@
             var edges = inEdges.Concat(outEdges);
 
             var vertices = graph.GetNeighbours(dataVertex).Concat(Enumerable.Repeat(dataVertex, 1));
-            
+
             graphDataGetter.RedefineEdgesGetter(() => edges);
             graphDataGetter.RedefineVertecesGetter(() => vertices);
 
@@ -50,5 +56,6 @@
 
             loadingService.TryRefresh(navigatorArea);
         }
+        #endregion
     }
 }

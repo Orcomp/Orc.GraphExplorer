@@ -9,6 +9,10 @@
 namespace Orc.GraphExplorer.ViewModels
 {
     using System.ComponentModel;
+    using System.Threading.Tasks;
+
+    using Catel;
+    using Catel.Configuration;
     using Catel.MVVM;
     using Messages;
     using Models;
@@ -26,9 +30,14 @@ namespace Orc.GraphExplorer.ViewModels
         #region Constructors
         public GraphExplorerViewModel(IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory, INavigationService navigationService)
         {
+            Argument.IsNotNull(() => graphDataService);
+            Argument.IsNotNull(() => graphExplorerFactory);
+            Argument.IsNotNull(() => navigationService);
+
             _graphDataService = graphDataService;
             _graphExplorerFactory = graphExplorerFactory;
             _navigationService = navigationService;
+
             Explorer = _graphExplorerFactory.CreateExplorer();
 
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
@@ -39,6 +48,8 @@ namespace Orc.GraphExplorer.ViewModels
             ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
             NavigationMessage.Register(this, OnNavigationMessage);
         }
+
+
         #endregion
 
         #region Properties
@@ -133,9 +144,9 @@ namespace Orc.GraphExplorer.ViewModels
             }
         }
 
-        protected override void Initialize()
+        protected override async Task Initialize()
         {
-            base.Initialize();
+            await base.Initialize();
             IsEditorTabSelected = true;
         }
 

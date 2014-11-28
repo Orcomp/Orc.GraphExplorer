@@ -5,28 +5,30 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using Catel;
-    using Catel.Data;
     using Catel.Fody;
     using Catel.MVVM;
     using Models;
 
     public class PropertyViewModel : ViewModelBase
     {
+        #region Constructors
         public PropertyViewModel()
         {
-            
         }
+
         public PropertyViewModel(Property property)
         {
             Argument.IsNotNull(() => property);
             Property = property;
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>
@@ -41,5 +43,6 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         [DefaultValue(false)]
         public bool IsSelected { get; set; }
+        #endregion
     }
 }

@@ -5,16 +5,20 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System.Windows.Interactivity;
     using Catel.Windows.Interactivity;
-    using Models.Data;
     using Views;
     using Views.Base;
 
     public class GraphNavigationBehavior : BehaviorBase<GraphAreaViewBase>
     {
+        #region Fields
+        private IGraphNavigator _navigator;
+        #endregion
+
+        #region Methods
         protected override void OnAssociatedObjectLoaded()
         {
             base.OnAssociatedObjectLoaded();
@@ -29,17 +33,16 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.VertexDoubleClick += AssociatedObject_VertexDoubleClick;
         }
 
-        private IGraphNavigator _navigator;
-
-        void AssociatedObject_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
+        private void AssociatedObject_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
         {
             var vertexView = args.VertexControl as VertexView;
             if (vertexView == null)
             {
                 return;
             }
-            
-            _navigator.NavigateTo(vertexView.ViewModel.DataVertex);            
+
+            _navigator.NavigateTo(vertexView.ViewModel.DataVertex);
         }
+        #endregion
     }
 }

@@ -1,18 +1,29 @@
-﻿namespace Orc.GraphExplorer.Services
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="DataVertexFactory.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Services
 {
     using Catel;
     using Models;
 
     public class DataVertexFactory : IDataVertexFactory
     {
+        #region Constants
         private const int FakeVertexId = -666;
 
+        private static int _maxId = 0;
+        #endregion
+
+        #region IDataVertexFactory Members
         public DataVertex CreateFakeVertex()
         {
             return new DataVertex(FakeVertexId);
         }
-
-        private static int _maxId = 0;     
 
         public DataVertex CreateVertex()
         {
@@ -35,5 +46,6 @@
 
             return vertex.ID == FakeVertexId;
         }
+        #endregion
     }
 }

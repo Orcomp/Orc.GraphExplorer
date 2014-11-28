@@ -5,24 +5,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System.ComponentModel;
+    using System.Threading.Tasks;
     using Catel;
-    using Catel.Data;
     using Catel.Fody;
     using Catel.MVVM;
-
-    using Orc.GraphExplorer.Models;
+    using Models;
     using Services;
 
     public class EdgeViewModel : ViewModelBase
     {
+        #region Fields
         private readonly IGraphAreaEditorService _graphAreaEditorService;
+        #endregion
 
+        #region Constructors
         public EdgeViewModel()
         {
-            
         }
 
         public EdgeViewModel(DataEdge dataEdge, IGraphAreaEditorService graphAreaEditorService)
@@ -35,10 +36,40 @@ namespace Orc.GraphExplorer.ViewModels
 
             DeleteEdgeCommand = new Command(OnDeleteEdgeCommandExecute, OnDeleteEdgeCommandCanExecute);
         }
+        #endregion
 
-        protected override void Initialize()
+        #region Properties
+        /// <summary>
+        /// Gets the DeleteEdgeCommand command.
+        /// </summary>
+        public Command DeleteEdgeCommand { get; private set; }
+
+        public GraphAreaViewModel AreaViewModel
         {
-            base.Initialize();
+            get { return ParentViewModel as GraphAreaViewModel; }
+        }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [Model]
+        [Expose("IsVisible")]
+        [Expose("IsHighlightEnabled")]
+        [Expose("IsHighlighted")]
+        [Expose("IsEnabled")]
+        public DataEdge DataEdge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("DataEdge")]
+        public bool IsInEditing { get; set; }
+        #endregion
+
+        #region Methods
+        protected override async Task Initialize()
+        {
+            await base.Initialize();
             SyncWithAreaProperties();
         }
 
@@ -51,11 +82,6 @@ namespace Orc.GraphExplorer.ViewModels
             }
             IsInEditing = areaViewModel.IsInEditing;
         }
-
-        /// <summary>
-        /// Gets the DeleteEdgeCommand command.
-        /// </summary>
-        public Command DeleteEdgeCommand { get; private set; }
 
         /// <summary>
         /// Method to check whether the DeleteEdgeCommand command can be executed.
@@ -77,29 +103,6 @@ namespace Orc.GraphExplorer.ViewModels
                 _graphAreaEditorService.RemoveEdge(areaViewModel.Area, DataEdge);
             }
         }
-
-        public GraphAreaViewModel AreaViewModel
-        {
-            get
-            {
-                return ParentViewModel as GraphAreaViewModel;                
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [Model]
-        [Expose("IsVisible")]
-        [Expose("IsHighlightEnabled")]
-        [Expose("IsHighlighted")]
-        [Expose("IsEnabled")]
-        public DataEdge DataEdge { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("DataEdge")]
-        public bool IsInEditing { get; set; }
+        #endregion
     }
 }

@@ -1,34 +1,59 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="GraphAreaView.cs" company="Orcomp development team">
+// <copyright file="GraphAreaView.xaml.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Views
 {
-    using System;
-    using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Controls;
-    using Catel;
-    using Catel.Data;
-    using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
     using Catel.Windows;
+    using Messages;
+    using ViewModels;
 
-    using Orc.GraphExplorer.Messages;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views.Base;
-
-    public class GraphAreaView : GraphAreaViewBase
+    /// <summary>
+    /// Логика взаимодействия для GraphAreaView.xaml
+    /// </summary>
+    public partial class GraphAreaView
     {
+        #region Constants
+        /// <summary>
+        /// IsDragEnabled Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty IsDragEnabledProperty =
+            DependencyProperty.Register("IsDragEnabled", typeof (bool), typeof (GraphAreaView),
+                new FrameworkPropertyMetadata(false));
+        #endregion
+
+        #region Constructors
         public GraphAreaView()
         {
             Loaded += GraphAreaView_Loaded;
         }
+        #endregion
 
+        #region Properties
+        public new GraphAreaViewModel ViewModel
+        {
+            get { return base.ViewModel as GraphAreaViewModel; }
+        }
+
+        /// <summary>
+        /// Gets or sets the IsDragEnabled property.
+        /// </summary>
+        [ViewToViewModel]
+        public bool IsDragEnabled
+        {
+            get { return (bool) GetValue(IsDragEnabledProperty); }
+            set { SetValue(IsDragEnabledProperty, value); }
+        }
+        #endregion
+
+        #region Methods
         protected override void OnViewModelChanged()
         {
             base.OnViewModelChanged();
@@ -41,11 +66,11 @@ namespace Orc.GraphExplorer.Views
             SaveToXmlMessage.Register(this, OnSaveToXmlMessage, ViewModel.ToolsetName);
             LoadFromXmlMessage.Register(this, OnLoadFromXmlMessage, ViewModel.ToolsetName);
             SaveToImageMessage.Register(this, OnSaveToImageMessage, ViewModel.ToolsetName);
-            
-            ReadyToLoadGraphMessage.SendWith(ViewModel.ToolsetName);            
+
+            ReadyToLoadGraphMessage.SendWith(ViewModel.ToolsetName);
         }
 
-        void GraphAreaView_Loaded(object sender, RoutedEventArgs e)
+        private void GraphAreaView_Loaded(object sender, RoutedEventArgs e)
         {
             var viewModel = ViewModel;
 
@@ -76,29 +101,6 @@ namespace Orc.GraphExplorer.Views
             LoadFromFile(message.Data);
             RelayoutGraph();
         }
-
-        public new GraphAreaViewModel ViewModel {
-            get
-            {               
-                return base.ViewModel as GraphAreaViewModel;
-            }
-        }
-
-        /// <summary>
-        /// IsDragEnabled Dependency Property
-        /// </summary>
-        public static readonly DependencyProperty IsDragEnabledProperty =
-            DependencyProperty.Register("IsDragEnabled", typeof(bool), typeof(GraphAreaView),
-                new FrameworkPropertyMetadata(false));
-
-        /// <summary>
-        /// Gets or sets the IsDragEnabled property.
-        /// </summary>
-        [ViewToViewModel]
-        public bool IsDragEnabled
-        {
-            get { return (bool)GetValue(IsDragEnabledProperty); }
-            set { SetValue(IsDragEnabledProperty, value); }
-        }
+        #endregion
     }
 }

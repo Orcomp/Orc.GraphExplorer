@@ -10,9 +10,6 @@ namespace Orc.GraphExplorer.Behaviors
 {
     using System.Windows;
     using System.Windows.Input;
-    using System.Windows.Interactivity;
-
-    using Catel.MVVM.Converters;
     using Catel.MVVM.Views;
     using Catel.Windows.Interactivity;
     using DragDrop = System.Windows.DragDrop;
@@ -44,6 +41,5 @@ namespace Orc.GraphExplorer.Behaviors
             DragDrop.DoDragDrop(AssociatedObject, data, dragObject.GetDragEffects());
         }
         #endregion
-
     }
 }

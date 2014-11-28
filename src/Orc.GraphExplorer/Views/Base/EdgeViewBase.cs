@@ -24,7 +24,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event EventHandler<EventArgs> _viewLoaded;
         private event EventHandler<EventArgs> _viewUnloaded;
-        private event EventHandler<EventArgs> _viewDataContextChanged;
+        private event EventHandler<DataContextChangedEventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
         protected EdgeViewBase(VertexControl source, VertexControl target, object edge, bool showLabels = false, bool showArrows = true)
@@ -44,7 +44,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, new DataContextChangedEventArgs(e.OldValue, e.NewValue)));
 
             ViewModelChanged += EdgeViewBase_ViewModelChanged;
             base.BeginInit();
@@ -79,7 +79,7 @@ namespace Orc.GraphExplorer.Views.Base
             remove { _viewUnloaded -= value; }
         }
 
-        event EventHandler<EventArgs> IView.DataContextChanged
+        event EventHandler<DataContextChangedEventArgs> IView.DataContextChanged
         {
             add { _viewDataContextChanged += value; }
             remove { _viewDataContextChanged -= value; }
