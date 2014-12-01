@@ -23,6 +23,7 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
+    using Factories;
     using GraphX;
     using GraphX.Controls;
     using GraphX.Controls.Models;

@@ -12,6 +12,7 @@ namespace Orc.GraphExplorer.Services
     using System.Windows;
     using System.Windows.Media;
     using Catel;
+    using Factories;
     using Messages;
     using Models;
     using Models.Data;

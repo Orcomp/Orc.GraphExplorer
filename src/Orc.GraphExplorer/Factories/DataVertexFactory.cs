@@ -6,10 +6,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using Catel;
     using Models;
+    using Services;
 
     public class DataVertexFactory : IDataVertexFactory
     {

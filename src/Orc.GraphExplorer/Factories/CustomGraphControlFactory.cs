@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using System.Windows;
     using Catel;

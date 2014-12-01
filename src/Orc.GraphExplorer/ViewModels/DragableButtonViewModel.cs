@@ -13,6 +13,7 @@ namespace Orc.GraphExplorer.ViewModels
     using Behaviors;
     using Catel;
     using Catel.MVVM;
+    using Factories;
     using Models;
     using Services;
 
