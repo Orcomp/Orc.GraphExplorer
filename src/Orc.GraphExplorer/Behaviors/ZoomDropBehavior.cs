@@ -9,13 +9,11 @@
 namespace Orc.GraphExplorer.Behaviors
 {
     using System.Linq;
-
+    using Base;
     using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
-
-    using Orc.GraphExplorer.Behaviors.Base;
-    using Orc.GraphExplorer.ViewModels;
+    using ViewModels;
 
     public class ZoomDropBehavior : BaseDropBehavior
     {
@@ -28,15 +26,17 @@ namespace Orc.GraphExplorer.Behaviors
                 return null;
             }
 
-            var viewModelManager = ServiceLocator.Default.ResolveType<IViewModelManager>();
+            var serviceLocator = this.GetServiceLocator();
+
+            var viewModelManager = serviceLocator.ResolveType<IViewModelManager>();
             var graphAreaViewModel = viewModelManager.GetChildViewModels(toolset).OfType<GraphAreaViewModel>().FirstOrDefault();
             if (graphAreaViewModel == null)
             {
                 return null;
             }
 
-            var viewManager = ServiceLocator.Default.ResolveType<IViewManager>();
-            return (IUserControl)viewManager.GetViewsOfViewModel(graphAreaViewModel).FirstOrDefault();
+            var viewManager = serviceLocator.ResolveType<IViewManager>();
+            return (IUserControl) viewManager.GetViewsOfViewModel(graphAreaViewModel).FirstOrDefault();
         }
         #endregion
     }

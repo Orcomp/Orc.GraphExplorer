@@ -1,23 +1,22 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="IFilePickerService.cs" company="Orcomp development team">
+// <copyright file="DataEdgeExtensions.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Services.Interfaces
+namespace Orc.GraphExplorer
 {
     using Orc.GraphExplorer.Models;
 
-    public interface IConfigLocationService
+    public static class DataEdgeExtensions
     {
-        ConfigLocation Load();
+        public static bool IsFiltered(this DataEdge dataEdge)
+        {
+            var source = dataEdge.Source;
+            var target = dataEdge.Target;
 
-        void Save(ConfigLocation configLocation);
-/*        string ChangeRelationshipsFileLocation();*/
-
-        string OpenRelationshipsFile();
-
-        string OpenPropertiesFile();
+            return source != null && target != null && (source.IsFiltered && target.IsFiltered);
+        }
     }
 }

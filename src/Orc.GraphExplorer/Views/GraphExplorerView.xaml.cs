@@ -10,17 +10,6 @@
         public GraphExplorerView()
         {
             InitializeComponent();
-
-            Loaded += GraphExplorerView_Loaded;
-        }
-
-        void GraphExplorerView_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (ViewModel == null)
-            {
-                return;
-            }
-            //ViewModel.ResetGraphService(); 
         }
 
         protected override void OnViewModelChanged()

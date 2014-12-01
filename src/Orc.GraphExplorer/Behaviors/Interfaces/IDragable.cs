@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Behaviors.Interfaces
+namespace Orc.GraphExplorer.Behaviors
 {
     using System;
     using System.Windows;

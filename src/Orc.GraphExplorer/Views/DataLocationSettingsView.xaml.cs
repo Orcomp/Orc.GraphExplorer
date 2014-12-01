@@ -14,18 +14,17 @@ using System.Windows.Shapes;
 
 namespace Orc.GraphExplorer.Views
 {
-    using Events;
 
     /// <summary>
     /// Interaction logic for FilePickerView.xaml
     /// </summary>
-    public partial class ConfigLocationView
+    public partial class DataLocationSettingsView
     {
         // TODO: Replace this SettingApplied event
         // Create a custom routed event by first registering a RoutedEventID 
         // This event uses the bubbling routing strategy 
-        public static readonly RoutedEvent SettingAppliedEvent = EventManager.RegisterRoutedEvent(
-            "SettingApplied", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ConfigLocationView));
+        private static readonly RoutedEvent SettingAppliedEvent = EventManager.RegisterRoutedEvent(
+            "SettingApplied", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DataLocationSettingsView));
 
         // Provide CLR accessors for the event 
         public event RoutedEventHandler SettingApplied
@@ -37,11 +36,11 @@ namespace Orc.GraphExplorer.Views
         // This method raises the Tap event 
         void RaiseSettingAppliedEvent(bool neeedRefresh)
         {
-            RoutedEventArgs newEventArgs = new SettingAppliedRoutedEventArgs(ConfigLocationView.SettingAppliedEvent, this, neeedRefresh);
+            RoutedEventArgs newEventArgs = new SettingAppliedRoutedEventArgs(DataLocationSettingsView.SettingAppliedEvent, this, neeedRefresh);
             RaiseEvent(newEventArgs);
         }
 
-        public ConfigLocationView()
+        public DataLocationSettingsView()
         {
             InitializeComponent();
         }

@@ -1,30 +1,32 @@
-﻿namespace Orc.GraphExplorer.Demo.ViewModels
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="MainViewModel.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+namespace Orc.GraphExplorer.Demo.ViewModels
 {
-    using System;
-
-    using Catel;
-    using Catel.IoC;
     using Catel.MVVM;
-    using Catel.Services;
-
-    using Orc.GraphExplorer.Messages;
-
+    using Messages;
     using Orchestra.Services;
 
     public class MainViewModel : ViewModelBase
     {
-        private IStatusService _statusService;
-        public MainViewModel()
+        #region Fields
+        private readonly IStatusService _statusService;
+        #endregion
+
+        #region Constructors
+        public MainViewModel(IStatusService statusService)
         {
+            _statusService = statusService;
             StatusMessage.Register(this, OnStatusMessage);
         }
+        #endregion
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            _statusService = ServiceLocator.Default.ResolveType<IStatusService>();            
-        }
-
+        #region Methods
         private void OnStatusMessage(StatusMessage message)
         {
             if (_statusService == null)
@@ -34,5 +36,6 @@
 
             _statusService.UpdateStatus(message.Data);
         }
+        #endregion
     }
 }

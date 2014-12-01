@@ -20,7 +20,7 @@ namespace Orc.GraphExplorer.Demo
         protected override void OnStartup(StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            var serviceLocator = ServiceLocator.Default;
+            var serviceLocator = this.GetServiceLocator();
 
             var shellService = serviceLocator.ResolveType<IShellService>();
             shellService.Create<ShellWindow>();

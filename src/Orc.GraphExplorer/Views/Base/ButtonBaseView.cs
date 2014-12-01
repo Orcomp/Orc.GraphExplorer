@@ -15,6 +15,7 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
+    using Catel.Windows.Data;
 
     public abstract class ButtonBaseView : Button, IUserControl
     {
@@ -22,10 +23,10 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event EventHandler<EventArgs> _viewLoaded;
         private event EventHandler<EventArgs> _viewUnloaded;
-        private event EventHandler<EventArgs> _viewDataContextChanged;
+        private event EventHandler<DataContextChangedEventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public ButtonBaseView()
+        protected ButtonBaseView()
         {            
             _logic = new UserControlLogic(this);      
         }
@@ -38,17 +39,9 @@ namespace Orc.GraphExplorer.Views.Base
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, new DataContextChangedEventArgs(e.OldValue, e.NewValue)));
             
             base.BeginInit();
-        }
-
-        protected virtual void InvokeEvent(EventHandler<EventArgs> handler)
-        {
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
         }
 
         public IViewModel ViewModel
@@ -85,7 +78,7 @@ namespace Orc.GraphExplorer.Views.Base
             }
         }
 
-        event EventHandler<EventArgs> IView.DataContextChanged
+        event EventHandler<DataContextChangedEventArgs> IView.DataContextChanged
         {
             add
             {

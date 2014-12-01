@@ -5,12 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Helpers
+namespace Orc.GraphExplorer
 {
     using System.Linq;
-    using Catel.Memento;
-    using Operations.Interfaces;
 
+    using Catel;
+    using Catel.Memento;
+    using Operations;
     using Orc.GraphExplorer.Messages;
 
     public static class MementoServiceExtensions
@@ -32,21 +33,24 @@ namespace Orc.GraphExplorer.Helpers
 
         public static void Do(this IMementoService mementoService, IOperation operation)
         {
+            Argument.IsNotNull(() => operation);
+
             operation.Do();
             mementoService.ClearRedoBatches();
             mementoService.Add(operation);
-            if (string.IsNullOrEmpty(operation.Description))
+            var description = operation.Description;
+            if (string.IsNullOrEmpty(description))
             {
                 return;
             }
 
-            if (operation.Description.Length < 2)
+            if (description.Length < 2)
             {
-                StatusMessage.SendWith(operation.Description);
+                StatusMessage.SendWith(description);
             }
 
-            var firstLetter = operation.Description.Substring(0, 1);
-            var lastPart = operation.Description.Substring(1);
+            var firstLetter = description.Substring(0, 1);
+            var lastPart = description.Substring(1);
             StatusMessage.SendWith(firstLetter.ToUpper() + lastPart);
         }
     }

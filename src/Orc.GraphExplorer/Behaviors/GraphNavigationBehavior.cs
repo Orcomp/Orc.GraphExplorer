@@ -5,30 +5,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors
 {
-    using System.Windows.Interactivity;
-    using Interfaces;
-    using Models.Data;
+    using Catel.Windows.Interactivity;
     using Views;
     using Views.Base;
 
-    public class GraphNavigationBehavior : Behavior<GraphAreaViewBase>
+    public class GraphNavigationBehavior : BehaviorBase<GraphAreaViewBase>
     {
-        protected override void OnAttached()
-        {
-            base.OnAttached();
+        #region Fields
+        private IGraphNavigator _navigator;
+        #endregion
 
-            AssociatedObject.ViewModelChanged += AssociatedObject_ViewModelChanged;
-            
-        }
-
-        void AssociatedObject_ViewModelChanged(object sender, System.EventArgs e)
+        #region Methods
+        protected override void OnAssociatedObjectLoaded()
         {
+            base.OnAssociatedObjectLoaded();
+
             _navigator = AssociatedObject.ViewModel as IGraphNavigator;
-            _navigationController = AssociatedObject.ViewModel as IGraphNavigationController;
 
-            if (_navigator == null || _navigationController == null)
+            if (_navigator == null)
             {
                 return;
             }
@@ -36,20 +33,16 @@ namespace Orc.GraphExplorer.Behaviors
             AssociatedObject.VertexDoubleClick += AssociatedObject_VertexDoubleClick;
         }
 
-        private IGraphNavigator _navigator;
-        private IGraphNavigationController _navigationController;
-
-        void AssociatedObject_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
+        private void AssociatedObject_VertexDoubleClick(object sender, GraphX.Models.VertexSelectedEventArgs args)
         {
             var vertexView = args.VertexControl as VertexView;
             if (vertexView == null)
             {
                 return;
             }
-            if (_navigationController.CanNavigate)
-            {
-                _navigator.NavigateTo(vertexView.ViewModel.DataVertex);
-            }
+
+            _navigator.NavigateTo(vertexView.ViewModel.DataVertex);
         }
+        #endregion
     }
 }

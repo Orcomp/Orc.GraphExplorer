@@ -10,10 +10,7 @@ namespace Orc.GraphExplorer.Models.Data
 {
     using System;
     using Catel;
-    using Events;
     using GraphX.Logic;
-
-    using Orc.GraphExplorer.Services.Interfaces;
 
     public class GraphLogic : GXLogicCore<DataVertex, DataEdge, Graph>
     {
@@ -28,6 +25,8 @@ namespace Orc.GraphExplorer.Models.Data
 
         public void ResumeGraphReloading(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+
             GraphReloaded.SafeInvoke(this, new GraphEventArgs(graph));
         }
 

@@ -5,17 +5,22 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Events
+namespace Orc.GraphExplorer
 {
     using System;
+
+    using Catel;
+
     using Models.Data;
 
     public class GraphEventArgs : EventArgs
     {
-        public Graph Graph { get; set; }
+        public Graph Graph { get; private set; }
 
         public GraphEventArgs(Graph graph)
         {
+            Argument.IsNotNull(() => graph);
+ 
             Graph = graph;
         }
     }

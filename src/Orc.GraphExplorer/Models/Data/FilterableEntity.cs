@@ -2,17 +2,22 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+
+    using Catel;
+
     using Models;
 
     public class FilterableEntity
     {
         public FilterableEntity(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             ID = vertex.ID;
             Title = vertex.Title;
-            FirstName = vertex.Properties.Any(p => p.Key == "FirstName") ? vertex.Properties.First(p => p.Key == "FirstName").Value : string.Empty;
-            LastName = vertex.Properties.Any(p => p.Key == "LastName") ? vertex.Properties.First(p => p.Key == "LastName").Value : string.Empty;
-            Age = vertex.Properties.Any(p => p.Key == "Age" && IsInt(p.Value)) ? int.Parse((vertex.Properties.First(p => p.Key == "Age").Value)) : 0;
+            FirstName = vertex.Properties.Any(p => string.Equals(p.Key,"FirstName")) ? vertex.Properties.First(p => string.Equals(p.Key, "FirstName")).Value : string.Empty;
+            LastName = vertex.Properties.Any(p => string.Equals(p.Key, "LastName")) ? vertex.Properties.First(p => string.Equals(p.Key, "LastName")).Value : string.Empty;
+            Age = vertex.Properties.Any(p => string.Equals(p.Key, "Age") && p.Value.IsInteger()) ? int.Parse((vertex.Properties.First(p => string.Equals(p.Key, "Age")).Value)) : 0;
             Vertex = vertex;
         }
 
@@ -30,14 +35,11 @@
 
         public static IEnumerable<FilterableEntity> GenerateFilterableEntities(IEnumerable<DataVertex> vertices)
         {
+            Argument.IsNotNull(() => vertices);
+
             var enumerable = vertices.Select(v => new FilterableEntity(v));
 
             return enumerable;
-        }
-
-        private static bool IsInt(string str)
-        {
-            return !string.IsNullOrEmpty(str) && str.All(c => "0123456789".Contains(c));
         }
     }
 }

@@ -24,8 +24,5 @@ public static class ModuleInitializer
 
         var viewLocator = serviceLocator.ResolveType<IViewLocator>();
         viewLocator.Register(typeof(MainViewModel), typeof(MainWindow));
-
-        /*  var uiVisualizerService = serviceLocator.ResolveType<Catel.Services.IUIVisualizerService>();
-        uiVisualizerService.Register("MainWindow", typeof(MainWindow));*/
     }
 }

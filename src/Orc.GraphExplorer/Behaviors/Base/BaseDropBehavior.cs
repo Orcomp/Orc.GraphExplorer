@@ -5,32 +5,22 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Behaviors.Base
 {
-    using System.Linq;
     using System.Windows;
-    using System.Windows.Interactivity;
-
-    using Catel.IoC;
-    using Catel.MVVM;
     using Catel.MVVM.Views;
+    using Catel.Windows.Interactivity;
 
-    using Orc.GraphExplorer.Behaviors.Interfaces;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views;
-
-    public abstract class BaseDropBehavior : Behavior<FrameworkElement>
+    public abstract class BaseDropBehavior : BehaviorBase<FrameworkElement>
     {
-        #region Methods
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-            AssociatedObject.PreviewDrop += AssociatedObject_PreviewDrop;
-            AssociatedObject.DragEnter += AssociatedObject_DragEnter;
-        }
-
-
+        #region Fields
         private IUserControl _dropableContent;
+
+        private IDropable _dropableViewModel;
+        #endregion
+
+        #region Properties
         private IUserControl DropableContent
         {
             get
@@ -44,17 +34,38 @@ namespace Orc.GraphExplorer.Behaviors.Base
             }
         }
 
-        protected abstract IUserControl GetDropableContent();        
+        private IDropable DropableViewModel
+        {
+            get
+            {
+                if (DropableContent == null)
+                {
+                    return null;
+                }
+
+                if (_dropableViewModel == null)
+                {
+                    _dropableViewModel = DropableContent.ViewModel as IDropable;
+                }
+
+                return _dropableViewModel;
+            }
+        }
+        #endregion
+
+        #region Methods
+        protected override void OnAssociatedObjectLoaded()
+        {
+            base.OnAssociatedObjectLoaded();
+            AssociatedObject.PreviewDrop += AssociatedObject_PreviewDrop;
+            AssociatedObject.DragEnter += AssociatedObject_DragEnter;
+        }
+
+        protected abstract IUserControl GetDropableContent();
 
         private void AssociatedObject_DragEnter(object sender, DragEventArgs e)
         {
-            if (DropableContent == null)
-            {
-                return;
-            }
-
-            var dropable = DropableContent.ViewModel as IDropable;
-
+            var dropable = DropableViewModel;
             if (dropable == null || !e.Data.GetDataPresent(dropable.DataTypeFormat))
             {
                 return;
@@ -65,18 +76,13 @@ namespace Orc.GraphExplorer.Behaviors.Base
 
         private void AssociatedObject_PreviewDrop(object sender, DragEventArgs e)
         {
-            if (DropableContent == null)
-            {
-                return;
-            }
-
-            var dropable = DropableContent.ViewModel as IDropable;
+            var dropable = DropableViewModel;
             if (dropable == null)
             {
                 return;
             }
 
-            Point pos = AssociatedObject.TranslatePoint(e.GetPosition(AssociatedObject), (UIElement)DropableContent);
+            Point pos = AssociatedObject.TranslatePoint(e.GetPosition(AssociatedObject), (UIElement) DropableContent);
             dropable.Drop(e.Data, pos);
         }
         #endregion

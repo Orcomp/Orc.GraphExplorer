@@ -5,35 +5,135 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System;
-    using Behaviors.Interfaces;
-    using Catel.Data;
-    using Catel.IoC;
-    using Catel.Memento;
+    using System.ComponentModel;
+    using System.Threading.Tasks;
+
+    using Catel;
+    using Catel.Configuration;
     using Catel.MVVM;
-    using Catel.Services;
     using Messages;
-    using Models.Data;
-    using Orc.GraphExplorer.Models;
-    using Services.Interfaces;
+    using Models;
+    using Services;
 
-    public class GraphExplorerViewModel : ViewModelBase, IGraphNavigator
+    public class GraphExplorerViewModel : ViewModelBase
     {
+        #region Fields
+        private readonly IGraphDataService _graphDataService;
+        private readonly IGraphExplorerFactory _graphExplorerFactory;
 
-        private readonly IMementoService _mementoService;
+        private readonly INavigationService _navigationService;
+        #endregion
 
-        public GraphExplorerViewModel(IMementoService mementoService, IConfigLocationService configLocationService, IMessageService messageService)
+        #region Constructors
+        public GraphExplorerViewModel(IGraphDataService graphDataService, IGraphExplorerFactory graphExplorerFactory, INavigationService navigationService)
         {
-            _mementoService = mementoService;
-            Explorer = new Explorer(_mementoService, configLocationService, messageService);
+            Argument.IsNotNull(() => graphDataService);
+            Argument.IsNotNull(() => graphExplorerFactory);
+            Argument.IsNotNull(() => navigationService);
+
+            _graphDataService = graphDataService;
+            _graphExplorerFactory = graphExplorerFactory;
+            _navigationService = navigationService;
+
+            Explorer = _graphExplorerFactory.CreateExplorer();
 
             CloseNavTabCommand = new Command(OnCloseNavTabCommandExecute);
 
             OpenSettingsCommand = new Command(OnOpenSettingsCommandExecute);
 
             EditingStartStopMessage.Register(this, OnEditingStartStopMessage, Explorer.EditorToolset.ToolsetName);
+            ReadyToLoadGraphMessage.Register(this, OnReadyToLoadGraphMessage);
+            NavigationMessage.Register(this, OnNavigationMessage);
+        }
+
+
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// Gets the OpenSettingsCommand command.
+        /// </summary>
+        public Command OpenSettingsCommand { get; private set; }
+
+        /// <summary>
+        /// Gets the CloseNavTabCommand command.
+        /// </summary>
+        public Command CloseNavTabCommand { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [Model]
+        public Explorer Explorer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [Model]
+        [ViewModelToModel("Explorer")]
+        public Settings Settings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Settings")]
+        public bool IsSettingsVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [Model]
+        [ViewModelToModel("Explorer")]
+        public GraphToolset EditorToolset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("EditorToolset")]
+        public bool IsChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Explorer")]
+        public bool IsNavTabVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Explorer")]
+        public bool IsNavTabSelected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsEditorTabSelected { get; set; }
+        #endregion
+
+        #region Methods
+        private void OnNavigationMessage(NavigationMessage message)
+        {
+            _navigationService.NavigateTo(Explorer, message.Data);
+        }
+
+        private void OnReadyToLoadGraphMessage(ReadyToLoadGraphMessage message)
+        {
+            var editorArea = Explorer.EditorToolset.Area;
+            if (string.Equals(message.Data, "Editor") && editorArea.GraphDataGetter == null)
+            {
+                editorArea.GraphDataGetter = _graphDataService;
+                editorArea.GraphDataSaver = _graphDataService;
+            }
+
+            var navigatorArea = Explorer.NavigatorToolset.Area;
+            if (string.Equals(message.Data, "Navigator") && navigatorArea.GraphDataGetter == null)
+            {
+                navigatorArea.GraphDataGetter = new NavigatorGraphDataGetter();
+            }
         }
 
         private void OnEditingStartStopMessage(EditingStartStopMessage message)
@@ -44,16 +144,11 @@ namespace Orc.GraphExplorer.ViewModels
             }
         }
 
-        protected override void Initialize()
+        protected override async Task Initialize()
         {
-            base.Initialize();
+            await base.Initialize();
             IsEditorTabSelected = true;
         }
-
-        /// <summary>
-        /// Gets the OpenSettingsCommand command.
-        /// </summary>
-        public Command OpenSettingsCommand { get; private set; }
 
         /// <summary>
         /// Method to invoke when the OpenSettingsCommand command is executed.
@@ -64,11 +159,6 @@ namespace Orc.GraphExplorer.ViewModels
         }
 
         /// <summary>
-        /// Gets the CloseNavTabCommand command.
-        /// </summary>
-        public Command CloseNavTabCommand { get; private set; }
-
-        /// <summary>
         /// Method to invoke when the CloseNavTabCommand command is executed.
         /// </summary>
         private void OnCloseNavTabCommandExecute()
@@ -77,132 +167,6 @@ namespace Orc.GraphExplorer.ViewModels
             IsNavTabSelected = false;
             IsEditorTabSelected = true;
         }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [Model]
-        public Explorer Explorer
-        {
-            get { return GetValue<Explorer>(ExplorerProperty); }
-            private set { SetValue(ExplorerProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Explorer property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ExplorerProperty = RegisterProperty("Explorer", typeof (Explorer));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [Model]
-        [ViewModelToModel("Explorer")]
-        public Settings Settings
-        {
-            get { return GetValue<Settings>(SettingsProperty); }
-            set { SetValue(SettingsProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the Settings property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData SettingsProperty = RegisterProperty("Settings", typeof(Settings));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Settings")]
-        public bool IsSettingsVisible
-        {
-            get { return GetValue<bool>(IsSettingsVisibleProperty); }
-            set { SetValue(IsSettingsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsSettingsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsSettingsVisibleProperty = RegisterProperty("IsSettingsVisible", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [Model]
-        [ViewModelToModel("Explorer")]
-        public GraphToolset EditorToolset
-        {
-            get { return GetValue<GraphToolset>(EditorToolsetProperty); }
-            set { SetValue(EditorToolsetProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the EditoToolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData EditorToolsetProperty = RegisterProperty("EditorToolset", typeof(GraphToolset));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("EditorToolset")]
-        public bool IsChanged
-        {
-            get { return GetValue<bool>(IsChangedProperty); }
-            set { SetValue(IsChangedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsChanged property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsNavTabVisible
-        {
-            get { return GetValue<bool>(IsNavTabVisibleProperty); }
-            set { SetValue(IsNavTabVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsNavTabVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsNavTabVisibleProperty = RegisterProperty("IsNavTabVisible", typeof (bool), () => false);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsNavTabSelected
-        {
-            get { return GetValue<bool>(IsNavTabSelectedProperty); }
-            set { SetValue(IsNavTabSelectedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsNavTabSelected property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsNavTabSelectedProperty = RegisterProperty("IsNavTabSelected", typeof (bool), () => false);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsEditorTabSelected
-        {
-            get { return GetValue<bool>(IsEditorTabSelectedProperty); }
-            set { SetValue(IsEditorTabSelectedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsEditorTabSelected property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsEditorTabSelectedProperty = RegisterProperty("IsEditorTabSelected", typeof (bool), () => false);
-
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            IsNavTabVisible = true;
-            IsNavTabSelected = true;
-            Explorer.NavigateTo(dataVertex);
-        }
-
+        #endregion
     }
 }

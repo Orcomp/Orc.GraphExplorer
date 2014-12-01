@@ -5,10 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Behaviors.Interfaces
+
+namespace Orc.GraphExplorer.Behaviors
 {
     public interface IFilterable
     {
+        #region Methods
         void UpdateFilterSource();
+        #endregion
     }
 }

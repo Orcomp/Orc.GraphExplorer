@@ -28,12 +28,14 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event EventHandler<EventArgs> _viewLoaded;
         private event EventHandler<EventArgs> _viewUnloaded;
-        private event EventHandler<EventArgs> _viewDataContextChanged;
+        private event EventHandler<DataContextChangedEventArgs> _viewDataContextChanged;
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
+        protected VertexViewBase(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
+            Argument.IsNotNull(() => vertexData);
+
             _logic = new UserControlLogic(this);
 
             _logic.ViewModelChanged += (sender, args) => ViewModelChanged.SafeInvoke(this);
@@ -42,7 +44,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, new DataContextChangedEventArgs(e.OldValue, e.NewValue)));
 
             ViewModelChanged += VertexViewBase_ViewModelChanged;
             
@@ -80,7 +82,7 @@ namespace Orc.GraphExplorer.Views.Base
             remove { _viewUnloaded -= value; }
         }
 
-        event EventHandler<EventArgs> IView.DataContextChanged
+        event EventHandler<DataContextChangedEventArgs> IView.DataContextChanged
         {
             add { _viewDataContextChanged += value; }
             remove { _viewDataContextChanged -= value; }

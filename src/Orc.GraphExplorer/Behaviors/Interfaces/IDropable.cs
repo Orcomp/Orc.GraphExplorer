@@ -6,14 +6,17 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Behaviors.Interfaces
+namespace Orc.GraphExplorer.Behaviors
 {
     using System;
     using System.Windows;
 
     public interface IDropable
     {
+        #region Properties
         Type DataTypeFormat { get; }
+        #endregion
+
         #region Methods
         /// <summary>
         /// Gets the effects.

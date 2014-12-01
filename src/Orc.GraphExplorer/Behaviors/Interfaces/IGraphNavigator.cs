@@ -5,13 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Behaviors.Interfaces
+
+namespace Orc.GraphExplorer.Behaviors
 {
     using Models;
-    using Models.Data;
 
     public interface IGraphNavigator
     {
-        void NavigateTo(DataVertex dataVertex);        
+        #region Methods
+        void NavigateTo(DataVertex dataVertex);
+        #endregion
     }
 }

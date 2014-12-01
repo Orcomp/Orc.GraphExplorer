@@ -6,7 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:catel="http://catel.codeplex.com"
     xmlns:ViewModels="clr-namespace:Orc.GraphExplorer.ViewModels" 
-    x:Class="Orc.GraphExplorer.Views.ConfigLocationView"
+    x:Class="Orc.GraphExplorer.Views.DataLocationSettingsView"
              mc:Ignorable="d" Foreground="#FF2B2929"
              d:DesignHeight="300" d:DesignWidth="500" >
     <Grid>

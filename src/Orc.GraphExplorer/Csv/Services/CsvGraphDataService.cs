@@ -11,31 +11,45 @@ namespace Orc.GraphExplorer.Csv.Services
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Config;
+    using Catel;
+    using Catel.Configuration;
+
     using CsvHelper;
     using Data;
-    using GraphExplorer.Services.Interfaces;
+    using GraphExplorer.Services;
     using Models;
     using Models.Data;
 
-    public class CsvGraphDataService : IGraphDataGetter, IGraphDataSaver
+    public class CsvGraphDataService : IGraphDataService
     {
         #region Fields
-        private readonly CsvGraphDataServiceConfig _config;
+        private readonly IDataVertexFactory _dataVertexFactory;
+        private readonly IDataLocationSettingsService _dataLocationSettingsService;
+
+        private readonly IConfigurationService _configurationService;
 
         private List<DataVertex> _verticesWithProperties;
 
         private IList<DataVertex> _verticesWithoutProperties;
 
         private List<DataEdge> _edges;
-
-        private IList<RelationDataRecord> _loadedRelations;
         #endregion
 
         #region Constructors
-        public CsvGraphDataService()
+        public CsvGraphDataService(IDataVertexFactory dataVertexFactory, IDataLocationSettingsService dataLocationSettingsService, IConfigurationService configurationService)
         {
-            _config = CsvGraphDataServiceConfig.Current;
+            _dataVertexFactory = dataVertexFactory;
+            _dataLocationSettingsService = dataLocationSettingsService;
+            _configurationService = configurationService;
+
+            _configurationService.ConfigurationChanged += _configurationService_ConfigurationChanged;
+        }
+
+        void _configurationService_ConfigurationChanged(object sender, ConfigurationChangedEventArgs e)
+        {
+            _verticesWithProperties = null;
+            _verticesWithoutProperties = null;
+            _edges = null;
         }
         #endregion
 
@@ -82,7 +96,7 @@ namespace Orc.GraphExplorer.Csv.Services
         }
         #endregion
 
-        #region IGraphDataGetter Members
+        #region IGraphDataService Members
         public IEnumerable<DataVertex> GetVerteces()
         {
             GetEdges();
@@ -93,12 +107,14 @@ namespace Orc.GraphExplorer.Csv.Services
         {
             return Edges;
         }
-        #endregion
 
-        #region IGraphDataSaver Members
         public void SaveChanges(Graph graph)
         {
-            using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Truncate))
+            Argument.IsNotNull(() => graph);
+
+            var dataLocationSettings = _dataLocationSettingsService.GetCurrentOrLoad();
+
+            using (var fs = new FileStream(dataLocationSettings.RelationshipsFile, FileMode.Truncate))
             {
                 using (var writer = new CsvWriter(new StreamWriter(fs)))
                 {
@@ -110,14 +126,17 @@ namespace Orc.GraphExplorer.Csv.Services
                 }
             }
 
-            using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Truncate))
+            if (dataLocationSettings.EnableProperty ?? false)
             {
-                using (var writer = new CsvWriter(new StreamWriter(fs)))
+                using (var fs = new FileStream(dataLocationSettings.PropertiesFile, FileMode.Truncate))
                 {
-                    writer.WriteHeader<PropertyDataRecord>();
-                    foreach (var propertyData in graph.Vertices.SelectMany(x => x.Properties.Select(prop => new PropertyDataRecord {ID = x.ID, Property = prop.Key, Value = prop.Value})))
+                    using (var writer = new CsvWriter(new StreamWriter(fs)))
                     {
-                        writer.WriteRecord(propertyData);
+                        writer.WriteHeader<PropertyDataRecord>();
+                        foreach (var propertyData in graph.Vertices.SelectMany(x => x.Properties.Select(prop => new PropertyDataRecord {ID = x.ID, Property = prop.Key, Value = prop.Value})))
+                        {
+                            writer.WriteRecord(propertyData);
+                        }
                     }
                 }
             }
@@ -134,11 +153,11 @@ namespace Orc.GraphExplorer.Csv.Services
         #endregion
 
         #region Methods
-        public IEnumerable<DataVertex> InitializeVertexProperties()
+        private IEnumerable<DataVertex> InitializeVertexProperties()
         {
             return LoadProperties().GroupBy(x => x.ID).Select(x =>
             {
-                var vertex = DataVertex.Create(x.Key);
+                var vertex = _dataVertexFactory.CreateVertex(x.Key);
                 foreach (var record in x)
                 {
                     vertex.Properties.Add(new Property() {Key = record.Property, Value = record.Value});
@@ -148,7 +167,7 @@ namespace Orc.GraphExplorer.Csv.Services
             });
         }
 
-        public IEnumerable<DataEdge> InitializeEdges()
+        private IEnumerable<DataEdge> InitializeEdges()
         {
             return from relation in LoadRelations()
                 let @from = GetOrCreateVertex(relation.From)
@@ -162,7 +181,7 @@ namespace Orc.GraphExplorer.Csv.Services
 
             if (vertex == null)
             {
-                vertex = DataVertex.Create(id);
+                vertex = _dataVertexFactory.CreateVertex(id);
                 VertecesWithoutProperties.Add(vertex);
             }
 
@@ -171,7 +190,13 @@ namespace Orc.GraphExplorer.Csv.Services
 
         private IEnumerable<PropertyDataRecord> LoadProperties()
         {
-            using (var fs = new FileStream(_config.VertexesFilePath, FileMode.Open))
+            var dataLocationSettings = _dataLocationSettingsService.GetCurrentOrLoad();
+            if (!dataLocationSettings.EnableProperty ?? false)
+            {
+                yield break;
+            }
+
+            using (var fs = new FileStream(dataLocationSettings.PropertiesFile, FileMode.Open))
             {
                 using (var reader = new CsvReader(new StreamReader(fs)))
                 {
@@ -185,7 +210,8 @@ namespace Orc.GraphExplorer.Csv.Services
 
         private IEnumerable<RelationDataRecord> LoadRelations()
         {
-            using (var fs = new FileStream(_config.EdgesFilePath, FileMode.Open))
+            var dataLocationSettings = _dataLocationSettingsService.GetCurrentOrLoad();
+            using (var fs = new FileStream(dataLocationSettings.RelationshipsFile, FileMode.Open))
             {
                 using (var reader = new CsvReader(new StreamReader(fs)))
                 {

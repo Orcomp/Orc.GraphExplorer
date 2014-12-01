@@ -8,8 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Height="200" Width="320">
-        <views:FilterBuilderControl x:Name="FilterBuilderControl" Margin="2,2,6,2" RawCollection="{Binding FilterableEntities}" FilteredCollection="{Binding FilteredEntities}" />
+        <views:FilterBuilderControl x:Name="FilterBuilderControl" Margin="2,2,6,2" RawCollection="{Binding Path=DataContext.RawCollection, RelativeSource={RelativeSource AncestorType=Grid}}" FilteredCollection="{Binding Path=DataContext.FilteredEntities, RelativeSource={RelativeSource AncestorType=Grid}}" />
         <CheckBox Margin="6" IsChecked="{Binding IsHideVertexes, Mode=TwoWay}" Content="Hide vertexes been filtered"/>
-        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding ClearFilterCommand}" Height="24" Width="80" Margin="6"/>
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Clear" Command="{Binding Path=DataContext.ClearFilterCommand, RelativeSource={RelativeSource AncestorType=Grid}}" Height="24" Width="80" Margin="6"/>
     </StackPanel>
 </catel:UserControl>

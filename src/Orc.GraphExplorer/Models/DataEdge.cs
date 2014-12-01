@@ -8,23 +8,23 @@
 
 namespace Orc.GraphExplorer.Models
 {
-    using System;
+    using System.ComponentModel;
     using System.Windows;
-
+    using Catel;
     using Catel.Data;
-
     using GraphX;
     using GraphX.Models.XmlSerializer;
-
     using YAXLib;
 
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
     public class DataEdge : ModelBase, IGraphXEdge<DataVertex>
     {
-  
         #region Constructors
         public DataEdge(DataVertex source, DataVertex target, double weight = 1)
         {
+            Argument.IsNotNull(() => source);
+            Argument.IsNotNull(() => target);
+
             Source = source;
             Target = target;
             Weight = weight;
@@ -37,19 +37,43 @@ namespace Orc.GraphExplorer.Models
         }
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsHighlightEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsHighlighted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool IsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsInEditing { get; set; }
+        #endregion
+
         #region IGraphXEdge<DataVertex> Members
         /// <summary>
         /// Unique edge ID
         /// </summary>
         public int ID { get; set; }
-
-        public bool IsFiltered 
-        {
-            get
-            {
-                return Source != null && Target != null && (Source.IsFiltered && Target.IsFiltered);                 
-            }
-        }
 
         /// <summary>
         /// Returns true if Source vertex equals Target vertex
@@ -72,19 +96,5 @@ namespace Orc.GraphExplorer.Models
 
         public double Weight { get; set; }
         #endregion
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsVisible
-        {
-            get { return GetValue<bool>(IsVisibleProperty); }
-            set { SetValue(IsVisibleProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsVisible property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsVisibleProperty = RegisterProperty("IsVisible", typeof(bool), () => true);
     }
 }

@@ -1,12 +1,12 @@
 #region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="EdgeViewCreatedAventArgs.cs" company="Orcomp development team">
+// <copyright file="EdgeViewCreatedEventArgs.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Events
+namespace Orc.GraphExplorer
 {
     using System;
     using GraphX;
@@ -14,11 +14,14 @@ namespace Orc.GraphExplorer.Events
     using Orc.GraphExplorer.Views;
     using Views.Base;
 
-    public class EdgeViewCreatedAventArgs : EventArgs
+    using Catel;
+
+    public class EdgeViewCreatedEventArgs : EventArgs
     {
         #region Constructors
-        public EdgeViewCreatedAventArgs(EdgeViewBase edgeViewBase)
+        public EdgeViewCreatedEventArgs(EdgeViewBase edgeViewBase)
         {
+            Argument.IsNotNull(() => edgeViewBase); 
             EdgeViewBase = edgeViewBase;
         }
         #endregion

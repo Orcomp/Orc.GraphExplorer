@@ -5,33 +5,45 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.ViewModels
 {
-    using System;
-    using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using Behaviors.Interfaces;
-    using Catel.Data;
+    using Catel;
+    using Catel.Fody;
     using Catel.Memento;
     using Catel.MVVM;
-    using Catel.Services;
+    using GraphX;
     using GraphX.Controls;
-    using Models.Data;
-    using Orc.GraphExplorer.Messages;
-    using Orc.GraphExplorer.Models;
-    using Services.Interfaces;
+    using Messages;
+    using Microsoft.Win32;
+    using Models;
+    using Services;
 
-    public class GraphToolsetViewModel : ViewModelBase, IGraphNavigator
+    public class GraphToolsetViewModel : ViewModelBase
     {
+        #region Fields
         private readonly IMementoService _mementoService;
-        private readonly IMessageService _messageService;
+        private readonly IGraphAreaEditorService _graphAreaEditorService;
 
-        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IMessageService messageService)
+        private readonly IGraphAreaLoadingService _graphAreaLoadingService;
+        #endregion
+
+        #region Constructors
+        public GraphToolsetViewModel()
         {
+        }
+
+        public GraphToolsetViewModel(GraphToolset toolset, IMementoService mementoService, IGraphAreaEditorService graphAreaEditorService, IGraphAreaLoadingService graphAreaLoadingService)
+        {
+            Argument.IsNotNull(() => toolset);
+            Argument.IsNotNull(() => mementoService);
+            Argument.IsNotNull(() => graphAreaEditorService);
+            Argument.IsNotNull(() => graphAreaLoadingService);
+
             _mementoService = mementoService;
-            _messageService = messageService;
+            _graphAreaEditorService = graphAreaEditorService;
+            _graphAreaLoadingService = graphAreaLoadingService;
             Toolset = toolset;
 
             SaveToXml = new Command(OnSaveToXmlExecute);
@@ -46,27 +58,13 @@ namespace Orc.GraphExplorer.ViewModels
 
             GraphChangedMessage.Register(this, OnAreaChangedMessage);
         }
+        #endregion
 
-        private void OnAreaChangedMessage(GraphChangedMessage message)
-        {
-            IsChanged = message.Data;
-            UndoCommand.RaiseCanExecuteChanged();
-            RedoCommand.RaiseCanExecuteChanged();
-            SaveChangesCommand.RaiseCanExecuteChanged();
-        }
-
+        #region Properties
         /// <summary>
         /// Gets the SaveToXml command.
         /// </summary>
         public Command SaveToXml { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the SaveToXml command is executed.
-        /// </summary>
-        private void OnSaveToXmlExecute()
-        {
-            Toolset.SaveToXml();
-        }
 
         /// <summary>
         /// Gets the LoadFromXml command.
@@ -74,25 +72,9 @@ namespace Orc.GraphExplorer.ViewModels
         public Command LoadFromXml { get; private set; }
 
         /// <summary>
-        /// Method to invoke when the LoadFromXml command is executed.
-        /// </summary>
-        private void OnLoadFromXmlExecute()
-        {
-            Toolset.LoadFromXml();
-        }
-
-        /// <summary>
         /// Gets the SaveToImage command.
         /// </summary>
         public Command SaveToImage { get; private set; }
-
-        /// <summary>
-        /// Method to invoke when the SaveToImage command is executed.
-        /// </summary>
-        private void OnSaveToImageExecute()
-        {
-            Toolset.SaveToImage();
-        }
 
         /// <summary>
         /// Gets the RefreshCommand command.
@@ -100,17 +82,113 @@ namespace Orc.GraphExplorer.ViewModels
         public Command RefreshCommand { get; private set; }
 
         /// <summary>
+        /// Gets the SaveChangesCommand command.
+        /// </summary>
+        public Command SaveChangesCommand { get; private set; }
+
+        /// <summary>
+        /// Gets the UndoCommand command.
+        /// </summary>
+        public Command UndoCommand { get; private set; }
+
+        /// <summary>
+        /// Gets the RedoCommand command.
+        /// </summary>
+        public Command RedoCommand { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [Model]
+        [Expose("ToolsetName")]
+        public GraphToolset Toolset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Toolset")]
+        [Model]
+        [Expose("CanEdit")]
+        [Expose("IsDragEnabled")]
+        [Expose("IsInEditing")]
+        public GraphArea Area { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        public ZoomControlModes ZoomMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [ViewModelToModel("Toolset")]
+        public bool IsChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsAddingNewEdge { get; set; }
+
+        public GraphExplorerViewModel GraphExplorer
+        {
+            get { return ParentViewModel as GraphExplorerViewModel; }
+        }
+        #endregion
+
+        #region Methods
+        private void OnAreaChangedMessage(GraphChangedMessage message)
+        {
+            UpdateEditionState(message.Data);
+        }
+
+        private void UpdateEditionState(bool isChanged)
+        {
+            IsChanged = isChanged;
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+            SaveChangesCommand.RaiseCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Method to invoke when the SaveToXml command is executed.
+        /// </summary>
+        private void OnSaveToXmlExecute()
+        {
+            var dlg = new SaveFileDialog {Filter = "All files|*.xml", Title = "Select layout file name", FileName = "overrall_layout.xml"};
+            if (dlg.ShowDialog() == true)
+            {
+                SaveToXmlMessage.SendWith(dlg.FileName, Toolset.ToolsetName);
+            }
+        }
+
+        /// <summary>
+        /// Method to invoke when the LoadFromXml command is executed.
+        /// </summary>
+        private void OnLoadFromXmlExecute()
+        {
+            var dlg = new OpenFileDialog {Filter = "All files|*.xml", Title = "Select layout file", FileName = "overrall_layout.xml"};
+            if (dlg.ShowDialog() == true)
+            {
+                LoadFromXmlMessage.SendWith(dlg.FileName, Toolset.ToolsetName);
+            }
+        }
+
+        /// <summary>
+        /// Method to invoke when the SaveToImage command is executed.
+        /// </summary>
+        private void OnSaveToImageExecute()
+        {
+            SaveToImageMessage.SendWith(ImageType.PNG, Toolset.ToolsetName);
+        }
+
+        /// <summary>
         /// Method to invoke when the RefreshCommand command is executed.
         /// </summary>
         private void OnRefreshCommandExecute()
         {
-            Toolset.Refresh();
+            _graphAreaLoadingService.TryRefresh(Area);
         }
-
-        /// <summary>
-        /// Gets the SaveChangesCommand command.
-        /// </summary>
-        public Command SaveChangesCommand { get; private set; }
 
         /// <summary>
         /// Method to check whether the SaveChangesCommand command can be executed.
@@ -126,13 +204,8 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnSaveChangesCommandExecute()
         {
-            Area.SaveChanges();                        
+            _graphAreaEditorService.SaveChanges(Area);
         }
-
-        /// <summary>
-        /// Gets the UndoCommand command.
-        /// </summary>
-        public Command UndoCommand { get; private set; }
 
         /// <summary>
         /// Method to check whether the UndoCommand command can be executed.
@@ -143,19 +216,14 @@ namespace Orc.GraphExplorer.ViewModels
             return _mementoService.CanUndo;
         }
 
-
         /// <summary>
         /// Method to invoke when the UndoCommand command is executed.
         /// </summary>
         private void OnUndoCommandExecute()
         {
-            Toolset.Undo();           
+            _mementoService.Undo();
+            UpdateEditionState(_mementoService.CanUndo);
         }
-
-        /// <summary>
-        /// Gets the RedoCommand command.
-        /// </summary>
-        public Command RedoCommand { get; private set; }
 
         /// <summary>
         /// Method to check whether the RedoCommand command can be executed.
@@ -163,7 +231,7 @@ namespace Orc.GraphExplorer.ViewModels
         /// <returns><c>true</c> if the command can be executed; otherwise <c>false</c></returns>
         private bool OnRedoCommandCanExecute()
         {
-            return Toolset.CanRedo;
+            return _mementoService.CanRedo;
         }
 
         /// <summary>
@@ -171,208 +239,17 @@ namespace Orc.GraphExplorer.ViewModels
         /// </summary>
         private void OnRedoCommandExecute()
         {
-            Toolset.Redo();            
+            _mementoService.Redo();
+            UpdateEditionState(_mementoService.CanUndo);
         }
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [Model]
-        // TODO: Rename it
-        public GraphToolset Toolset
-        {
-            get
-            {
-                return GetValue<GraphToolset>(ToolsetProperty);
-            }
-            set
-            {
-                SetValue(ToolsetProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the Toolset property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetProperty = RegisterProperty("Toolset", typeof(GraphToolset), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Toolset")]
-        public string ToolsetName
-        {
-            get
-            {
-                return GetValue<string>(ToolsetNameProperty);
-            }
-            set
-            {
-                SetValue(ToolsetNameProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the ToolsetName property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ToolsetNameProperty = RegisterProperty("ToolsetName", typeof(string));
-
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Toolset")]
-        [Model]
-        public GraphArea Area
-        {
-            get
-            {                
-                return GetValue<GraphArea>(AreaProperty);
-            }
-            set
-            {
-                SetValue(AreaProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the Area property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData AreaProperty = RegisterProperty("Area", typeof(GraphArea));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool CanEdit
-        {
-            get { return GetValue<bool>(CanEditProperty); }
-            set { SetValue(CanEditProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the CanEdit property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData CanEditProperty = RegisterProperty("CanEdit", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool IsDragEnabled
-        {
-            get
-            {
-                return GetValue<bool>(IsDragEnabledProperty);
-            }
-            set
-            {
-                SetValue(IsDragEnabledProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the IsDragEnabled property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsDragEnabledProperty = RegisterProperty("IsDragEnabled", typeof(bool));
-
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public ZoomControlModes ZoomMode
-        {
-            get
-            {
-                return GetValue<ZoomControlModes>(ZoomModeProperty);
-            }
-            set
-            {
-                SetValue(ZoomModeProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the ZoomMode property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData ZoomModeProperty = RegisterProperty("ZoomMode", typeof(ZoomControlModes), null);
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Area")]
-        public bool IsInEditing
-        {
-            get
-            {
-                return GetValue<bool>(IsInEditingProperty);
-            }
-            set
-            {
-                SetValue(IsInEditingProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Register the IsInEditing property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsInEditingProperty = RegisterProperty("IsInEditing", typeof(bool));       
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        [ViewModelToModel("Toolset")]
-        public bool IsChanged
-        {
-            get { return GetValue<bool>(IsChangedProperty); }
-            set { SetValue(IsChangedProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsChanged property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsChangedProperty = RegisterProperty("IsChanged", typeof(bool));
-
-        /// <summary>
-        /// Gets or sets the property value.
-        /// </summary>
-        public bool IsAddingNewEdge
-        {
-            get { return GetValue<bool>(IsAddingNewEdgeProperty); }
-            set { SetValue(IsAddingNewEdgeProperty, value); }
-        }
-
-        /// <summary>
-        /// Register the IsAddingNewEdge property so it is known in the class.
-        /// </summary>
-        public static readonly PropertyData IsAddingNewEdgeProperty = RegisterProperty("IsAddingNewEdge", typeof(bool), () => false, (sender, e) => ((GraphToolsetViewModel)sender).OnIsAddingNewEdgeChanged());
 
         /// <summary>
         /// Called when the IsAddingNewEdge property has changed.
         /// </summary>
         private void OnIsAddingNewEdgeChanged()
         {
-            if (IsAddingNewEdge)
-            {
-                StatusMessage.SendWith("Select Source Node");
-            }
-            else
-            {
-                StatusMessage.SendWith("Exit Create Link");
-            }
-        }        
-
-
-        public void NavigateTo(DataVertex dataVertex)
-        {
-            if(GraphExplorer != null)
-            {
-                GraphExplorer.NavigateTo(dataVertex); 
-              } 
+            StatusMessage.SendWith(IsAddingNewEdge ? "Select Source Node" : "Exit Create Link");
         }
-
-        public GraphExplorerViewModel GraphExplorer {
-            get { return ParentViewModel as GraphExplorerViewModel; }
-        }
+        #endregion
     }
 }

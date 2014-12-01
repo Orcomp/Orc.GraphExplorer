@@ -1,10 +1,10 @@
-﻿namespace Orc.GraphExplorer.Events
+﻿namespace Orc.GraphExplorer
 {
     using System.Windows;
 
     public class SettingAppliedRoutedEventArgs : RoutedEventArgs
     {
-        bool _needRefresh;
+        readonly bool _needRefresh;
 
         public bool NeedRefresh
         {

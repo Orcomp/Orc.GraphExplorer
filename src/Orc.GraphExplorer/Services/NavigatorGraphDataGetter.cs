@@ -5,57 +5,49 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Behaviors.Interfaces;
-    using GraphX.GraphSharp;
-    using Interfaces;
+    using Catel;
     using Models;
-    using Models.Data;
 
-    public class NavigatorGraphDataGetter : IGraphDataGetter, IGraphNavigator
+    public class NavigatorGraphDataGetter : IGraphDataGetter, IOverridableGraphDataGetter
     {
-        private readonly Graph _graph;
+        #region Fields
+        private Func<IEnumerable<DataVertex>> _vertecesGetter;
 
-        public NavigatorGraphDataGetter()
-        {
-            
-        }
+        private Func<IEnumerable<DataEdge>> _edgesGetter;
+        #endregion
 
-        public NavigatorGraphDataGetter(Graph graph)
-        {
-            _graph = graph;
-        }
-
+        #region IGraphDataGetter Members
         public IEnumerable<DataVertex> GetVerteces()
         {
-            return _vertices;
+            return _vertecesGetter == null ? Enumerable.Empty<DataVertex>() : _vertecesGetter();
         }
 
         public IEnumerable<DataEdge> GetEdges()
         {
-            return _edges;
+            return _edgesGetter == null ? Enumerable.Empty<DataEdge>() : _edgesGetter();
         }
+        #endregion
 
-        private IEnumerable<DataEdge> _edges = Enumerable.Empty<DataEdge>();
-        private IEnumerable<DataVertex> _vertices = Enumerable.Empty<DataVertex>();
-
-        public void NavigateTo(DataVertex dataVertex)
+        #region IOverridableGraphDataGetter Members
+        public void RedefineVertecesGetter(Func<IEnumerable<DataVertex>> getter)
         {
-            IEnumerable<DataEdge> inEdges;
-            IEnumerable<DataEdge> outEdges;
+            Argument.IsNotNull(() => getter);
 
-            if (!_graph.TryGetInEdges(dataVertex, out inEdges) || !_graph.TryGetOutEdges(dataVertex, out outEdges))
-            {
-                return;
-            }
-
-            _edges = inEdges.Concat(outEdges);
-
-            _vertices = _graph.GetNeighbours(dataVertex).Concat(Enumerable.Repeat(dataVertex, 1));
+            _vertecesGetter = getter;
         }
 
+        public void RedefineEdgesGetter(Func<IEnumerable<DataEdge>> getter)
+        {
+            Argument.IsNotNull(() => getter);
+
+            _edgesGetter = getter;
+        }
+        #endregion
     }
 }

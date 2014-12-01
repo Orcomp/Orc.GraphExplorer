@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Operations.Interfaces
+namespace Orc.GraphExplorer.Operations
 {
     using Catel.Memento;
 

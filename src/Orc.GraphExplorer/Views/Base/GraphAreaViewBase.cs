@@ -23,15 +23,12 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
-    using Events;
-    using Fasterflect;
     using GraphX;
     using GraphX.Controls;
     using GraphX.Controls.Models;
     using Models;
     using Models.Data;
     using Services;
-    using Services.Interfaces;
 
     public abstract class GraphAreaViewBase : GraphArea<DataVertex, DataEdge, Graph>, IUserControl
     {
@@ -43,16 +40,18 @@ namespace Orc.GraphExplorer.Views.Base
         #endregion
 
         #region Fields
-        private UserControlLogic _logic;
+        private readonly UserControlLogic _logic;
+        private readonly IDataVertexFactory _dataVertexFactory;
         #endregion
 
         #region Constructors
-        public GraphAreaViewBase()
+        protected GraphAreaViewBase()
         {
-            // TODO: try to inject IGraphControlFactory
-            IServiceLocator serviceLocator = ServiceLocator.Default;
+            IServiceLocator serviceLocator = this.GetServiceLocator();
             ControlFactory = serviceLocator.ResolveType<IGraphControlFactory>();
             ControlFactory.FactoryRootArea = this;
+
+            _dataVertexFactory = serviceLocator.ResolveType<IDataVertexFactory>();
 
             _logic = new UserControlLogic(this);
         }
@@ -67,7 +66,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             _logic.PropertyChanged += (sender, args) => _propertyChanged.SafeInvoke(this, args);
 
-            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, EventArgs.Empty));
+            this.AddDataContextChangedHandler((sender, e) => _viewDataContextChanged.SafeInvoke(this, new DataContextChangedEventArgs(e.OldValue, e.NewValue)));
 
             ViewModelChanged += GraphAreaViewBase_ViewModelChanged;
             CloseViewModelOnUnloaded = false;
@@ -79,11 +78,6 @@ namespace Orc.GraphExplorer.Views.Base
         {            
             GenerateGraph(e.Graph, true);
             SubscribeOnGraphEvents();            
-        }
-
-        public override List<IGraphControl> GetRelatedControls(IGraphControl ctrl, GraphControlType resultType = GraphControlType.VertexAndEdge, EdgesType edgesType = EdgesType.Out)
-        {
-            return base.GetRelatedControls(ctrl, resultType, edgesType);
         }
 
         void GraphAreaViewBase_BeforeReloadingGraph(object sender, EventArgs e)
@@ -128,7 +122,7 @@ namespace Orc.GraphExplorer.Views.Base
             remove { _viewUnloaded -= value; }
         }
 
-        event EventHandler<EventArgs> IView.DataContextChanged
+        event EventHandler<DataContextChangedEventArgs> IView.DataContextChanged
         {
             add { _viewDataContextChanged += value; }
             remove { _viewDataContextChanged -= value; }
@@ -171,10 +165,14 @@ namespace Orc.GraphExplorer.Views.Base
         {
             if (ViewModel != null)
             {
-                var logic = (GraphLogic)ViewModel.GetPropertyValue("Logic");
+                var logicProvider = ViewModel as IGraphLogicProvider;
+                if (logicProvider != null)
+                {
+                    var logic = logicProvider.Logic;
 
-                logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
-                logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
+                    logic.BeforeReloadingGraph += GraphAreaViewBase_BeforeReloadingGraph;
+                    logic.GraphReloaded += GraphAreaViewBase_GraphReloaded;
+                }
             }
         }
 
@@ -206,10 +204,12 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 return;
             }
-            LogicCore.Graph.VertexAdded += GraphVertexAdded;
-            LogicCore.Graph.VertexRemoved += GraphVertexRemoved;
-            LogicCore.Graph.EdgeAdded += GraphEdgeAdded;
-            LogicCore.Graph.EdgeRemoved += GraphEdgeRemoved;
+            var graph = LogicCore.Graph;
+
+            graph.VertexAdded += GraphVertexAdded;
+            graph.VertexRemoved += GraphVertexRemoved;
+            graph.EdgeAdded += GraphEdgeAdded;
+            graph.EdgeRemoved += GraphEdgeRemoved;
         }
 
         private void UnSubscribeOnGraphEvents(GraphLogic logic = null)
@@ -224,10 +224,12 @@ namespace Orc.GraphExplorer.Views.Base
                 return;
             }
 
-            logic.Graph.VertexAdded -= GraphVertexAdded;
-            logic.Graph.VertexRemoved -= GraphVertexRemoved;
-            logic.Graph.EdgeAdded -= GraphEdgeAdded;
-            logic.Graph.EdgeRemoved -= GraphEdgeRemoved;
+            var graph = logic.Graph;
+
+            graph.VertexAdded -= GraphVertexAdded;
+            graph.VertexRemoved -= GraphVertexRemoved;
+            graph.EdgeAdded -= GraphEdgeAdded;
+            graph.EdgeRemoved -= GraphEdgeRemoved;
         }
 
         private void GraphEdgeRemoved(DataEdge edge)
@@ -248,7 +250,7 @@ namespace Orc.GraphExplorer.Views.Base
         private void AddEdge(DataEdge edge)
         {
             VertexControl source = VertexList[edge.Source];
-            VertexControl target = DataVertex.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
+            VertexControl target = _dataVertexFactory.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
 
             var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, edge);
             AddEdge(edge, edgeView);
@@ -258,7 +260,7 @@ namespace Orc.GraphExplorer.Views.Base
 
             if (target == null && TemporaryEdgeCreated != null)
             {
-                TemporaryEdgeCreated(this, new EdgeViewCreatedAventArgs(edgeView));
+                TemporaryEdgeCreated(this, new EdgeViewCreatedEventArgs(edgeView));
             }
             else
             {
@@ -273,7 +275,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void GraphVertexAdded(DataVertex vertex)
         {
-            if (DataVertex.IsFakeVertex(vertex))
+            if (_dataVertexFactory.IsFakeVertex(vertex))
             {
                 return;
             }
@@ -283,11 +285,15 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void SafeAddVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             RunCodeInUiThread(() => AddVertex(vertex), null, DispatcherPriority.Loaded);
         }
 
         private void AddVertex(DataVertex vertex)
         {
+            Argument.IsNotNull(() => vertex);
+
             var vertexControl = (VertexView)ControlFactory.CreateVertexControl(vertex);            
 
             AddVertex(vertex, vertexControl);
@@ -297,6 +303,8 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void SetPositon(VertexControl vertexControl, DataVertex dataVertex)
         {
+            Argument.IsNotNull(() => vertexControl);
+
             var point = (Point)dataVertex.Tag;
 
             if (Math.Abs(point.X - double.MinValue) > 0d)
@@ -309,7 +317,7 @@ namespace Orc.GraphExplorer.Views.Base
             //dataVertex.Tag = null;
         }
 
-        public static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
+        private static void RunCodeInUiThread(Action action, Dispatcher dispatcher = null, DispatcherPriority priority = DispatcherPriority.Background)
         {
             if (action == null)
                 return;
@@ -334,10 +342,10 @@ namespace Orc.GraphExplorer.Views.Base
 
         private event EventHandler<EventArgs> _viewUnloaded;
 
-        private event EventHandler<EventArgs> _viewDataContextChanged;
+        private event EventHandler<DataContextChangedEventArgs> _viewDataContextChanged;
 
         private event PropertyChangedEventHandler _propertyChanged;
 
-        public event EventHandler<EdgeViewCreatedAventArgs> TemporaryEdgeCreated;
+        public event EventHandler<EdgeViewCreatedEventArgs> TemporaryEdgeCreated;
     }
 }

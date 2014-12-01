@@ -1,47 +1,34 @@
 ﻿#region Copyright (c) 2014 Orcomp development team.
 // -------------------------------------------------------------------------------------------------------------------
-// <copyright file="VertexView.cs" company="Orcomp development team">
+// <copyright file="VertexView.xaml.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
+
 namespace Orc.GraphExplorer.Views
 {
-    using System;
     using System.Windows;
-    using System.Windows.Controls;
-
-    using Catel.IoC;
     using Catel.MVVM;
     using Catel.MVVM.Views;
-
+    using Catel.Windows;
     using GraphX;
+    using ViewModels;
 
-    using Orc.GraphExplorer.Helpers;
-    using Orc.GraphExplorer.ViewModels;
-    using Orc.GraphExplorer.Views.Base;
-
-    public class VertexView : VertexViewBase
+    /// <summary>
+    /// Логика взаимодействия для VertexView.xaml
+    /// </summary>
+    public partial class VertexView
     {
+        #region Constructors
         public VertexView(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
-        {            
+        {
             Loaded += VertexView_Loaded;
         }
+        #endregion
 
-
-        private void VertexView_Loaded(object sender, RoutedEventArgs e)
-        {
-            var relationalViewModel = ViewModel as IRelationalViewModel;
-            var graphAreaView = this.FindFirstParentOfType<GraphAreaView>();
-            if (graphAreaView != null && relationalViewModel != null && ViewModel.ParentViewModel == null)
-            {
-                relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
-            }
-            //DataContext = ViewModel;
-        }
-
-
+        #region Properties
         [ViewToViewModel]
         public bool IsHighlightEnabled
         {
@@ -79,7 +66,22 @@ namespace Orc.GraphExplorer.Views
 
         public new VertexViewModel ViewModel
         {
-            get { return base.ViewModel as VertexViewModel; }
-        } 
+            get { return base.ViewModel; }
+        }
+        #endregion
+
+        #region Methods
+        private void VertexView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var viewModel = ViewModel;
+
+            var relationalViewModel = viewModel as IRelationalViewModel;
+            var graphAreaView = this.FindLogicalOrVisualAncestorByType<GraphAreaView>();
+            if (graphAreaView != null && relationalViewModel != null && viewModel.ParentViewModel == null)
+            {
+                relationalViewModel.SetParentViewModel(graphAreaView.ViewModel);
+            }
+        }
+        #endregion
     }
 }

@@ -7,8 +7,8 @@
 #endregion
 namespace Orc.GraphExplorer.Operations
 {
+    using Catel;
     using Catel.Memento;
-    using Interfaces;
 
     using Orc.GraphExplorer.Messages;
     using Orc.GraphExplorer.Models;
@@ -21,6 +21,9 @@ namespace Orc.GraphExplorer.Operations
 
         public AddEdgeOperation(GraphArea graphArea, DataEdge edge)
         {
+            Argument.IsNotNull(() => graphArea);
+            Argument.IsNotNull(() => edge);
+
             _graphArea = graphArea;
             _edge = edge;
             CanRedo = true;

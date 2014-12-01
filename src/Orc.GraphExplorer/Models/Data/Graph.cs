@@ -2,9 +2,10 @@
 {
     using System;
 
-    using Orc.GraphExplorer.Services.Interfaces;
+    using Catel;
 
     using QuickGraph;
+    using Services;
 
     public class Graph : BidirectionalGraph<DataVertex, DataEdge>
     {
@@ -17,6 +18,8 @@
 
         public Graph(IGraphDataGetter graphDataGetter)
         {
+            Argument.IsNotNull(() => graphDataGetter);
+
             _graphDataGetter = graphDataGetter;
         }
 
