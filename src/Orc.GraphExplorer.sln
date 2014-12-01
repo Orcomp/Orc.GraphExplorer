@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{512E4DA1-75E3-4CBA-A1AD-E3E5CDE775BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Demo", "Orc.GraphExplorer.Demo\Orc.GraphExplorer.Demo.csproj", "{2C50CF42-66C8-4955-82F8-B76197DF5287}"
@@ -19,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{DA563D74-3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer", "Orc.GraphExplorer\Orc.GraphExplorer.csproj", "{59306C76-EBA0-4CE3-9E23-4BD072B7B6D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Test", "Orc.GraphExplorer.Test\Orc.GraphExplorer.Test.csproj", "{402AE338-0F0E-42E9-9C7B-C594EDE6D764}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.GraphExplorer.Tests", "Orc.GraphExplorer.Tests\Orc.GraphExplorer.Tests.csproj", "{402AE338-0F0E-42E9-9C7B-C594EDE6D764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
