@@ -1,23 +1,20 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------------------------------------------
 // <copyright file="MahAppsService.cs" company="Orcomp development team">
 //   Copyright (c) 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
 namespace Orc.GraphExplorer.Demo.Services
 {
     using System.Windows;
-
     using MahApps.Metro.Controls;
-
-    using Orc.GraphExplorer.Demo.Views;
-
     using Orchestra.Models;
     using Orchestra.Services;
+    using Views;
 
     public class MahAppsService : IMahAppsService
     {
+        #region IMahAppsService Members
         public AboutInfo GetAboutInfo()
         {
             return new AboutInfo();
@@ -32,5 +29,6 @@ namespace Orc.GraphExplorer.Demo.Services
         {
             return new MainWindow();
         }
+        #endregion
     }
 }

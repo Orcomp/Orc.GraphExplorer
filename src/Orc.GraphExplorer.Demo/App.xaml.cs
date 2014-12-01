@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
+﻿#region Copyright (c) 2014 Orcomp development team.
+// -------------------------------------------------------------------------------------------------------------------
+// <copyright file="App.xaml.cs" company="Orcomp development team">
+//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
 
 namespace Orc.GraphExplorer.Demo
 {
+    using System;
+    using System.Windows;
     using Catel.IoC;
-
     using Orchestra.Services;
     using Orchestra.Views;
 
@@ -17,21 +19,14 @@ namespace Orc.GraphExplorer.Demo
     /// </summary>
     public partial class App : Application
     {
+        #region Methods
         protected override void OnStartup(StartupEventArgs e)
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var serviceLocator = this.GetServiceLocator();
 
             var shellService = serviceLocator.ResolveType<IShellService>();
-            shellService.Create<ShellWindow>();
-
+            shellService.CreateWithSplash<ShellWindow>();
         }
-
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
-
-
+        #endregion
     }
 }
