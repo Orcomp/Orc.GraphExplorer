@@ -1,10 +1,9 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="DataVertex.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+//   Copyright (c) 2008 - 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
 
 namespace Orc.GraphExplorer.Models
 {
@@ -12,11 +11,8 @@ namespace Orc.GraphExplorer.Models
     using System.ComponentModel;
     using System.Globalization;
     using System.Windows.Media;
-
     using Catel.Data;
-
     using GraphX;
-
     using YAXLib;
 
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]
@@ -41,6 +37,11 @@ namespace Orc.GraphExplorer.Models
         #endregion
 
         #region Properties
+        public static int FakeVertexId
+        {
+            get { return -666; }
+        }
+
         /// <summary>
         /// Gets or sets the property value.
         /// </summary>

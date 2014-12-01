@@ -15,7 +15,7 @@ namespace Orc.GraphExplorer.Factories
     public class DataVertexFactory : IDataVertexFactory
     {
         #region Constants
-        private const int FakeVertexId = -666;
+        
 
         private static int _maxId = 0;
         #endregion
@@ -23,7 +23,7 @@ namespace Orc.GraphExplorer.Factories
         #region IDataVertexFactory Members
         public DataVertex CreateFakeVertex()
         {
-            return new DataVertex(FakeVertexId);
+            return new DataVertex(DataVertex.FakeVertexId);
         }
 
         public DataVertex CreateVertex()
@@ -41,12 +41,6 @@ namespace Orc.GraphExplorer.Factories
             return new DataVertex(id);
         }
 
-        public bool IsFakeVertex(DataVertex vertex)
-        {
-            Argument.IsNotNull(() => vertex);
-
-            return vertex.ID == FakeVertexId;
-        }
         #endregion
     }
 }

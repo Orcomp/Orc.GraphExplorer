@@ -14,6 +14,5 @@ namespace Orc.GraphExplorer.Factories
         DataVertex CreateFakeVertex();
         DataVertex CreateVertex();
         DataVertex CreateVertex(int id);
-        bool IsFakeVertex(DataVertex vertex);
     }
 }
