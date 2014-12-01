@@ -1,27 +1,23 @@
-#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EdgeViewCreatedEventArgs.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+//   Copyright (c) 2008 - 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
 
 namespace Orc.GraphExplorer
 {
     using System;
-    using GraphX;
-
-    using Orc.GraphExplorer.Views;
-    using Views.Base;
-
     using Catel;
+    using Views.Base;
 
     public class EdgeViewCreatedEventArgs : EventArgs
     {
         #region Constructors
         public EdgeViewCreatedEventArgs(EdgeViewBase edgeViewBase)
         {
-            Argument.IsNotNull(() => edgeViewBase); 
+            Argument.IsNotNull(() => edgeViewBase);
+
             EdgeViewBase = edgeViewBase;
         }
         #endregion

@@ -1,16 +1,17 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="DataEdgeExtensions.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+//   Copyright (c) 2008 - 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
+
 namespace Orc.GraphExplorer
 {
-    using Orc.GraphExplorer.Models;
+    using Models;
 
     public static class DataEdgeExtensions
     {
+        #region Methods
         public static bool IsFiltered(this DataEdge dataEdge)
         {
             var source = dataEdge.Source;
@@ -18,5 +19,6 @@ namespace Orc.GraphExplorer
 
             return source != null && target != null && (source.IsFiltered && target.IsFiltered);
         }
+        #endregion
     }
 }

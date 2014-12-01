@@ -1,27 +1,29 @@
-﻿#region Copyright (c) 2014 Orcomp development team.
-// -------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GraphEventArgs.cs" company="Orcomp development team">
-//   Copyright (c) 2014 Orcomp development team. All rights reserved.
+//   Copyright (c) 2008 - 2014 Orcomp development team. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
+
 namespace Orc.GraphExplorer
 {
     using System;
-
     using Catel;
-
     using Models.Data;
 
     public class GraphEventArgs : EventArgs
     {
-        public Graph Graph { get; private set; }
-
+        #region Constructors
         public GraphEventArgs(Graph graph)
         {
             Argument.IsNotNull(() => graph);
- 
+
             Graph = graph;
         }
+        #endregion
+
+        #region Properties
+        public Graph Graph { get; private set; }
+        #endregion
     }
 }
