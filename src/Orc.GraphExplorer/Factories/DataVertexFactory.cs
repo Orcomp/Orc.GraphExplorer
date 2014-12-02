@@ -6,15 +6,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using Catel;
     using Models;
+    using Services;
 
     public class DataVertexFactory : IDataVertexFactory
     {
         #region Constants
-        private const int FakeVertexId = -666;
+        
 
         private static int _maxId = 0;
         #endregion
@@ -22,7 +23,7 @@ namespace Orc.GraphExplorer.Services
         #region IDataVertexFactory Members
         public DataVertex CreateFakeVertex()
         {
-            return new DataVertex(FakeVertexId);
+            return new DataVertex(DataVertex.FakeVertexId);
         }
 
         public DataVertex CreateVertex()
@@ -40,12 +41,6 @@ namespace Orc.GraphExplorer.Services
             return new DataVertex(id);
         }
 
-        public bool IsFakeVertex(DataVertex vertex)
-        {
-            Argument.IsNotNull(() => vertex);
-
-            return vertex.ID == FakeVertexId;
-        }
         #endregion
     }
 }

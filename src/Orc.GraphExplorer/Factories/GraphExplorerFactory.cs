@@ -6,11 +6,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using Catel;
     using Messages;
     using Models;
+    using Services;
 
     public class GraphExplorerFactory : IGraphExplorerFactory
     {

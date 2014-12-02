@@ -2,6 +2,7 @@
 
 using Orc.GraphExplorer;
 using Orc.GraphExplorer.Csv.Services;
+using Orc.GraphExplorer.Factories;
 using Orc.GraphExplorer.Services;
 using GraphX.Controls.Models;
 

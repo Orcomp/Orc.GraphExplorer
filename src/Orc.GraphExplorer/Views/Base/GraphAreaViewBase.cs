@@ -23,6 +23,8 @@ namespace Orc.GraphExplorer.Views.Base
     using Catel.MVVM.Providers;
     using Catel.MVVM.Views;
     using Catel.Windows;
+    using Extensions;
+    using Factories;
     using GraphX;
     using GraphX.Controls;
     using GraphX.Controls.Models;
@@ -250,7 +252,7 @@ namespace Orc.GraphExplorer.Views.Base
         private void AddEdge(DataEdge edge)
         {
             VertexControl source = VertexList[edge.Source];
-            VertexControl target = _dataVertexFactory.IsFakeVertex(edge.Target) ? null : VertexList[edge.Target];
+            VertexControl target = edge.Target.IsFakeVertex() ? null : VertexList[edge.Target];
 
             var edgeView = (EdgeViewBase) ControlFactory.CreateEdgeControl(source, target, edge);
             AddEdge(edge, edgeView);
@@ -262,10 +264,6 @@ namespace Orc.GraphExplorer.Views.Base
             {
                 TemporaryEdgeCreated(this, new EdgeViewCreatedEventArgs(edgeView));
             }
-            else
-            {
-                
-            }
         }
 
         private void GraphVertexRemoved(DataVertex vertex)
@@ -275,7 +273,7 @@ namespace Orc.GraphExplorer.Views.Base
 
         private void GraphVertexAdded(DataVertex vertex)
         {
-            if (_dataVertexFactory.IsFakeVertex(vertex))
+            if (vertex.IsFakeVertex())
             {
                 return;
             }

@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using Models;
 

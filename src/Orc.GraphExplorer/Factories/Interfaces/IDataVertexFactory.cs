@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-namespace Orc.GraphExplorer.Services
+namespace Orc.GraphExplorer.Factories
 {
     using Models;
 
@@ -14,6 +14,5 @@ namespace Orc.GraphExplorer.Services
         DataVertex CreateFakeVertex();
         DataVertex CreateVertex();
         DataVertex CreateVertex(int id);
-        bool IsFakeVertex(DataVertex vertex);
     }
 }
